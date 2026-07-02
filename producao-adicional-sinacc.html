@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Produção adicional SINACC — Ortopedia</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%233b877b'/%3E%3Cpath d='M28 30 V50 C28 75 40 82 50 82 C60 82 72 75 72 50 V30' stroke='white' stroke-width='12' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='28' cy='30' r='8' fill='white'/%3E%3Ccircle cx='50' cy='82' r='8' fill='white'/%3E%3Ccircle cx='72' cy='30' r='8' fill='white'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --color-primary: #3b877b;
+  --color-primary-dark: #2a6058;
+  --teal: #3b877b;
+  --bg: #f4f7f6;
+  --bg-tint: #eef3f1;
+  --paper: #ffffff;
+  --ink: #2c3e50;
+  --ink-soft: #46555f;
+  --ink-muted: #7a8a86;
+  --rule: #dfe6e3;
+  --rule-soft: #edf1ef;
+  --t1: #2c3e50;
+  --surface-glass: rgba(255,255,255,0.72);
+  --surface-border: rgba(255,255,255,0.60);
+  --blur-amount: 12px;
+  --radius-sm: 8px; --radius-md: 12px; --radius-lg: 20px;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Roboto Mono', monospace;
+  --pos: #2ecc71;
+  --pos-dark: #1e9e54;
+  --warn: #e67e22;
+  --neg: #c75f1c;
+  --shadow-md: 0 8px 24px -10px rgba(59,135,123,0.30);
+  --shadow-lg: 0 20px 50px -20px rgba(44,62,80,0.35);
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: var(--font-sans); -webkit-font-smoothing: antialiased;
+  background-image:
+    radial-gradient(circle at 15% 0%, rgba(59,135,123,0.10), transparent 45%),
+    radial-gradient(circle at 90% 100%, rgba(44,62,80,0.08), transparent 45%);
+  background-attachment: fixed;
+  padding: 28px 16px 60px;
+}
+.wrap { max-width: 1180px; margin: 0 auto; }
+.brand { display: inline-block; margin-bottom: 12px; line-height: 0; }
+.brand-logo { height: 32px; width: auto; display: block; }
+h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; margin: 0 0 6px; }
+h1 em { font-style: normal; font-weight: 600; color: var(--color-primary); }
+.sub { color: var(--ink-soft); font-size: 13.5px; margin: 0 0 24px; max-width: 900px; line-height: 1.55; }
+.sub b { color: var(--ink); }
+
+.glass {
+  background: var(--surface-glass);
+  -webkit-backdrop-filter: blur(var(--blur-amount));
+  backdrop-filter: blur(var(--blur-amount));
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+}
+.panel { padding: 18px 20px; margin-bottom: 22px; }
+.panel h2, section h2 { font-size: 15px; font-weight: 700; margin: 0 0 14px; display: flex; align-items: center; gap: 8px; }
+.eyebrow { font-family: var(--font-mono); font-size: 10.5px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: var(--color-primary); display: block; margin-bottom: 3px; }
+
+.globals { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; }
+.group + .group { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--rule-soft); }
+#distGroup { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--rule-soft); }
+#distGroup summary { cursor: pointer; user-select: none; list-style: none; }
+#distGroup summary::-webkit-details-marker { display: none; }
+#distGroup summary::before { content: '▸  '; color: var(--color-primary); }
+#distGroup[open] summary::before { content: '▾  '; }
+#distGroup summary:hover { color: var(--color-primary-dark); }
+.group-title { font-family: var(--font-mono); font-size: 10.5px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 10px; }
+.group-note { font-size: 11px; color: var(--ink-muted); margin-top: 8px; line-height: 1.5; }
+.field label { display: flex; align-items: flex-end; min-height: 30px; font-size: 11.5px; font-weight: 600; color: var(--ink-muted); margin-bottom: 5px; line-height: 1.35; }
+input[type="number"], select {
+  background: var(--bg); border: 1px solid var(--rule);
+  padding: 7px 10px; font-size: 14px; color: var(--ink);
+  border-radius: var(--radius-sm); min-height: 35px; width: 100%;
+  font-family: var(--font-mono); text-align: right;
+}
+input:focus, select:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(59,135,123,0.15); }
+
+/* chips seletor GDH */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  border: 1px solid var(--rule); background: rgba(255,255,255,.85); color: var(--ink-soft);
+  border-radius: 999px; padding: 7px 14px 7px 10px; font-size: 12.5px; font-weight: 500;
+  cursor: pointer; transition: all .15s ease; display: flex; align-items: center; gap: 7px; user-select: none;
+}
+.chip .n { font-family: var(--font-mono); font-weight: 600; font-size: 12px; color: var(--ink); }
+.chip:hover { border-color: var(--color-primary); }
+.chip.on { background: var(--color-primary); border-color: var(--color-primary); color: #fff; box-shadow: 0 4px 12px rgba(59,135,123,.25); }
+.chip.on .n { color: #fff; }
+.chip .area { font-size: 10px; opacity: .75; }
+
+/* cartões GDH */
+.card { padding: 0; margin-bottom: 26px; overflow: hidden; }
+.card-head { padding: 16px 20px 14px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px; border-bottom: 1px solid var(--rule-soft); }
+.card-head .gdh { font-family: var(--font-mono); font-weight: 600; font-size: 18px; color: var(--color-primary); }
+.card-head .name { font-size: 15px; font-weight: 700; }
+.card-head .tag { font-family: var(--font-mono); font-size: 10px; letter-spacing: .8px; text-transform: uppercase; background: var(--bg-tint); border: 1px solid var(--rule); border-radius: 999px; padding: 3px 9px; color: var(--ink-muted); }
+.card-head .tag.deduz { background: rgba(230,126,34,.10); border-color: rgba(230,126,34,.35); color: var(--neg); }
+.card-body { padding: 16px 20px 20px; }
+.controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 18px; }
+
+/* segmented int/amb */
+.seg { display: flex; border: 1px solid var(--rule); border-radius: var(--radius-sm); overflow: hidden; min-height: 35px; }
+.seg button {
+  flex: 1; border: none; background: var(--bg); color: var(--ink-soft); font: 600 12.5px var(--font-sans);
+  cursor: pointer; padding: 7px 4px; transition: all .15s ease;
+}
+.seg button.sel { background: var(--color-primary); color: #fff; }
+
+/* switch */
+.sw { display: flex; align-items: center; gap: 8px; min-height: 35px; cursor: pointer; }
+.sw .track { width: 34px; height: 20px; border-radius: 999px; background: var(--rule); position: relative; transition: background .15s ease; flex: none; }
+.sw .track::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: left .15s ease; box-shadow: 0 1px 3px rgba(44,62,80,.3); }
+.sw.on .track { background: var(--color-primary); }
+.sw.on .track::after { left: 16px; }
+.sw span.lbl { font-size: 12px; font-weight: 600; color: var(--ink-soft); line-height: 1.3; }
+
+/* tabelas de resultados */
+.results { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 860px) { .results { grid-template-columns: 1fr; } }
+.rbox { background: rgba(255,255,255,.85); border: 1px solid var(--rule); border-radius: var(--radius-md); overflow: auto; }
+.rbox h3 { font-size: 12.5px; font-weight: 700; margin: 0; padding: 10px 14px; border-bottom: 1px solid var(--rule-soft); color: var(--ink); display: flex; gap: 8px; align-items: center; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .6px; color: var(--ink-muted); text-align: right; padding: 8px 10px 6px; border-bottom: 1px solid var(--rule-soft); }
+th:first-child, td:first-child { text-align: left; }
+td { padding: 8px 10px; border-bottom: 1px solid var(--rule-soft); font-family: var(--font-mono); font-size: 12.5px; text-align: right; white-space: nowrap; }
+td:first-child { font-family: var(--font-sans); font-weight: 500; color: var(--ink-soft); white-space: normal; }
+tr:last-child td { border-bottom: none; }
+.badge { display: inline-block; font-family: var(--font-mono); font-size: 9.5px; font-weight: 600; letter-spacing: .5px; border-radius: 4px; padding: 2px 6px; margin-left: 6px; vertical-align: 1px; }
+.badge.b12 { background: rgba(59,135,123,.12); color: var(--color-primary-dark); border: 1px solid rgba(59,135,123,.3); }
+.badge.b20 { background: rgba(230,126,34,.10); color: var(--neg); border: 1px solid rgba(230,126,34,.35); }
+.pos { color: var(--pos-dark); } .negv { color: var(--neg); }
+.muted { color: var(--ink-muted); }
+.note-inline { font-size: 11px; color: var(--ink-muted); padding: 8px 14px 10px; line-height: 1.5; border-top: 1px solid var(--rule-soft); font-family: var(--font-sans); }
+.best td { background: rgba(46,204,113,.07); }
+
+/* regras */
+.rules { padding: 20px; }
+.rules ul { margin: 0; padding-left: 20px; line-height: 1.65; font-size: 13.5px; color: var(--ink-soft); }
+.rules li { margin-bottom: 9px; }
+.rules b { color: var(--ink); }
+.rules .art { font-family: var(--font-mono); font-size: 11px; color: var(--color-primary-dark); white-space: nowrap; }
+a.art { text-decoration: none; border-bottom: 1px dotted var(--color-primary-dark); }
+a.art:hover { background: rgba(59,135,123,.10); }
+a.tag { text-decoration: none; }
+.sub a { color: var(--color-primary-dark); font-weight: 600; text-decoration: none; border-bottom: 1px dotted var(--color-primary-dark); }
+.sub a:hover { background: rgba(59,135,123,.10); }
+footer a { color: var(--color-primary-dark); }
+tr.noline td { border-bottom: none; }
+tr.indiv td { font-style: italic; color: var(--ink-soft); font-size: 11.5px; padding-top: 0; }
+tr.indiv td:first-child { color: var(--ink-muted); }
+
+/* alerta final */
+.alert-warn {
+  border-left: 4px solid var(--warn);
+  background: rgba(230,126,34,.08);
+  border-radius: var(--radius-sm);
+  padding: 14px 18px; margin-top: 22px;
+  font-size: 13.5px; line-height: 1.6; color: var(--ink-soft);
+}
+.alert-warn b { color: var(--ink); }
+footer { margin-top: 30px; font-size: 11px; color: var(--ink-muted); line-height: 1.6; }
+.empty { text-align: center; color: var(--ink-muted); font-size: 13.5px; padding: 34px 20px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <a class="brand" href="https://ubnic.com" aria-label="UBNIC" rel="noopener" target="_blank">
+    <svg class="brand-logo" viewBox="0 0 320 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M28 30 V50 C28 75 40 82 50 82 C60 82 72 75 72 50 V30" stroke="var(--teal)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="28" cy="30" r="7" fill="var(--teal)" stroke="var(--bg)" stroke-width="2.5"/>
+      <circle cx="50" cy="82" r="7" fill="var(--teal)" stroke="var(--bg)" stroke-width="2.5"/>
+      <circle cx="72" cy="30" r="7" fill="var(--teal)" stroke="var(--bg)" stroke-width="2.5"/>
+      <text x="95" y="68" font-family="'Inter',system-ui,sans-serif" font-weight="700" font-size="42" letter-spacing="-1" fill="var(--t1)">UBNIC</text>
+    </svg>
+  </a>
+
+  <h1>Produção adicional <em>SINACC</em> — Ortopedia</h1>
+  <p class="sub">Comparador do regime antigo (Portaria n.º 207/2017, SIGIC) com o novo regime em vigor desde <b>1 de julho de 2026</b> (<a href="https://diariodarepublica.pt/dr/detalhe/portaria/274-2026-1138714124" target="_blank" rel="noopener">Portaria n.º 274/2026/1</a> — tabelas de preços APR36; <a href="https://diariodarepublica.pt/dr/detalhe/portaria/281-2026-1139897695" target="_blank" rel="noopener">Portaria n.º 281/2026/1</a> — regras de pagamento da produção adicional e externalizada, ao abrigo do <a href="https://diariodarepublica.pt/dr/detalhe/decreto-lei/12-2026-1019913911" target="_blank" rel="noopener">DL n.º 12/2026</a> — SINACC). Selecione os GDH, ajuste material, regime e percentagem da equipa. As citações de artigos (ex.: <a class="art" href="portaria-281-2026.html#art5" target="_blank">art. 5.º</a>) abrem o <a href="portaria-281-2026.html" target="_blank">texto integral da Portaria 281/2026/1 com âncoras por artigo</a> — o sítio do DR não permite ligações diretas a artigos.</p>
+
+  <div class="glass panel">
+    <h2><span class="eyebrow" style="margin:0">Parâmetros globais</span></h2>
+    <div class="group">
+      <div class="group-title">Produção adicional</div>
+      <div class="globals">
+        <div class="field"><label>% equipa por defeito (novo: CA fixa 20–80%)</label><input type="number" id="gPct" value="45" min="0" max="100" step="1"></div>
+        <div class="field"><label>% equipa — regime antigo</label><input type="number" id="gPctOld" value="45" min="0" max="100" step="1"></div>
+        <div class="field"><label>Custos internos por defeito — internamento (€)</label><input type="number" id="gIntCost" value="1500" min="0" step="50"></div>
+        <div class="field"><label>Custos internos por defeito — ambulatório (€)</label><input type="number" id="gAmbCost" value="500" min="0" step="50"></div>
+      </div>
+    </div>
+    <div class="group">
+      <div class="group-title">Sala privada alugada</div>
+      <div class="globals">
+        <div class="field"><label>Sala + internamento (€/episódio)</label><input type="number" id="gSala" value="2460" min="0" step="10"></div>
+        <div class="field"><label>Fração da equipa paga pelo hospital — internamento (%)</label><input type="number" id="gFracInt" value="81.1" min="0" max="100" step="0.05"></div>
+        <div class="field"><label>Fração da equipa paga pelo hospital — ambulatório (%)</label><input type="number" id="gFracAmb" value="78.55" min="0" max="100" step="0.05"></div>
+      </div>
+      <div class="group-note">No cenário de sala alugada, o hospital paga apenas cirurgiões + instrumentistas (fração da equipa acima); anestesia e enfermagem de sala estão incluídas no preço da sala.</div>
+    </div>
+  </div>
+
+  <div class="glass panel">
+    <h2><span class="eyebrow" style="margin:0">Perfil — quem está a ver os valores</span></h2>
+    <div class="chips" id="roleChips"></div>
+    <details class="group" id="distGroup">
+      <summary class="group-title">Distribuição do valor da equipa (Modelos A/B do hospital — % do valor da equipa)</summary>
+      <div id="distWrap"></div>
+      <div class="group-note">Modelos A (ambulatório) e B (internamento) de registo de produção adicional do hospital. Pressupostos: cirurgião principal e ajudante dividem a fatia dos cirurgiões em partes iguais; enfermeiros em partes iguais. Escolhido um perfil, o valor individual aparece em itálico por baixo do valor da equipa em cada GDH.</div>
+    </details>
+  </div>
+
+  <div class="glass panel">
+    <h2><span class="eyebrow" style="margin:0">GDH ortopédicos — selecionar para analisar</span></h2>
+    <div class="chips" id="chips"></div>
+  </div>
+
+  <div id="cards"></div>
+
+  <section class="glass rules">
+    <h2>Regras novas relevantes — Portaria n.º 281/2026/1</h2>
+    <ul>
+      <li><b>Base de cálculo:</b> a produção adicional e a externalizada pagam-se pelos preços das <b>colunas O (internamento) / P (ambulatório)</b> da tabela GDH nova — não pelo preço GDH pleno. <a class="art" href="portaria-281-2026.html#art2" target="_blank" title="Abrir o artigo 2.º da Portaria 281/2026/1">art. 2.º, n.º 4</a></li>
+      <li><b>% da equipa (cirurgia, adicional interna):</b> deixa de haver percentagem única — o Conselho de Administração fixa <b>entre 20% e 80%</b>, por grupo de procedimentos, em regulamento anual validado pela DE-SNS. <a class="art" href="portaria-281-2026.html#art5" target="_blank" title="Abrir o artigo 5.º da Portaria 281/2026/1">art. 5.º, n.º 4, al. b), i</a></li>
+      <li><b>Dedução do material:</b> nos GDH <b>301, 302, 303, 304, 310, 313, 321</b> (e 73, 170, 171, 176, 363), o valor dos dispositivos médicos implantáveis <b>(IVA incluído)</b> é <b>deduzido ao valor a distribuir à equipa</b>. <a class="art" href="portaria-281-2026.html#art5" target="_blank" title="Abrir o artigo 5.º da Portaria 281/2026/1">art. 5.º, n.º 10</a></li>
+      <li><b>Severidades:</b> paga-se pela <b>sev. 1</b>, exceto se a sev. 2 resultar <b>exclusivamente do diagnóstico e procedimento principais</b>; episódios concluídos em sev. 3/4 pagam-se pelo valor da <b>sev. 2</b>. Só contam diagnósticos presentes à admissão; complicações intra/pós-operatórias não elevam a severidade. <a class="art" href="portaria-281-2026.html#art5" target="_blank" title="Abrir o artigo 5.º da Portaria 281/2026/1">art. 5.º, n.º 4, al. b), ii; art. 2.º, n.os 3 e 6</a></li>
+      <li><b>Fim da majoração ×1,2:</b> a majoração de procedimentos complexos desaparece na produção adicional interna; só há majorações pontuais e temporárias por decisão da DE-SNS com autorização ministerial. <a class="art" href="portaria-281-2026.html#art5" target="_blank" title="Abrir o artigo 5.º da Portaria 281/2026/1">art. 5.º, n.º 2</a></li>
+      <li><b>Múltiplos procedimentos independentes:</b> acresce <b>45%</b> do valor dos GDH adicionais, até <b>+60%</b> do GDH principal (mesma equipa) ou <b>+100%</b> (equipa de especialidade diferente). <a class="art" href="portaria-281-2026.html#art2" target="_blank" title="Abrir o artigo 2.º da Portaria 281/2026/1">art. 2.º, n.º 8, al. c)</a></li>
+      <li><b>Acesso ao adicional:</b> exige produção base contratualizada cumprida; o n.º de procedimentos em adicional não pode exceder a produção base; o diretor de serviço classifica cada episódio (base/adicional) no agendamento. <a class="art" href="portaria-281-2026.html#art4" target="_blank" title="Abrir o artigo 4.º da Portaria 281/2026/1">art. 4.º, n.os 4–5</a></li>
+      <li><b>Codificação:</b> não pode ser feita por elementos da equipa que realizou o adicional. <a class="art" href="portaria-281-2026.html#art5" target="_blank" title="Abrir o artigo 5.º da Portaria 281/2026/1">art. 5.º, n.º 1</a></li>
+      <li><b>Externalização — preço compreensivo:</b> o hospital de origem paga a coluna O/P à entidade de destino; inclui consultas e MCDT prévios, estadia, medicação, pós-operatório e seguimento por 2 meses, rotinas pré-operatórias e UCI por conta do destino. Só severidades 1 e 2 (3/4 pagam-se como 2). <a class="art" href="portaria-281-2026.html#art8" target="_blank" title="Abrir o artigo 8.º da Portaria 281/2026/1">arts. 8.º e 9.º, n.º 11</a></li>
+      <li><b>Externalização — material:</b> dispositivos implantáveis <b>&gt;200 €</b> acrescem ao preço com autorização prévia da origem — <b>exceto</b> nos GDH da lista (301, 302, 303, 304, 310, 313, 321…), em que o preço O/P já inclui a prótese, que fica <b>por conta da entidade de destino</b>. <a class="art" href="portaria-281-2026.html#art9" target="_blank" title="Abrir o artigo 9.º da Portaria 281/2026/1">art. 9.º, n.os 1–10</a></li>
+      <li><b>Externalização — complexidade:</b> a portaria cria um suplemento de +<b>20%</b> sobre o preço O/P para procedimentos de «especial complexidade» — mas a lista concreta só existirá quando a ACSS publicar a <b>Circular Normativa</b> prevista (à data, ainda não publicada). Até lá não se sabe que procedimentos beneficiam; o interruptor nos cartões é um cenário. Nota: este suplemento aplica-se apenas à produção <b>externalizada</b> — na produção adicional interna não substitui a antiga majoração ×1,2, que desaparece sem sucessor. <a class="art" href="portaria-281-2026.html#art9" target="_blank" title="Abrir o artigo 9.º da Portaria 281/2026/1">art. 9.º, n.º 12</a></li>
+      <li><b>Transportes:</b> até à cirurgia por conta da origem; depois, do destino; destino escolhido fora das opções: por conta do utente. <a class="art" href="portaria-281-2026.html#art11" target="_blank" title="Abrir o artigo 11.º da Portaria 281/2026/1">art. 11.º, n.os 1–2</a></li>
+      <li><b>Restrição de equipas:</b> a produção numa entidade convencionada <b>não é paga</b> se algum médico da equipa cirúrgica exercer atividade no hospital de origem. <a class="art" href="portaria-281-2026.html#art10" target="_blank" title="Abrir o artigo 10.º da Portaria 281/2026/1">art. 10.º, n.º 6</a></li>
+      <li><b>Consultas e MCDT (adicional interna):</b> consultas até 80% do valor de tabela; MCDT entre 20–80% conforme a coluna aplicável. <a class="art" href="portaria-281-2026.html#art5" target="_blank" title="Abrir o artigo 5.º da Portaria 281/2026/1">art. 5.º, n.º 4, als. a) e c)</a></li>
+    </ul>
+  </section>
+
+  <div class="alert-warn">
+    <b>Nota — risco de desmotivação das equipas:</b> se a produção adicional deixar de compensar financeiramente os profissionais do hospital (dedução das próteses, fim da majoração ×1,2, pagamento pela severidade 1 e percentagens fixadas abaixo do teto), as equipas ficam desmotivadas para operar fora de horas no SNS. A consequência provável é a redução da produção adicional interna e a saída progressiva dos profissionais para o setor privado — onde a mesma cirurgia externalizada é paga ao preço compreensivo da coluna O/P —, com perda de capacidade cirúrgica própria do hospital público e aumento da dependência da externalização.
+  </div>
+
+  <footer>
+    Fontes: Portaria n.º 274/2026/1, de 25 de junho (DR n.º 121/2026, Série I) — anexo ii, tabela i (APR36; colunas F/H = preço pleno, O/P = preço SIGIC/SIGA/SINACC) · Portaria n.º 281/2026/1, de 29 de junho (DR n.º 123/2026, Série I) · DL n.º 12/2026, de 22 de janeiro (SINACC). Valores antigos: Portaria n.º 207/2017 na redação final (APR31). Ferramenta de simulação — não substitui os diplomas nem os regulamentos internos de cada ULS. UBNIC · julho 2026.
+  </footer>
+</div>
+
+<script>
+// ---- dados: GDH ortopédicos ----------------------------------------------
+// old*: Portaria 207/2017 (APR31). new*: colunas O/P da Portaria 274/2026/1 (APR36).
+// deduz: lista do art. 5.º n.º 10 / art. 9.º n.º 10 da Portaria 281/2026/1.
+const GDH = [
+  {g:301, nome:'Substituição da articulação da anca', area:'anca',   oi1:4484.54, oi2:5351.01, oa1:4386.89, oa2:null,    ni1:5074.34, ni2:6053.53, na1:4976.69, na2:null,     deduz:true,  cx:true,  mat:1599},
+  {g:302, nome:'Substituição da articulação do joelho', area:'joelho', oi1:4378.70, oi2:5116.15, oa1:4232.75, oa2:4535.73, ni1:4987.11, ni2:6612.12, na1:4841.16, na2:6418.61, deduz:true,  cx:true,  mat:1599, matAmb:1968},
+  {g:303, nome:'Artrodese dorsal e/ou lombar p/ curvatura vertebral', area:'raquis', oi1:5577.69, oi2:7847.38, oa1:5418.19, oa2:null, ni1:6412.58, ni2:7717.20, na1:6253.08, na2:null,    deduz:true,  cx:true,  mat:0},
+  {g:304, nome:'Artrodese dorsal e/ou lombar, exceto curvatura', area:'raquis', oi1:3846.75, oi2:6013.67, oa1:3205.63, oa2:5083.44, ni1:4231.42, ni2:6934.75, na1:3526.19, na2:6704.99, deduz:true,  cx:true,  mat:0},
+  {g:305, nome:'Amputação de membros inferiores exceto dedos', area:'geral', oi1:3445.55, oi2:4667.80, oa1:3445.55, oa2:4667.80, ni1:3972.55, ni2:5076.71, na1:3972.55, na2:null,    deduz:false, cx:false, mat:0},
+  {g:308, nome:'Proc. anca/fémur por traumatismo, exceto substituição', area:'anca', oi1:2828.37, oi2:3676.88, oa1:2828.37, oa2:null, ni1:3276.32, ni2:4101.63, na1:3276.32, na2:null,    deduz:false, cx:false, mat:0},
+  {g:309, nome:'Proc. anca/fémur não traumáticos, exceto substituição', area:'anca', oi1:2196.34, oi2:4844.20, oa1:2196.34, oa2:4844.20, ni1:3858.56, ni2:9419.54, na1:3858.56, na2:null, deduz:false, cx:false, mat:0},
+  {g:310, nome:'Excisão e/ou descompressão de disco intervertebral', area:'raquis', oi1:1962.72, oi2:2435.35, oa1:1686.36, oa2:2435.35, ni1:2195.35, ni2:3269.30, na1:1918.98, na2:2857.73, deduz:true, cx:false, mat:0},
+  {g:312, nome:'Enxerto de pele (exceto mão), sist. músculo-esquelético', area:'geral', oi1:3323.63, oi2:9902.28, oa1:3325.13, oa2:9902.28, ni1:3657.65, ni2:10570.97, na1:3657.65, na2:10570.97, deduz:false, cx:false, mat:0},
+  {g:313, nome:'Procedimentos no joelho e/ou perna, exceto no pé', area:'joelho', oi1:1275.37, oi2:3504.73, oa1:1266.96, oa2:3504.73, ni1:2064.00, ni2:3975.99, na1:2064.00, na2:3975.99, deduz:true, cx:false, mat:0},
+  {g:314, nome:'Procedimentos no pé e/ou dedos', area:'pé', oi1:1325.25, oi2:3098.69, oa1:1150.41, oa2:3098.69, ni1:1751.68, ni2:3168.18, na1:1751.68, na2:3168.18, deduz:false, cx:false, mat:0},
+  {g:315, nome:'Procedimentos no ombro, braço e/ou antebraço', area:'ombro', oi1:1168.05, oi2:2860.20, oa1:1075.75, oa2:2537.95, ni1:1949.37, ni2:3539.34, na1:1949.37, na2:3539.34, deduz:false, cx:false, mat:0},
+  {g:316, nome:'Procedimentos na mão e/ou punho', area:'mão', oi1:921.31, oi2:2166.18, oa1:921.31, oa2:2166.18, ni1:1485.39, ni2:2383.84, na1:1485.39, na2:2383.84, deduz:false, cx:false, mat:0},
+  {g:317, nome:'Procedimentos no tendão, músculo e/ou tecidos moles', area:'geral', oi1:1063.03, oi2:2958.16, oa1:1063.03, oa2:2958.16, ni1:1684.62, ni2:4104.45, na1:1684.62, na2:4104.45, deduz:false, cx:false, mat:0},
+  {g:320, nome:'Outros proc. sist. músculo-esquelético / tecido conjuntivo', area:'geral', oi1:1127.18, oi2:4250.79, oa1:1101.26, oa2:4250.79, ni1:1851.27, ni2:3384.45, na1:1851.27, na2:3384.45, deduz:false, cx:false, mat:0},
+  {g:321, nome:'Artrodese cervical / outros proc. dorso-pescoço', area:'raquis', oi1:2233.02, oi2:3633.61, oa1:1978.81, oa2:3633.61, ni1:2953.53, ni2:5304.96, na1:2953.53, na2:5304.96, deduz:true, cx:false, mat:0},
+];
+
+// ---- distribuição do valor da equipa (Modelos A/B do hospital) -------------
+const DIST = {
+  int: {cir: 50.35, an: 23.05, enf: 23.05, ao: 2.5, at: 1.0, out: 0.05, nEnf: 3},
+  amb: {cir: 47.75, an: 21.85, enf: 26.85, ao: 2.5, at: 1.0, out: 0.05, nEnf: 4},
+  nCir: 2,
+};
+let role = 'equipa';
+const ROLES = [
+  {k: 'equipa', lbl: 'Equipa completa'},
+  {k: 'cir', lbl: 'Cirurgião'},
+  {k: 'an', lbl: 'Anestesista'},
+  {k: 'enf', lbl: 'Enfermeiro'},
+  {k: 'ao', lbl: 'Assistente operacional'},
+  {k: 'at', lbl: 'Assistente técnico'},
+  {k: 'out', lbl: 'Outros de apoio'},
+];
+function roleShare(amb) {
+  const d = DIST[amb ? 'amb' : 'int'];
+  switch (role) {
+    case 'cir': return d.cir / 100 / DIST.nCir;
+    case 'an':  return d.an / 100;
+    case 'enf': return d.enf / 100 / d.nEnf;
+    case 'ao':  return d.ao / 100;
+    case 'at':  return d.at / 100;
+    case 'out': return d.out / 100;
+    default: return null;
+  }
+}
+function roleDesc(amb) {
+  const d = DIST[amb ? 'amb' : 'int'];
+  const p = v => v.toLocaleString('pt-PT', {maximumFractionDigits: 2});
+  switch (role) {
+    case 'cir': return `Cirurgião (${p(d.cir)}% ÷ ${DIST.nCir})`;
+    case 'an':  return `Anestesista (${p(d.an)}%)`;
+    case 'enf': return `Enfermeiro (${p(d.enf)}% ÷ ${d.nEnf})`;
+    case 'ao':  return `Assistente operacional (${p(d.ao)}%)`;
+    case 'at':  return `Assistente técnico (${p(d.at)}%)`;
+    case 'out': return `Outros de apoio (${p(d.out)}%)`;
+    default: return '';
+  }
+}
+function renderRoles() {
+  const el = document.getElementById('roleChips'); el.innerHTML = '';
+  ROLES.forEach(r0 => {
+    const c = document.createElement('div');
+    c.className = 'chip' + (role === r0.k ? ' on' : '');
+    c.textContent = r0.lbl;
+    c.onclick = () => { role = r0.k; renderRoles(); render(); };
+    el.appendChild(c);
+  });
+}
+function renderDist() {
+  const rows = [['Cirurgiões (grupo)', 'cir'], ['Anestesista', 'an'], ['Enfermeiros (grupo)', 'enf'],
+                ['Assistente operacional', 'ao'], ['Assistente técnico', 'at'], ['Outros de apoio', 'out']];
+  const sum = reg => DIST[reg].cir + DIST[reg].an + DIST[reg].enf + DIST[reg].ao + DIST[reg].at + DIST[reg].out;
+  const sumSty = reg => Math.abs(sum(reg) - 100) > 0.011 ? 'color:var(--neg);font-weight:600' : 'color:var(--pos-dark)';
+  document.getElementById('distWrap').innerHTML = `
+    <div style="overflow:auto"><table style="max-width:560px;background:rgba(255,255,255,.85);border:1px solid var(--rule);border-radius:8px">
+      <tr><th>Grupo</th><th>Internamento %</th><th>Ambulatório %</th></tr>
+      ${rows.map(([lbl, k]) => `<tr><td>${lbl}</td>
+        <td><input class="dist-in" data-reg="int" data-k="${k}" type="number" step="0.05" min="0" value="${DIST.int[k]}" style="width:100px"></td>
+        <td><input class="dist-in" data-reg="amb" data-k="${k}" type="number" step="0.05" min="0" value="${DIST.amb[k]}" style="width:100px"></td></tr>`).join('')}
+      <tr><td style="font-weight:600;font-family:var(--font-sans)">Soma</td>
+        <td style="${sumSty('int')}">${sum('int').toLocaleString('pt-PT', {maximumFractionDigits: 2})}%</td>
+        <td style="${sumSty('amb')}">${sum('amb').toLocaleString('pt-PT', {maximumFractionDigits: 2})}%</td></tr>
+    </table></div>
+    <div class="globals" style="margin-top:12px;max-width:560px">
+      <div class="field"><label>N.º de cirurgiões</label><input id="dNCir" type="number" min="1" step="1" value="${DIST.nCir}"></div>
+      <div class="field"><label>N.º enfermeiros — internamento</label><input id="dNEnfI" type="number" min="1" step="1" value="${DIST.int.nEnf}"></div>
+      <div class="field"><label>N.º enfermeiros — ambulatório</label><input id="dNEnfA" type="number" min="1" step="1" value="${DIST.amb.nEnf}"></div>
+    </div>`;
+  document.querySelectorAll('.dist-in').forEach(i => i.addEventListener('change', () => {
+    DIST[i.dataset.reg][i.dataset.k] = parseFloat(i.value) || 0; renderDist(); render();
+  }));
+  document.getElementById('dNCir').addEventListener('change', e => { DIST.nCir = Math.max(1, parseInt(e.target.value) || 1); renderDist(); render(); });
+  document.getElementById('dNEnfI').addEventListener('change', e => { DIST.int.nEnf = Math.max(1, parseInt(e.target.value) || 1); renderDist(); render(); });
+  document.getElementById('dNEnfA').addEventListener('change', e => { DIST.amb.nEnf = Math.max(1, parseInt(e.target.value) || 1); renderDist(); render(); });
+}
+
+// ---- estado ---------------------------------------------------------------
+const state = {}; // por GDH: {on, amb, mat, pct, cxOld, cxNew, custos, custosTouched, matTouched}
+GDH.forEach(d => state[d.g] = {
+  on: d.g === 302 || d.g === 313,
+  amb: d.g === 313,
+  mat: d.mat, // 302 começa em internamento (PTJ: 1 599 € c/ IVA; em ambulatório passa a 1 968 €)
+  pct: null,           // null = herda global
+  cxOld: d.cx, cxNew: d.cx,
+  custos: null, matTouched: false,
+});
+
+const fmt = v => (v === null || v === undefined || isNaN(v)) ? '—'
+  : v.toLocaleString('pt-PT', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' €';
+const fmtD = v => (v>=0?'+':'') + fmt(v).replace(' €',' €');
+const fmtP = v => (v>=0?'+':'') + (v*100).toLocaleString('pt-PT',{maximumFractionDigits:0}) + '%';
+const G = id => parseFloat(document.getElementById(id).value) || 0;
+
+// ---- chips ----------------------------------------------------------------
+const chipsEl = document.getElementById('chips');
+GDH.forEach(d => {
+  const c = document.createElement('div');
+  c.className = 'chip' + (state[d.g].on ? ' on' : '');
+  c.innerHTML = `<span class="n">${d.g}</span> ${d.nome} <span class="area">· ${d.area}</span>`;
+  c.onclick = () => { state[d.g].on = !state[d.g].on; c.classList.toggle('on'); render(); };
+  chipsEl.appendChild(c);
+});
+
+['gPct','gPctOld','gIntCost','gAmbCost','gSala','gFracInt','gFracAmb'].forEach(id =>
+  document.getElementById(id).addEventListener('input', render));
+
+// ---- cálculo por GDH ------------------------------------------------------
+function calc(d) {
+  const s = state[d.g];
+  const amb = s.amb;
+  const pct = (s.pct === null ? G('gPct') : s.pct) / 100;
+  const pctOld = G('gPctOld') / 100;
+  const mat = s.mat || 0;
+  const custos = s.custos === null ? (amb ? G('gAmbCost') : G('gIntCost')) : s.custos;
+
+  const old1 = amb ? d.oa1 : d.oi1, old2 = amb ? d.oa2 : d.oi2;
+  const nov1 = amb ? d.na1 : d.ni1, nov2 = amb ? d.na2 : d.ni2;
+  const majOld = s.cxOld ? 1.2 : 1;
+
+  const eqOld1 = old1 !== null ? pctOld * old1 * majOld : null;
+  const eqOld2 = old2 !== null ? pctOld * old2 * majOld : null;
+  const ded = d.deduz ? mat : 0;
+  const eqNov1 = nov1 !== null ? pct * nov1 - ded : null;
+  const eqNov2 = nov2 !== null ? pct * nov2 - ded : null;
+
+  // hospital
+  const interno = (eqNov1 !== null ? eqNov1 : 0) + mat + custos;
+  let extern = nov1;
+  let externExtra = (!d.deduz && mat > 200) ? mat : 0; // dispositivo acresce (art. 9.º n.º 1)
+  if (extern !== null) {
+    extern = extern * (s.cxNew ? 1.2 : 1) + externExtra;
+  }
+  const fracSala = (amb ? G('gFracAmb') : G('gFracInt')) / 100;
+  const sala = G('gSala') + mat + (eqNov1 !== null ? eqNov1 * fracSala : 0);
+
+  return {amb, pct, pctOld, mat, custos, old1, old2, nov1, nov2, eqOld1, eqOld2, eqNov1, eqNov2,
+          interno, extern, externExtra, sala, ded};
+}
+
+// ---- render ---------------------------------------------------------------
+function render() {
+  const host = document.getElementById('cards');
+  host.innerHTML = '';
+  const active = GDH.filter(d => state[d.g].on);
+  if (!active.length) {
+    host.innerHTML = '<div class="glass panel empty">Selecione um ou mais GDH acima para ver a análise.</div>';
+    return;
+  }
+  active.forEach(d => {
+    const s = state[d.g], r = calc(d);
+    const card = document.createElement('section');
+    card.className = 'glass card';
+
+    const delta1 = (r.eqNov1 !== null && r.eqOld1 !== null) ? r.eqNov1 - r.eqOld1 : null;
+    const delta2 = (r.eqNov2 !== null && r.eqOld2 !== null) ? r.eqNov2 - r.eqOld2 : null;
+    const cls = v => v === null ? '' : (v >= 0 ? 'pos' : 'negv');
+
+    const best = Math.min(...[r.interno, r.extern ?? Infinity, r.sala]);
+    const mk = v => v === best ? ' class="best"' : '';
+
+    const sh = roleShare(r.amb);
+    const iRow = (vo, vn) => sh === null ? '' :
+      `<tr class="indiv"><td>↳ ${roleDesc(r.amb)}</td>` +
+      `<td>${vo === null ? '—' : fmt(vo * sh)}</td>` +
+      `<td>${vn === null ? '—' : fmt(vn * sh)}</td>` +
+      `<td class="${vo !== null && vn !== null ? cls(vn - vo) : ''}">${vo === null || vn === null ? '—' : fmtD((vn - vo) * sh)}</td>` +
+      `<td></td></tr>`;
+    const mainCls = sh === null ? '' : ' class="noline"';
+
+    card.innerHTML = `
+      <div class="card-head">
+        <span class="gdh">GDH ${d.g}</span><span class="name">${d.nome}</span>
+        <span class="tag">${d.area}</span>
+        ${d.deduz ? '<a class="tag deduz" href="portaria-281-2026.html#art5" target="_blank" title="Abrir o art. 5.º da Portaria 281/2026/1">material deduzido à equipa · art. 5.º n.º 10</a>' : '<span class="tag">sem dedução de material à equipa</span>'}
+      </div>
+      <div class="card-body">
+        <div class="controls">
+          <div class="field"><label>Regime</label>
+            <div class="seg">
+              <button data-k="int" class="${!s.amb ? 'sel' : ''}">Internamento</button>
+              <button data-k="amb" class="${s.amb ? 'sel' : ''}">Ambulatório</button>
+            </div>
+          </div>
+          <div class="field"><label>Material implantável, c/ IVA (€)</label>
+            <input type="number" data-k="mat" value="${s.mat}" min="0" step="50"></div>
+          <div class="field"><label>% equipa (vazio = global ${G('gPct')}%)</label>
+            <input type="number" data-k="pct" value="${s.pct === null ? '' : s.pct}" placeholder="${G('gPct')}" min="0" max="100" step="1"></div>
+          <div class="field"><label>Custos internos do hospital (€)</label>
+            <input type="number" data-k="custos" value="${r.custos}" min="0" step="50"></div>
+          <div class="field"><label>Complexo no regime antigo (×1,2)</label>
+            <div class="sw ${s.cxOld ? 'on' : ''}" data-k="cxOld"><div class="track"></div><span class="lbl">majoração ×1,2</span></div></div>
+          <div class="field"><label>Cenário: especial complexidade na externalização</label>
+            <div class="sw ${s.cxNew ? 'on' : ''}" data-k="cxNew"><div class="track"></div><span class="lbl">+20% — lista em Circular ACSS ainda não publicada (art. 9.º, n.º 12)</span></div></div>
+        </div>
+
+        <div class="results">
+          <div class="rbox">
+            <h3>Equipa — antes vs. agora <span class="muted" style="font-weight:500">(${r.amb ? 'ambulatório' : 'internamento'})</span></h3>
+            <table>
+              <tr><th></th><th>Antes ${s.cxOld ? '<span class="badge b12">×1,2</span>' : ''}</th><th>Agora (${(r.pct*100).toLocaleString('pt-PT')}%)</th><th>Δ €</th><th>Δ %</th></tr>
+              <tr${mainCls}>
+                <td>Severidade 1</td>
+                <td>${fmt(r.eqOld1)}</td>
+                <td>${fmt(r.eqNov1)}</td>
+                <td class="${cls(delta1)}">${delta1 === null ? '—' : fmtD(delta1)}</td>
+                <td class="${cls(delta1)}">${delta1 === null || !r.eqOld1 ? '—' : fmtP(delta1 / r.eqOld1)}</td>
+              </tr>
+              ${iRow(r.eqOld1, r.eqNov1)}
+              <tr${mainCls}>
+                <td>Severidade 2</td>
+                <td>${fmt(r.eqOld2)}</td>
+                <td>${fmt(r.eqNov2)}</td>
+                <td class="${cls(delta2)}">${delta2 === null ? '—' : fmtD(delta2)}</td>
+                <td class="${cls(delta2)}">${delta2 === null || !r.eqOld2 ? '—' : fmtP(delta2 / r.eqOld2)}</td>
+              </tr>
+              ${iRow(r.eqOld2, r.eqNov2)}
+            </table>
+            <div class="note-inline">Agora: ${(r.pct*100).toLocaleString('pt-PT')}% × coluna ${r.amb ? 'P' : 'O'} (${fmt(r.nov1)} sev. 1${r.nov2 !== null ? ' · ' + fmt(r.nov2) + ' sev. 2' : ''})${r.ded ? ` <b>− material (${fmt(r.mat)})</b>` : ''}. A sev. 2 só é paga se resultar exclusivamente do diagnóstico + procedimento principais; sev. 3/4 pagam-se pela sev. 2. «—» = sem preço na tabela aplicável.</div>
+          </div>
+
+          <div class="rbox">
+            <h3>Hospital — custo por episódio (sev. 1)</h3>
+            <table>
+              <tr><th>Cenário</th><th>Custo</th><th></th></tr>
+              <tr${mk(r.interno)}>
+                <td>Fazer internamente (adicional interna)</td>
+                <td>${fmt(r.interno)}</td>
+                <td class="muted" style="font-size:10.5px">equipa ${fmt(r.eqNov1)} + material ${fmt(r.mat)} + custos ${fmt(r.custos)}</td>
+              </tr>
+              <tr${r.extern !== null ? mk(r.extern) : ''}>
+                <td>Externalizar (entidade de destino)${s.cxNew ? ' <span class="badge b20">+20%</span>' : ''}</td>
+                <td>${fmt(r.extern)}</td>
+                <td class="muted" style="font-size:10.5px">${d.deduz ? 'prótese incluída — por conta do destino' : (r.externExtra ? 'inclui dispositivo ' + fmt(r.externExtra) + ' pago pela origem' : 'preço compreensivo (2 meses)')}</td>
+              </tr>
+              <tr${mk(r.sala)}>
+                <td>Sala privada alugada (equipa e material do hospital)</td>
+                <td>${fmt(r.sala)}</td>
+                <td class="muted" style="font-size:10.5px">sala ${fmt(G('gSala'))} + material ${fmt(r.mat)} + ${(r.amb ? G('gFracAmb') : G('gFracInt')).toLocaleString('pt-PT')}% da equipa</td>
+              </tr>
+            </table>
+            <div class="note-inline">Verde = cenário mais barato. Na sala privada, o hospital paga apenas cirurgiões + instrumentistas (${G('gFracInt').toLocaleString('pt-PT')}% da equipa no internamento / ${G('gFracAmb').toLocaleString('pt-PT')}% no ambulatório); anestesia e enfermagem de sala incluídas no preço da sala. Externalização: transportes até à cirurgia por conta da origem; UCI por conta do destino.</div>
+          </div>
+        </div>
+      </div>`;
+
+    // listeners
+    card.querySelectorAll('.seg button').forEach(b => b.onclick = () => {
+      const goAmb = b.dataset.k === 'amb';
+      if (goAmb !== s.amb) {
+        s.amb = goAmb;
+        // material por defeito específico do regime (ex.: PTJ 1300 / PUC 1600)
+        if (!s.matTouched && d.g === 302) s.mat = goAmb ? (d.matAmb || d.mat) : d.mat;
+        if (s.custos === null) {} // continua a herdar o global do regime
+        render();
+      }
+    });
+    card.querySelectorAll('input[data-k]').forEach(inp => inp.addEventListener('change', () => {
+      const k = inp.dataset.k, v = inp.value === '' ? null : parseFloat(inp.value);
+      if (k === 'mat') { s.mat = v || 0; s.matTouched = true; }
+      if (k === 'pct') { s.pct = v; }
+      if (k === 'custos') { s.custos = v; }
+      render();
+    }));
+    card.querySelectorAll('.sw').forEach(sw => sw.onclick = () => {
+      s[sw.dataset.k] = !s[sw.dataset.k]; render();
+    });
+
+    host.appendChild(card);
+  });
+}
+renderRoles();
+renderDist();
+render();
+</script>
+</body>
+</html>
