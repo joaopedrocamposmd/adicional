@@ -83,6 +83,38 @@ input[type="number"], select {
   font-family: var(--font-mono); text-align: right;
 }
 input:focus, select:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(59,135,123,0.15); }
+input[type="range"] { width: 100%; accent-color: var(--color-primary); min-height: 35px; background: transparent; border: none; padding: 0; cursor: pointer; }
+input[type="range"]:focus { box-shadow: none; }
+.slval { font-family: var(--font-mono); font-weight: 600; color: var(--color-primary-dark); margin-left: 4px; }
+input.est { background: rgba(230,126,34,.07); border-color: rgba(230,126,34,.4); }
+.reset { border: none; background: none; color: var(--ink-muted); cursor: pointer; font-size: 10.5px; padding: 0 4px; text-decoration: underline dotted; }
+.reset:hover { color: var(--color-primary-dark); }
+.mgmt { border-top: 1px solid var(--rule-soft); padding: 9px 14px; font-size: 11.5px; color: var(--ink-soft); line-height: 1.55; font-family: var(--font-sans); }
+.mgmt b { font-family: var(--font-mono); font-weight: 600; white-space: nowrap; }
+.mgmt .ok { color: var(--pos-dark); font-weight: 600; }
+.mgmt .ko { color: var(--neg); font-weight: 600; }
+
+/* Tooltip "i" com popover (padrão u-info da biblioteca UBNIC) */
+.vf { white-space: nowrap; }
+.u-info { position: relative; display: inline-flex; vertical-align: 1px; margin-left: 5px; }
+.u-info > i {
+  width: 14px; height: 14px; border-radius: 50%; border: 1px solid var(--ink-muted);
+  color: var(--ink-muted); font-style: normal; font-size: 9px; font-weight: 700;
+  display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+  transition: all .15s ease; font-family: var(--font-sans); line-height: 1;
+}
+.u-info > i:hover, .u-info.open > i { border-color: var(--color-primary); color: var(--color-primary); }
+.u-info-pop { display: none; } /* conteúdo é projetado no popover global #gpop (o backdrop-filter dos cartões desloca position:fixed) */
+#gpop {
+  position: fixed; z-index: 60; width: max-content; max-width: 360px; padding: 9px 12px;
+  background: rgba(255,255,255,.97);
+  border: 1px solid var(--rule); border-radius: var(--radius-sm); box-shadow: var(--shadow-lg);
+  font-family: var(--font-mono); font-size: 11px; font-weight: 400; line-height: 1.6; color: var(--ink);
+  white-space: normal; text-align: left; text-transform: none; letter-spacing: 0;
+  opacity: 0; visibility: hidden; transition: opacity .12s ease; pointer-events: none;
+}
+#gpop.show { opacity: 1; visibility: visible; }
+#gpop .nota { color: var(--ink-muted); font-family: var(--font-sans); display: block; margin-top: 5px; padding-top: 5px; border-top: 1px solid var(--rule-soft); }
 
 /* chips seletor GDH */
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -105,7 +137,8 @@ input:focus, select:focus { outline: none; border-color: var(--color-primary); b
 .card-head .tag { font-family: var(--font-mono); font-size: 10px; letter-spacing: .8px; text-transform: uppercase; background: var(--bg-tint); border: 1px solid var(--rule); border-radius: 999px; padding: 3px 9px; color: var(--ink-muted); }
 .card-head .tag.deduz { background: rgba(230,126,34,.10); border-color: rgba(230,126,34,.35); color: var(--neg); }
 .card-body { padding: 16px 20px 20px; }
-.controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 18px; }
+.controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 12px; }
+.controls.sw-row { grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); margin-bottom: 18px; padding-top: 10px; border-top: 1px solid var(--rule-soft); }
 
 /* segmented int/amb */
 .seg { display: flex; border: 1px solid var(--rule); border-radius: var(--radius-sm); overflow: hidden; min-height: 35px; }
@@ -185,18 +218,34 @@ footer { margin-top: 30px; font-size: 11px; color: var(--ink-muted); line-height
   </a>
 
   <h1>Produção adicional <em>SINACC</em> — Ortopedia</h1>
-  <p class="sub">Comparador do regime antigo (Portaria n.º 207/2017, SIGIC) com o novo regime em vigor desde <b>1 de julho de 2026</b> (<a href="https://diariodarepublica.pt/dr/detalhe/portaria/274-2026-1138714124" target="_blank" rel="noopener">Portaria n.º 274/2026/1</a> — tabelas de preços APR36; <a href="https://diariodarepublica.pt/dr/detalhe/portaria/281-2026-1139897695" target="_blank" rel="noopener">Portaria n.º 281/2026/1</a> — regras de pagamento da produção adicional e externalizada, ao abrigo do <a href="https://diariodarepublica.pt/dr/detalhe/decreto-lei/12-2026-1019913911" target="_blank" rel="noopener">DL n.º 12/2026</a> — SINACC). Selecione os GDH, ajuste material, regime e percentagem da equipa. As citações de artigos (ex.: <a class="art" href="portaria-281-2026.html#art5" target="_blank">art. 5.º</a>) abrem o <a href="portaria-281-2026.html" target="_blank">texto integral da Portaria 281/2026/1 com âncoras por artigo</a> — o sítio do DR não permite ligações diretas a artigos.</p>
+  <p class="sub">Comparador do regime antigo (Portaria n.º 207/2017, SIGIC) com o novo regime em vigor desde <b>1 de julho de 2026</b> (<a href="https://diariodarepublica.pt/dr/detalhe/portaria/274-2026-1138714124" target="_blank" rel="noopener">Portaria n.º 274/2026/1</a> — tabelas de preços APR36; <a href="https://diariodarepublica.pt/dr/detalhe/portaria/281-2026-1139897695" target="_blank" rel="noopener">Portaria n.º 281/2026/1</a> — regras de pagamento da produção adicional e externalizada, ao abrigo do <a href="https://diariodarepublica.pt/dr/detalhe/decreto-lei/12-2026-1019913911" target="_blank" rel="noopener">DL n.º 12/2026</a> — SINACC). Selecione os GDH, ajuste material, regime e percentagem da equipa; passe o rato (ou toque) no <span class="u-info" style="margin:0 1px"><i>i</i></span> junto a cada valor para ver a fórmula completa. As citações de artigos (ex.: <a class="art" href="portaria-281-2026.html#art5" target="_blank">art. 5.º</a>) abrem o <a href="portaria-281-2026.html" target="_blank">texto integral da Portaria 281/2026/1 com âncoras por artigo</a> — o sítio do DR não permite ligações diretas a artigos.</p>
 
   <div class="glass panel">
     <h2><span class="eyebrow" style="margin:0">Parâmetros globais</span></h2>
     <div class="group">
       <div class="group-title">Produção adicional</div>
       <div class="globals">
-        <div class="field"><label>% equipa por defeito (novo: CA fixa 20–80%)</label><input type="number" id="gPct" value="45" min="0" max="100" step="1"></div>
-        <div class="field"><label>% equipa — regime antigo</label><input type="number" id="gPctOld" value="45" min="0" max="100" step="1"></div>
+        <div class="field"><label>% equipa por defeito — novo (CA fixa 20–80%):<span class="slval" id="gPctV">45%</span></label><input type="range" id="gPct" value="45" min="20" max="80" step="5"></div>
+        <div class="field"><label>% equipa — regime antigo:<span class="slval" id="gPctOldV">45%</span></label><input type="range" id="gPctOld" value="45" min="35" max="55" step="10"></div>
         <div class="field"><label>Custos internos por defeito — internamento (€)</label><input type="number" id="gIntCost" value="1500" min="0" step="50"></div>
         <div class="field"><label>Custos internos por defeito — ambulatório (€)</label><input type="number" id="gAmbCost" value="500" min="0" step="50"></div>
       </div>
+    </div>
+    <div class="group">
+      <div class="group-title">Mix de severidades (case-mix do serviço)</div>
+      <div class="globals">
+        <div class="field"><label>% de doentes concluídos em sev. 2 por comorbilidades:<span class="slval" id="gP2V">25%</span></label><input type="range" id="gP2" value="25" min="0" max="60" step="5"></div>
+        <div class="field"><label>% de doentes em sev. 3/4:<span class="slval" id="gP34V">5%</span></label><input type="range" id="gP34" value="5" min="0" max="30" step="5"></div>
+      </div>
+      <div class="group-note">Na externalização pagam-se severidades 1 e 2 — a sev. 2 <b>por comorbilidades</b> é paga ao hospital de destino (art. 8.º, n.º 1); às equipas internas paga-se a sev. 1, salvo se a sev. 2 resultar do diagnóstico + procedimento principais (art. 5.º, n.º 4). Sev. 3/4 pagam-se pela sev. 2 em ambos os casos. O «custo esperado por episódio» nos cartões reflete este mix.</div>
+    </div>
+    <div class="group">
+      <div class="group-title">Complicações tardias (dados do hospital — editar)</div>
+      <div class="globals">
+        <div class="field"><label>Taxa adicional de revisão nos operados fora (p.p.)</label><input type="number" id="gCompRate" class="est" value="2" min="0" step="0.5"></div>
+        <div class="field"><label>Custo médio de uma revisão (€)</label><input type="number" id="gCompCost" class="est" value="15000" min="0" step="500"></div>
+      </div>
+      <div class="group-note">Estimativas de partida — <b>substitua pelos dados do próprio hospital</b>. O preço compreensivo da externalização cobre apenas 2 meses (art. 8.º); infeção periprotésica, rigidez e dor evidenciam-se aos 6–12 meses e as revisões (&gt;10 000 € só em material, com internamento prolongado) ficam por conta do hospital de origem. O acréscimo esperado (taxa × custo) soma-se ao custo de externalizar nos GDH com o interruptor «risco de complicações» ativo — artroplastias (301, 302) por defeito.</div>
     </div>
     <div class="group">
       <div class="group-title">Sala privada alugada</div>
@@ -204,8 +253,9 @@ footer { margin-top: 30px; font-size: 11px; color: var(--ink-muted); line-height
         <div class="field"><label>Sala + internamento (€/episódio)</label><input type="number" id="gSala" value="2460" min="0" step="10"></div>
         <div class="field"><label>Fração da equipa paga pelo hospital — internamento (%)</label><input type="number" id="gFracInt" value="81.1" min="0" max="100" step="0.05"></div>
         <div class="field"><label>Fração da equipa paga pelo hospital — ambulatório (%)</label><input type="number" id="gFracAmb" value="78.55" min="0" max="100" step="0.05"></div>
+        <div class="field"><label>Demora média do internamento (dias)</label><input type="number" id="gDias" value="3" min="1" step="1"></div>
       </div>
-      <div class="group-note">No cenário de sala alugada, o hospital paga apenas cirurgiões + instrumentistas (fração da equipa acima); anestesia e enfermagem de sala estão incluídas no preço da sala.</div>
+      <div class="group-note">No cenário de sala alugada, o hospital paga apenas cirurgiões + instrumentistas (fração da equipa acima); anestesia e enfermagem de sala estão incluídas no preço da sala. A demora média serve para calcular o preço implícito de cada diária de internamento libertada.</div>
     </div>
   </div>
 
@@ -225,6 +275,8 @@ footer { margin-top: 30px; font-size: 11px; color: var(--ink-muted); line-height
   </div>
 
   <div id="cards"></div>
+
+  <div id="anual"></div>
 
   <section class="glass rules">
     <h2>Regras novas relevantes — Portaria n.º 281/2026/1</h2>
@@ -246,8 +298,19 @@ footer { margin-top: 30px; font-size: 11px; color: var(--ink-muted); line-height
     </ul>
   </section>
 
+  <section class="glass rules" style="margin-top:22px">
+    <h2>Leitura para gestão — o que os números mostram (e o que não mostram)</h2>
+    <ul>
+      <li><b>Indexante a 80% nos GDH com dedução de material</b> (301–304, 310, 313, 321): só perto do teto legal as equipas repõem valores próximos dos anteriores — os cartões calculam a percentagem exata caso a caso. E mesmo a 80%, quando se considera o mix de severidades, a eventual majoração de complexidade na externalização e os encargos que ficam sempre na origem (transportes pré-operatórios, validações, complicações tardias), operar com a equipa da instituição mantém-se económico face a externalizar — a comparação dinâmica está em cada cartão.</li>
+      <li><b>Severidade 2 das comorbilidades — a assimetria escondida:</b> ao externalizar, o hospital paga a severidade 2 ao destino (<a class="art" href="portaria-281-2026.html#art8" target="_blank">art. 8.º, n.º 1</a>); a fazer dentro, paga à equipa a severidade 1 (<a class="art" href="portaria-281-2026.html#art5" target="_blank">art. 5.º, n.º 4</a>). Num serviço com case-mix envelhecido, cada doente comórbido externalizado custa mais — ajuste o mix nos parâmetros globais e veja o efeito no custo esperado.</li>
+      <li><b>Camas são o recurso escasso:</b> a diferença entre alugar sala e operar dentro, dividida pelas diárias libertadas, dá o preço implícito de libertar uma cama (calculado nos cartões de internamento). Havendo casos sociais ou doentes médicos em camas cirúrgicas, pode compensar pagar até esse valor por diária para os deslocar — libertando camas e mantendo a equipa própria a operar.</li>
+      <li><b>Complicações tardias não estão no preço:</b> o preço compreensivo da externalização cobre apenas 2 meses (<a class="art" href="portaria-281-2026.html#art8" target="_blank">art. 8.º, n.os 2–3</a>). Na artroplastia, uma complicação pode passar despercebida até aos 60 dias — infeção periprotésica, rigidez e dor só se tornam evidentes aos 6–12 meses — e as revisões custam &gt;10 000 € só em material, com internamentos prolongados, por conta do hospital de origem. O histórico do hospital mostra complicações muito superiores nos doentes operados fora — quantifique-o nos parâmetros «Complicações tardias» e o custo esperado passa a entrar na comparação.</li>
+      <li><b>Para o doente, ser operado no hospital é melhor medicina:</b> relação de confiança com o cirurgião que o seguiu em consulta, discutiu a indicação e o inscreveu — e que o acompanhará até ao fim da recuperação; equipa de enfermagem treinada que o conhece desde o pré-operatório; integração direta com a ECCI e a MFR, com reabilitação iniciada ainda no internamento.</li>
+    </ul>
+  </section>
+
   <div class="alert-warn">
-    <b>Nota — risco de desmotivação das equipas:</b> se a produção adicional deixar de compensar financeiramente os profissionais do hospital (dedução das próteses, fim da majoração ×1,2, pagamento pela severidade 1 e percentagens fixadas abaixo do teto), as equipas ficam desmotivadas para operar fora de horas no SNS. A consequência provável é a redução da produção adicional interna e a saída progressiva dos profissionais para o setor privado — onde a mesma cirurgia externalizada é paga ao preço compreensivo da coluna O/P —, com perda de capacidade cirúrgica própria do hospital público e aumento da dependência da externalização.
+    <b>Nota — risco de desmotivação das equipas:</b> a produção adicional é um grande motivador das equipas. Se deixar de compensar financeiramente (dedução das próteses, fim da majoração ×1,2, pagamento pela severidade 1 e percentagens fixadas abaixo do teto), em poucos meses os profissionais comprometem as suas agendas com atividade privada para compensar — e, uma vez comprometidos, diminui a probabilidade de retomarem a produção adicional ao mesmo nível e aumenta a probabilidade de quebrarem o vínculo com o hospital. A consequência é a perda de capacidade cirúrgica própria e o aumento da dependência da externalização — onde a mesma cirurgia é paga ao preço compreensivo da coluna O/P.
   </div>
 
   <footer>
@@ -261,7 +324,7 @@ footer { margin-top: 30px; font-size: 11px; color: var(--ink-muted); line-height
 // deduz: lista do art. 5.º n.º 10 / art. 9.º n.º 10 da Portaria 281/2026/1.
 const GDH = [
   {g:301, nome:'Substituição da articulação da anca', area:'anca',   oi1:4484.54, oi2:5351.01, oa1:4386.89, oa2:null,    ni1:5074.34, ni2:6053.53, na1:4976.69, na2:null,     deduz:true,  cx:true,  mat:1599},
-  {g:302, nome:'Substituição da articulação do joelho', area:'joelho', oi1:4378.70, oi2:5116.15, oa1:4232.75, oa2:4535.73, ni1:4987.11, ni2:6612.12, na1:4841.16, na2:6418.61, deduz:true,  cx:true,  mat:1599, matAmb:1968},
+  {g:302, nome:'Substituição da articulação do joelho', area:'joelho', oi1:4378.70, oi2:5116.15, oa1:4232.75, oa2:4535.73, ni1:4987.11, ni2:6612.12, na1:4841.16, na2:6418.61, deduz:true,  cx:true,  mat:1750, matAmb:1968},
   {g:303, nome:'Artrodese dorsal e/ou lombar p/ curvatura vertebral', area:'raquis', oi1:5577.69, oi2:7847.38, oa1:5418.19, oa2:null, ni1:6412.58, ni2:7717.20, na1:6253.08, na2:null,    deduz:true,  cx:true,  mat:0},
   {g:304, nome:'Artrodese dorsal e/ou lombar, exceto curvatura', area:'raquis', oi1:3846.75, oi2:6013.67, oa1:3205.63, oa2:5083.44, ni1:4231.42, ni2:6934.75, na1:3526.19, na2:6704.99, deduz:true,  cx:true,  mat:0},
   {g:305, nome:'Amputação de membros inferiores exceto dedos', area:'geral', oi1:3445.55, oi2:4667.80, oa1:3445.55, oa2:4667.80, ni1:3972.55, ni2:5076.71, na1:3972.55, na2:null,    deduz:false, cx:false, mat:0},
@@ -362,9 +425,11 @@ const state = {}; // por GDH: {on, amb, mat, pct, cxOld, cxNew, custos, custosTo
 GDH.forEach(d => state[d.g] = {
   on: d.g === 302 || d.g === 313,
   amb: d.g === 313,
-  mat: d.mat, // 302 começa em internamento (PTJ: 1 599 € c/ IVA; em ambulatório passa a 1 968 €)
+  mat: d.mat, // 302 começa em internamento (PTJ: 1 750 € c/ IVA; em ambulatório passa a 1 968 €)
   pct: null,           // null = herda global
   cxOld: d.cx, cxNew: d.cx,
+  compl: d.g === 301 || d.g === 302, // risco de complicações tardias na externalização (artroplastias)
+  vol: d.g === 302 ? 150 : (d.g === 313 ? 50 : 0), // episódios/ano em produção adicional
   custos: null, matTouched: false,
 });
 
@@ -373,6 +438,44 @@ const fmt = v => (v === null || v === undefined || isNaN(v)) ? '—'
 const fmtD = v => (v>=0?'+':'') + fmt(v).replace(' €',' €');
 const fmtP = v => (v>=0?'+':'') + (v*100).toLocaleString('pt-PT',{maximumFractionDigits:0}) + '%';
 const G = id => parseFloat(document.getElementById(id).value) || 0;
+
+// valor com tooltip de fórmula (padrão u-info da biblioteca UBNIC)
+const F = (val, formula) => `<span class="vf">${val}<span class="u-info"><i>i</i><span class="u-info-pop">${formula}</span></span></span>`;
+(function initInfoPops() {
+  const gpop = document.createElement('div'); gpop.id = 'gpop'; document.body.appendChild(gpop);
+  let gInfo = null, pinned = false;
+  function openInfo(info) {
+    if (gInfo && gInfo !== info) gInfo.classList.remove('open');
+    gInfo = info; info.classList.add('open');
+    gpop.innerHTML = info.querySelector('.u-info-pop').innerHTML;
+    gpop.style.left = '0px'; gpop.style.top = '0px';
+    gpop.classList.add('show');
+    const r = info.getBoundingClientRect(), w = gpop.offsetWidth, h = gpop.offsetHeight;
+    gpop.style.left = Math.max(8, Math.min(window.innerWidth - w - 8, r.left + r.width / 2 - w / 2)) + 'px';
+    gpop.style.top = (r.top - h - 8 < 8 ? r.bottom + 8 : r.top - h - 8) + 'px';
+  }
+  function closeInfo() { if (gInfo) gInfo.classList.remove('open'); gInfo = null; gpop.classList.remove('show'); }
+  document.addEventListener('click', e => {
+    const ico = e.target.closest('.u-info > i');
+    if (ico) {
+      const info = ico.parentElement;
+      if (gInfo === info && pinned) { pinned = false; closeInfo(); }
+      else { pinned = true; openInfo(info); }
+      return;
+    }
+    pinned = false; closeInfo();
+  });
+  document.addEventListener('mouseover', e => {
+    const vf = e.target.closest('.vf'); if (!vf || pinned) return;
+    const info = vf.querySelector('.u-info'); if (info) openInfo(info);
+  });
+  document.addEventListener('mouseout', e => {
+    const vf = e.target.closest('.vf'); if (!vf || pinned) return;
+    if (vf.contains(e.relatedTarget)) return;
+    closeInfo();
+  });
+  window.addEventListener('scroll', () => { pinned = false; closeInfo(); }, true);
+})();
 
 // ---- chips ----------------------------------------------------------------
 const chipsEl = document.getElementById('chips');
@@ -384,8 +487,12 @@ GDH.forEach(d => {
   chipsEl.appendChild(c);
 });
 
-['gPct','gPctOld','gIntCost','gAmbCost','gSala','gFracInt','gFracAmb'].forEach(id =>
-  document.getElementById(id).addEventListener('input', render));
+const SLV = {gPct: 'gPctV', gPctOld: 'gPctOldV', gP2: 'gP2V', gP34: 'gP34V'};
+function syncSlv() {
+  Object.entries(SLV).forEach(([i, v]) => document.getElementById(v).textContent = G(i).toLocaleString('pt-PT') + '%');
+}
+['gPct','gPctOld','gIntCost','gAmbCost','gSala','gFracInt','gFracAmb','gP2','gP34','gDias','gCompRate','gCompCost'].forEach(id =>
+  document.getElementById(id).addEventListener('input', () => { syncSlv(); render(); }));
 
 // ---- cálculo por GDH ------------------------------------------------------
 function calc(d) {
@@ -406,18 +513,78 @@ function calc(d) {
   const eqNov1 = nov1 !== null ? pct * nov1 - ded : null;
   const eqNov2 = nov2 !== null ? pct * nov2 - ded : null;
 
-  // hospital
-  const interno = (eqNov1 !== null ? eqNov1 : 0) + mat + custos;
-  let extern = nov1;
-  let externExtra = (!d.deduz && mat > 200) ? mat : 0; // dispositivo acresce (art. 9.º n.º 1)
-  if (extern !== null) {
-    extern = extern * (s.cxNew ? 1.2 : 1) + externExtra;
-  }
-  const fracSala = (amb ? G('gFracAmb') : G('gFracInt')) / 100;
-  const sala = G('gSala') + mat + (eqNov1 !== null ? eqNov1 * fracSala : 0);
+  // mix de severidades (case-mix): sev2 por comorbilidades paga sev1 à equipa interna,
+  // mas sev2 ao destino na externalização (art. 8.º n.º 1 vs art. 5.º n.º 4 b) ii)
+  const p2 = G('gP2') / 100, p34 = G('gP34') / 100, p1 = Math.max(0, 1 - p2 - p34);
+  const nov2eff = nov2 !== null ? nov2 : nov1;
+  const eqNov2eff = eqNov2 !== null ? eqNov2 : eqNov1;
+  const eqMix = eqNov1 === null ? null : (p1 + p2) * eqNov1 + p34 * eqNov2eff;
 
-  return {amb, pct, pctOld, mat, custos, old1, old2, nov1, nov2, eqOld1, eqOld2, eqNov1, eqNov2,
-          interno, extern, externExtra, sala, ded};
+  // hospital — custo esperado por episódio com o mix
+  const maj = s.cxNew ? 1.2 : 1;
+  const interno = (eqMix !== null ? eqMix : 0) + mat + custos;
+  const externExtra = (!d.deduz && mat > 200) ? mat : 0; // dispositivo acresce (art. 9.º n.º 1)
+  const compExtra = s.compl ? G('gCompRate') / 100 * G('gCompCost') : 0; // risco de complicações tardias
+  const extern = nov1 === null ? null : (p1 * nov1 + (p2 + p34) * nov2eff) * maj + externExtra + compExtra;
+  const fracSala = (amb ? G('gFracAmb') : G('gFracInt')) / 100;
+  const sala = G('gSala') + mat + (eqMix !== null ? eqMix * fracSala : 0);
+
+  // indicadores de gestão
+  const pctIgualar = (eqOld1 !== null && nov1) ? (eqOld1 + ded) / nov1 : null;
+  const eqMix80 = nov1 === null ? null : (p1 + p2) * (0.8 * nov1 - ded) + p34 * (0.8 * nov2eff - ded);
+  const interno80 = eqMix80 === null ? null : eqMix80 + mat + custos;
+  const sev2Extra = nov2 !== null ? (nov2 - nov1) * maj : null; // custo extra por comórbido externalizado
+  const dias = Math.max(1, G('gDias'));
+  const deltaSala = sala - interno;
+  const diariaBE = deltaSala / dias;
+
+  return {amb, pct, pctOld, mat, custos, old1, old2, nov1, nov2, nov2eff, eqOld1, eqOld2, eqNov1, eqNov2, eqNov2eff,
+          p1, p2, p34, eqMix, interno, extern, externExtra, compExtra, sala, ded,
+          pctIgualar, interno80, sev2Extra, dias, deltaSala, diariaBE};
+}
+
+// ---- programa anual ---------------------------------------------------------
+function renderAnual() {
+  const host = document.getElementById('anual');
+  const active = GDH.filter(d => state[d.g].on);
+  if (!active.length) { host.innerHTML = ''; return; }
+  let TI = 0, TE = 0, TS = 0, TEq = 0, TD = 0, rows = '';
+  active.forEach(d => {
+    const s = state[d.g], r = calc(d), v = s.vol || 0;
+    const ext = r.extern !== null ? r.extern : 0;
+    TI += r.interno * v; TE += ext * v; TS += r.sala * v; TEq += (r.eqMix || 0) * v;
+    TD += r.amb ? 0 : r.dias * v;
+    rows += `<tr>
+      <td>${d.g} — ${d.nome} <span class="muted">(${s.amb ? 'ambulatório' : 'internamento'})</span></td>
+      <td><input type="number" class="volin" data-g="${d.g}" value="${v}" min="0" step="10" style="width:90px"></td>
+      <td>${fmt((r.eqMix || 0) * v)}</td>
+      <td>${fmt(r.interno * v)}</td>
+      <td>${fmt(ext * v)}</td>
+      <td class="${ext * v - r.interno * v >= 0 ? 'pos' : 'negv'}">${fmtD(ext * v - r.interno * v)}</td>
+      <td>${fmt(r.sala * v)}</td>
+    </tr>`;
+  });
+  const dSala = TS - TI;
+  host.innerHTML = `<section class="glass card">
+    <div class="card-head"><span class="name">Programa anual — impacto orçamental</span><span class="tag">volumes editáveis</span></div>
+    <div class="card-body">
+      <div class="rbox"><table>
+        <tr><th>Procedimento</th><th>Episódios / ano</th><th>Equipa / ano</th><th>Fazer dentro / ano</th><th>Externalizar / ano</th><th>Poupança de fazer dentro</th><th>Sala privada / ano</th></tr>
+        ${rows}
+        <tr><td style="font-weight:700;font-family:var(--font-sans)">TOTAL</td><td></td>
+          <td style="font-weight:600">${fmt(TEq)}</td>
+          <td style="font-weight:600">${fmt(TI)}</td>
+          <td style="font-weight:600">${fmt(TE)}</td>
+          <td class="${TE - TI >= 0 ? 'pos' : 'negv'}" style="font-weight:700">${fmtD(TE - TI)}</td>
+          <td style="font-weight:600">${fmt(TS)}</td></tr>
+      </table>
+      <div class="note-inline">Custo esperado por episódio de cada cartão (mix de severidades, material, majorações, risco de complicações) × volume anual em produção adicional. Edite os volumes na própria tabela.</div>
+      <div class="mgmt">▸ Com estes volumes, fazer dentro ${TE - TI >= 0 ? 'poupa' : 'custa mais'} <b>${fmt(Math.abs(TE - TI))}/ano</b> face a externalizar e injeta <b>${fmt(TEq)}/ano</b> nas equipas — retenção e motivação. ${TD > 0 ? `Os episódios de internamento ocupam <b>${TD.toLocaleString('pt-PT')} diárias/ano</b>; a sala privada alugada liberta-as por <b>${fmtD(dSala)}/ano</b> (${fmt(dSala / Math.max(1, TD))}/diária libertada).` : ''}</div>
+    </div>
+  </section>`;
+  host.querySelectorAll('.volin').forEach(i => i.addEventListener('change', () => {
+    state[i.dataset.g].vol = Math.max(0, parseFloat(i.value) || 0); render();
+  }));
 }
 
 // ---- render ---------------------------------------------------------------
@@ -427,6 +594,7 @@ function render() {
   const active = GDH.filter(d => state[d.g].on);
   if (!active.length) {
     host.innerHTML = '<div class="glass panel empty">Selecione um ou mais GDH acima para ver a análise.</div>';
+    renderAnual();
     return;
   }
   active.forEach(d => {
@@ -442,13 +610,25 @@ function render() {
     const mk = v => v === best ? ' class="best"' : '';
 
     const sh = roleShare(r.amb);
+    const fInd = v => `${fmt(v)} equipa × ${roleDesc(r.amb)} = ${fmt(v * sh)}`;
     const iRow = (vo, vn) => sh === null ? '' :
       `<tr class="indiv"><td>↳ ${roleDesc(r.amb)}</td>` +
-      `<td>${vo === null ? '—' : fmt(vo * sh)}</td>` +
-      `<td>${vn === null ? '—' : fmt(vn * sh)}</td>` +
+      `<td>${vo === null ? '—' : F(fmt(vo * sh), fInd(vo))}</td>` +
+      `<td>${vn === null ? '—' : F(fmt(vn * sh), fInd(vn))}</td>` +
       `<td class="${vo !== null && vn !== null ? cls(vn - vo) : ''}">${vo === null || vn === null ? '—' : fmtD((vn - vo) * sh)}</td>` +
       `<td></td></tr>`;
     const mainCls = sh === null ? '' : ' class="noline"';
+
+    // fórmulas dos tooltips
+    const pctTxt = (r.pct * 100).toLocaleString('pt-PT'), pctOldTxt = (r.pctOld * 100).toLocaleString('pt-PT');
+    const pTxt = v => (v * 100).toLocaleString('pt-PT') + '%';
+    const fOld = sev => `${pctOldTxt}% × ${fmt(sev === 1 ? r.old1 : r.old2)} (GDH antigo, sev. ${sev})${s.cxOld ? ' × 1,2 (complexo)' : ''} = ${fmt(sev === 1 ? r.eqOld1 : r.eqOld2)}`;
+    const fNov = sev => { const res = sev === 1 ? r.eqNov1 : r.eqNov2;
+      return `${pctTxt}% × ${fmt(sev === 1 ? r.nov1 : r.nov2)} (col. ${r.amb ? 'P' : 'O'}, sev. ${sev})${r.ded ? ` − ${fmt(r.ded)} material c/ IVA (art. 5.º, n.º 10)` : ''} = ${fmt(res)}${res !== null && res < 0 ? ' — ⚠ o material excede a verba da equipa' : ''}`; };
+    const fInt = `equipa mix: ${pTxt(r.p1 + r.p2)} × ${fmt(r.eqNov1)} (sev. paga 1) + ${pTxt(r.p34)} × ${fmt(r.eqNov2eff)} (sev. paga 2) = ${fmt(r.eqMix)}; + material ${fmt(r.mat)} + custos internos ${fmt(r.custos)} = ${fmt(r.interno)}<span class="nota">A sev. 2 por comorbilidades paga-se à equipa pela sev. 1 (art. 5.º, n.º 4).</span>`;
+    const fExt = `${pTxt(r.p1)} × ${fmt(r.nov1)} (sev. 1) + ${pTxt(r.p2 + r.p34)} × ${fmt(r.nov2eff)} (sev. 2)${s.cxNew ? ', × 1,2 (especial complexidade)' : ''}${r.externExtra ? `, + ${fmt(r.externExtra)} dispositivo (art. 9.º, n.º 1)` : ''}${r.compExtra ? `, + ${G('gCompRate').toLocaleString('pt-PT')}% × ${fmt(G('gCompCost'))} risco de complicações` : ''} = ${fmt(r.extern)}<span class="nota">A sev. 2 por comorbilidades paga-se ao destino pela sev. 2 (art. 8.º, n.º 1). ${d.deduz ? 'Prótese incluída no preço — por conta do destino (art. 9.º, n.º 10).' : (r.externExtra ? 'Inclui dispositivo pago pela origem (art. 9.º, n.º 1).' : 'Preço compreensivo: inclui pré-op., estadia e 2 meses de seguimento.')}${r.compExtra ? ' O risco de complicações tardias (após os 2 meses cobertos) recai na origem — taxa e custo editáveis nos parâmetros globais.' : ''}</span>`;
+    const fSala = `${fmt(G('gSala'))} sala + ${fmt(r.mat)} material + ${(r.amb ? G('gFracAmb') : G('gFracInt')).toLocaleString('pt-PT')}% × ${fmt(r.eqMix)} equipa mix = ${fmt(r.sala)}<span class="nota">O hospital paga apenas cirurgiões + instrumentistas; anestesia e enfermagem de sala incluídas no preço da sala.</span>`;
+    const neg = v => v !== null && v < 0 ? ' class="negv"' : '';
 
     card.innerHTML = `
       <div class="card-head">
@@ -464,16 +644,20 @@ function render() {
               <button data-k="amb" class="${s.amb ? 'sel' : ''}">Ambulatório</button>
             </div>
           </div>
+          <div class="field"><label>% equipa — novo:<span class="slval">${(r.pct*100).toLocaleString('pt-PT')}%</span>${s.pct !== null ? ' <button class="reset" data-k="pctReset" title="Voltar ao valor global">↺ global</button>' : ''}</label>
+            <input type="range" data-k="pct" value="${r.pct*100}" min="20" max="80" step="5"></div>
           <div class="field"><label>Material implantável, c/ IVA (€)</label>
             <input type="number" data-k="mat" value="${s.mat}" min="0" step="50"></div>
-          <div class="field"><label>% equipa (vazio = global ${G('gPct')}%)</label>
-            <input type="number" data-k="pct" value="${s.pct === null ? '' : s.pct}" placeholder="${G('gPct')}" min="0" max="100" step="1"></div>
           <div class="field"><label>Custos internos do hospital (€)</label>
             <input type="number" data-k="custos" value="${r.custos}" min="0" step="50"></div>
+        </div>
+        <div class="controls sw-row">
           <div class="field"><label>Complexo no regime antigo (×1,2)</label>
             <div class="sw ${s.cxOld ? 'on' : ''}" data-k="cxOld"><div class="track"></div><span class="lbl">majoração ×1,2</span></div></div>
           <div class="field"><label>Cenário: especial complexidade na externalização</label>
             <div class="sw ${s.cxNew ? 'on' : ''}" data-k="cxNew"><div class="track"></div><span class="lbl">+20% — lista em Circular ACSS ainda não publicada (art. 9.º, n.º 12)</span></div></div>
+          <div class="field"><label>Risco de complicações tardias (externalização)</label>
+            <div class="sw ${s.compl ? 'on' : ''}" data-k="compl"><div class="track"></div><span class="lbl">+${fmt(G('gCompRate') / 100 * G('gCompCost'))}/episódio externalizado</span></div></div>
         </div>
 
         <div class="results">
@@ -483,16 +667,16 @@ function render() {
               <tr><th></th><th>Antes ${s.cxOld ? '<span class="badge b12">×1,2</span>' : ''}</th><th>Agora (${(r.pct*100).toLocaleString('pt-PT')}%)</th><th>Δ €</th><th>Δ %</th></tr>
               <tr${mainCls}>
                 <td>Severidade 1</td>
-                <td>${fmt(r.eqOld1)}</td>
-                <td>${fmt(r.eqNov1)}</td>
+                <td>${r.eqOld1 === null ? '—' : F(fmt(r.eqOld1), fOld(1))}</td>
+                <td${neg(r.eqNov1)}>${r.eqNov1 === null ? '—' : F(fmt(r.eqNov1), fNov(1))}</td>
                 <td class="${cls(delta1)}">${delta1 === null ? '—' : fmtD(delta1)}</td>
                 <td class="${cls(delta1)}">${delta1 === null || !r.eqOld1 ? '—' : fmtP(delta1 / r.eqOld1)}</td>
               </tr>
               ${iRow(r.eqOld1, r.eqNov1)}
               <tr${mainCls}>
                 <td>Severidade 2</td>
-                <td>${fmt(r.eqOld2)}</td>
-                <td>${fmt(r.eqNov2)}</td>
+                <td>${r.eqOld2 === null ? '—' : F(fmt(r.eqOld2), fOld(2))}</td>
+                <td${neg(r.eqNov2)}>${r.eqNov2 === null ? '—' : F(fmt(r.eqNov2), fNov(2))}</td>
                 <td class="${cls(delta2)}">${delta2 === null ? '—' : fmtD(delta2)}</td>
                 <td class="${cls(delta2)}">${delta2 === null || !r.eqOld2 ? '—' : fmtP(delta2 / r.eqOld2)}</td>
               </tr>
@@ -502,26 +686,26 @@ function render() {
           </div>
 
           <div class="rbox">
-            <h3>Hospital — custo por episódio (sev. 1)</h3>
+            <h3>Hospital — custo esperado por episódio <span class="muted" style="font-weight:500">(mix: ${(r.p1*100).toLocaleString('pt-PT')}% sev.1 · ${(r.p2*100).toLocaleString('pt-PT')}% sev.2 · ${(r.p34*100).toLocaleString('pt-PT')}% sev.3/4)</span></h3>
             <table>
-              <tr><th>Cenário</th><th>Custo</th><th></th></tr>
+              <tr><th>Cenário</th><th>Custo</th></tr>
               <tr${mk(r.interno)}>
                 <td>Fazer internamente (adicional interna)</td>
-                <td>${fmt(r.interno)}</td>
-                <td class="muted" style="font-size:10.5px">equipa ${fmt(r.eqNov1)} + material ${fmt(r.mat)} + custos ${fmt(r.custos)}</td>
+                <td>${F(fmt(r.interno), fInt)}</td>
               </tr>
               <tr${r.extern !== null ? mk(r.extern) : ''}>
-                <td>Externalizar (entidade de destino)${s.cxNew ? ' <span class="badge b20">+20%</span>' : ''}</td>
-                <td>${fmt(r.extern)}</td>
-                <td class="muted" style="font-size:10.5px">${d.deduz ? 'prótese incluída — por conta do destino' : (r.externExtra ? 'inclui dispositivo ' + fmt(r.externExtra) + ' pago pela origem' : 'preço compreensivo (2 meses)')}</td>
+                <td>Externalizar (entidade de destino)${s.cxNew ? ' <span class="badge b20">+20%</span>' : ''}${r.compExtra ? ' <span class="badge b20">+compl.</span>' : ''}</td>
+                <td>${r.extern === null ? '—' : F(fmt(r.extern), fExt)}</td>
               </tr>
               <tr${mk(r.sala)}>
                 <td>Sala privada alugada (equipa e material do hospital)</td>
-                <td>${fmt(r.sala)}</td>
-                <td class="muted" style="font-size:10.5px">sala ${fmt(G('gSala'))} + material ${fmt(r.mat)} + ${(r.amb ? G('gFracAmb') : G('gFracInt')).toLocaleString('pt-PT')}% da equipa</td>
+                <td>${F(fmt(r.sala), fSala)}</td>
               </tr>
             </table>
-            <div class="note-inline">Verde = cenário mais barato. Na sala privada, o hospital paga apenas cirurgiões + instrumentistas (${G('gFracInt').toLocaleString('pt-PT')}% da equipa no internamento / ${G('gFracAmb').toLocaleString('pt-PT')}% no ambulatório); anestesia e enfermagem de sala incluídas no preço da sala. Externalização: transportes até à cirurgia por conta da origem; UCI por conta do destino.</div>
+            <div class="note-inline">Verde = cenário mais barato. Na sala privada, o hospital paga apenas cirurgiões + instrumentistas; anestesia e enfermagem de sala incluídas no preço da sala. Externalização: transportes até à cirurgia por conta da origem; UCI por conta do destino; preço compreensivo cobre apenas 2 meses de seguimento.</div>
+            ${d.deduz && r.pctIgualar !== null && r.eqNov1 !== null && r.eqOld1 !== null && r.eqNov1 < r.eqOld1 ? `<div class="mgmt">▸ Para a equipa repor o valor de antes (sev. 1) seriam precisos <b>${(r.pctIgualar*100).toLocaleString('pt-PT', {maximumFractionDigits: 1})}%</b>${r.pctIgualar > 0.80 ? ' — <span class="ko">acima do teto legal de 80%</span>: nem no máximo legal a equipa repõe o valor anterior' : ' — o teto legal é 80%'}. A 80%, fazer dentro custa <b>${fmt(r.interno80)}</b> vs. <b>${fmt(r.extern)}</b> externalizado: ${r.interno80 !== null && r.extern !== null && r.interno80 <= r.extern ? '<span class="ok">compensa fazer dentro (−' + fmt(r.extern - r.interno80) + ' por episódio)</span>' : '<span class="ko">+' + fmt(r.interno80 - r.extern) + ' por episódio</span> — sem contar transportes' + (r.compExtra ? '' : ', complicações tardias') + ' e camas'}.</div>` : ''}
+            ${r.sev2Extra ? `<div class="mgmt">▸ Cada doente concluído em sev. 2 por comorbilidades custa <b>+${fmt(r.sev2Extra)}</b> se externalizado — o destino recebe a sev. 2 (art. 8.º, n.º 1); à equipa interna paga-se a sev. 1 (art. 5.º, n.º 4).</div>` : ''}
+            ${!r.amb && r.deltaSala > 0 ? `<div class="mgmt">▸ Alugar sala custa <b>+${fmt(r.deltaSala)}</b> face a fazer dentro e liberta ~${r.dias} diárias de internamento — um preço implícito de <b>${fmt(r.diariaBE)}/diária</b>. Até esse valor, compensa usá-lo para deslocar casos sociais e doentes médicos e libertar camas, mantendo a equipa própria a operar.</div>` : ''}
           </div>
         </div>
       </div>`;
@@ -547,12 +731,16 @@ function render() {
     card.querySelectorAll('.sw').forEach(sw => sw.onclick = () => {
       s[sw.dataset.k] = !s[sw.dataset.k]; render();
     });
+    const rbtn = card.querySelector('button[data-k=pctReset]');
+    if (rbtn) rbtn.onclick = () => { s.pct = null; render(); };
 
     host.appendChild(card);
   });
+  renderAnual();
 }
 renderRoles();
 renderDist();
+syncSlv();
 render();
 </script>
 </body>
