@@ -83,8 +83,16 @@ input[type="number"], select {
   font-family: var(--font-mono); text-align: right;
 }
 input:focus, select:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(59,135,123,0.15); }
-input[type="range"] { width: 100%; accent-color: var(--color-primary); min-height: 35px; background: transparent; border: none; padding: 0; cursor: pointer; }
+input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; min-height: 35px; background: transparent; border: none; padding: 0; cursor: pointer; position: relative; z-index: 1; }
 input[type="range"]:focus { box-shadow: none; }
+input[type="range"]::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: var(--rule); }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--color-primary); margin-top: -6px; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(59,135,123,.45); }
+input[type="range"]::-moz-range-track { height: 4px; border-radius: 2px; background: var(--rule); }
+input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: var(--color-primary); border: 2px solid #fff; box-shadow: 0 1px 4px rgba(59,135,123,.45); }
+.sl { position: relative; line-height: 0; }
+.sl input[type="range"] { display: block; }
+.sl-dots { position: absolute; top: 50%; left: 8px; right: 8px; height: 0; pointer-events: none; }
+.sl-dots i { position: absolute; top: 0; width: 5px; height: 5px; border-radius: 50%; background: var(--ink-muted); opacity: .45; transform: translate(-50%, -50%); }
 .slval { font-family: var(--font-mono); font-weight: 600; color: var(--color-primary-dark); margin-left: 4px; }
 input.est { background: rgba(230,126,34,.07); border-color: rgba(230,126,34,.4); }
 .reset { border: none; background: none; color: var(--ink-muted); cursor: pointer; font-size: 10.5px; padding: 0 4px; text-decoration: underline dotted; }
@@ -218,7 +226,7 @@ footer { margin-top: 30px; font-size: 11px; color: var(--ink-muted); line-height
   </a>
 
   <h1>Produção adicional <em>SINACC</em> — Ortopedia</h1>
-  <p class="sub">Comparador do regime antigo (Portaria n.º 207/2017, SIGIC) com o novo regime em vigor desde <b>1 de julho de 2026</b> (<a href="https://diariodarepublica.pt/dr/detalhe/portaria/274-2026-1138714124" target="_blank" rel="noopener">Portaria n.º 274/2026/1</a> — tabelas de preços APR36; <a href="https://diariodarepublica.pt/dr/detalhe/portaria/281-2026-1139897695" target="_blank" rel="noopener">Portaria n.º 281/2026/1</a> — regras de pagamento da produção adicional e externalizada, ao abrigo do <a href="https://diariodarepublica.pt/dr/detalhe/decreto-lei/12-2026-1019913911" target="_blank" rel="noopener">DL n.º 12/2026</a> — SINACC). Selecione os GDH, ajuste material, regime e percentagem da equipa; passe o rato (ou toque) no <span class="u-info" style="margin:0 1px"><i>i</i></span> junto a cada valor para ver a fórmula completa. As citações de artigos (ex.: <a class="art" href="portaria-281-2026.html#art5" target="_blank">art. 5.º</a>) abrem o <a href="portaria-281-2026.html" target="_blank">texto integral da Portaria 281/2026/1 com âncoras por artigo</a> — o sítio do DR não permite ligações diretas a artigos.</p>
+  <p class="sub">Comparador do regime antigo (Portaria n.º 207/2017, SIGIC) com o novo regime em vigor desde <b>1 de julho de 2026</b> (<a href="https://diariodarepublica.pt/dr/detalhe/portaria/274-2026-1138714124" target="_blank" rel="noopener">Portaria n.º 274/2026/1</a> — tabelas de preços APR36; <a href="https://diariodarepublica.pt/dr/detalhe/portaria/281-2026-1139897695" target="_blank" rel="noopener">Portaria n.º 281/2026/1</a> — regras de pagamento da produção adicional e externalizada, ao abrigo do <a href="https://diariodarepublica.pt/dr/detalhe/decreto-lei/12-2026-1019913911" target="_blank" rel="noopener">DL n.º 12/2026</a> — SINACC). Selecione os GDH, ajuste material, regime e percentagem da equipa; passe o rato (ou toque) no <span class="u-info" style="margin:0 1px"><i>i</i></span> junto a cada valor para ver a fórmula completa. As citações de artigos (ex.: <a class="art" href="portaria-281-2026.html#art5" target="_blank" title="Abrir o artigo 5.º da Portaria 281/2026/1 (transcrição com âncoras)">art. 5.º</a>) saltam diretamente para o artigo no <a href="portaria-281-2026.html" target="_blank">texto integral da Portaria 281/2026/1</a> (transcrição anotada, com ligação ao texto oficial do DR) — o sítio do Diário da República não permite ligação direta a cada artigo.</p>
 
   <div class="glass panel">
     <h2><span class="eyebrow" style="margin:0">Parâmetros globais</span></h2>
@@ -265,7 +273,7 @@ footer { margin-top: 30px; font-size: 11px; color: var(--ink-muted); line-height
     <details class="group" id="distGroup">
       <summary class="group-title">Distribuição do valor da equipa (Modelos A/B do hospital — % do valor da equipa)</summary>
       <div id="distWrap"></div>
-      <div class="group-note">Modelos A (ambulatório) e B (internamento) de registo de produção adicional do hospital. Pressupostos: cirurgião principal e ajudante dividem a fatia dos cirurgiões em partes iguais; enfermeiros em partes iguais. Escolhido um perfil, o valor individual aparece em itálico por baixo do valor da equipa em cada GDH.</div>
+      <div class="group-note">Modelos A (ambulatório) e B (internamento) de registo de produção adicional do hospital. A fatia dos cirurgiões divide-se conforme o slider «% do cirurgião» — 50% = divisão a meio entre principal e ajudante; ajuste (30–70%) para saber exatamente o que compete a um interno ou especialista conforme o papel na cirurgia. Enfermeiros em partes iguais. Escolhido um perfil, o valor individual aparece em itálico por baixo do valor da equipa em cada GDH.</div>
     </details>
   </div>
 
@@ -281,20 +289,20 @@ footer { margin-top: 30px; font-size: 11px; color: var(--ink-muted); line-height
   <section class="glass rules">
     <h2>Regras novas relevantes — Portaria n.º 281/2026/1</h2>
     <ul>
-      <li><b>Base de cálculo:</b> a produção adicional e a externalizada pagam-se pelos preços das <b>colunas O (internamento) / P (ambulatório)</b> da tabela GDH nova — não pelo preço GDH pleno. <a class="art" href="portaria-281-2026.html#art2" target="_blank" title="Abrir o artigo 2.º da Portaria 281/2026/1">art. 2.º, n.º 4</a></li>
-      <li><b>% da equipa (cirurgia, adicional interna):</b> deixa de haver percentagem única — o Conselho de Administração fixa <b>entre 20% e 80%</b>, por grupo de procedimentos, em regulamento anual validado pela DE-SNS. <a class="art" href="portaria-281-2026.html#art5" target="_blank" title="Abrir o artigo 5.º da Portaria 281/2026/1">art. 5.º, n.º 4, al. b), i</a></li>
-      <li><b>Dedução do material:</b> nos GDH <b>301, 302, 303, 304, 310, 313, 321</b> (e 73, 170, 171, 176, 363), o valor dos dispositivos médicos implantáveis <b>(IVA incluído)</b> é <b>deduzido ao valor a distribuir à equipa</b>. <a class="art" href="portaria-281-2026.html#art5" target="_blank" title="Abrir o artigo 5.º da Portaria 281/2026/1">art. 5.º, n.º 10</a></li>
-      <li><b>Severidades:</b> paga-se pela <b>sev. 1</b>, exceto se a sev. 2 resultar <b>exclusivamente do diagnóstico e procedimento principais</b>; episódios concluídos em sev. 3/4 pagam-se pelo valor da <b>sev. 2</b>. Só contam diagnósticos presentes à admissão; complicações intra/pós-operatórias não elevam a severidade. <a class="art" href="portaria-281-2026.html#art5" target="_blank" title="Abrir o artigo 5.º da Portaria 281/2026/1">art. 5.º, n.º 4, al. b), ii; art. 2.º, n.os 3 e 6</a></li>
-      <li><b>Fim da majoração ×1,2:</b> a majoração de procedimentos complexos desaparece na produção adicional interna; só há majorações pontuais e temporárias por decisão da DE-SNS com autorização ministerial. <a class="art" href="portaria-281-2026.html#art5" target="_blank" title="Abrir o artigo 5.º da Portaria 281/2026/1">art. 5.º, n.º 2</a></li>
-      <li><b>Múltiplos procedimentos independentes:</b> acresce <b>45%</b> do valor dos GDH adicionais, até <b>+60%</b> do GDH principal (mesma equipa) ou <b>+100%</b> (equipa de especialidade diferente). <a class="art" href="portaria-281-2026.html#art2" target="_blank" title="Abrir o artigo 2.º da Portaria 281/2026/1">art. 2.º, n.º 8, al. c)</a></li>
-      <li><b>Acesso ao adicional:</b> exige produção base contratualizada cumprida; o n.º de procedimentos em adicional não pode exceder a produção base; o diretor de serviço classifica cada episódio (base/adicional) no agendamento. <a class="art" href="portaria-281-2026.html#art4" target="_blank" title="Abrir o artigo 4.º da Portaria 281/2026/1">art. 4.º, n.os 4–5</a></li>
-      <li><b>Codificação:</b> não pode ser feita por elementos da equipa que realizou o adicional. <a class="art" href="portaria-281-2026.html#art5" target="_blank" title="Abrir o artigo 5.º da Portaria 281/2026/1">art. 5.º, n.º 1</a></li>
-      <li><b>Externalização — preço compreensivo:</b> o hospital de origem paga a coluna O/P à entidade de destino; inclui consultas e MCDT prévios, estadia, medicação, pós-operatório e seguimento por 2 meses, rotinas pré-operatórias e UCI por conta do destino. Só severidades 1 e 2 (3/4 pagam-se como 2). <a class="art" href="portaria-281-2026.html#art8" target="_blank" title="Abrir o artigo 8.º da Portaria 281/2026/1">arts. 8.º e 9.º, n.º 11</a></li>
-      <li><b>Externalização — material:</b> dispositivos implantáveis <b>&gt;200 €</b> acrescem ao preço com autorização prévia da origem — <b>exceto</b> nos GDH da lista (301, 302, 303, 304, 310, 313, 321…), em que o preço O/P já inclui a prótese, que fica <b>por conta da entidade de destino</b>. <a class="art" href="portaria-281-2026.html#art9" target="_blank" title="Abrir o artigo 9.º da Portaria 281/2026/1">art. 9.º, n.os 1–10</a></li>
-      <li><b>Externalização — complexidade:</b> a portaria cria um suplemento de +<b>20%</b> sobre o preço O/P para procedimentos de «especial complexidade» — mas a lista concreta só existirá quando a ACSS publicar a <b>Circular Normativa</b> prevista (à data, ainda não publicada). Até lá não se sabe que procedimentos beneficiam; o interruptor nos cartões é um cenário. Nota: este suplemento aplica-se apenas à produção <b>externalizada</b> — na produção adicional interna não substitui a antiga majoração ×1,2, que desaparece sem sucessor. <a class="art" href="portaria-281-2026.html#art9" target="_blank" title="Abrir o artigo 9.º da Portaria 281/2026/1">art. 9.º, n.º 12</a></li>
-      <li><b>Transportes:</b> até à cirurgia por conta da origem; depois, do destino; destino escolhido fora das opções: por conta do utente. <a class="art" href="portaria-281-2026.html#art11" target="_blank" title="Abrir o artigo 11.º da Portaria 281/2026/1">art. 11.º, n.os 1–2</a></li>
-      <li><b>Restrição de equipas:</b> a produção numa entidade convencionada <b>não é paga</b> se algum médico da equipa cirúrgica exercer atividade no hospital de origem. <a class="art" href="portaria-281-2026.html#art10" target="_blank" title="Abrir o artigo 10.º da Portaria 281/2026/1">art. 10.º, n.º 6</a></li>
-      <li><b>Consultas e MCDT (adicional interna):</b> consultas até 80% do valor de tabela; MCDT entre 20–80% conforme a coluna aplicável. <a class="art" href="portaria-281-2026.html#art5" target="_blank" title="Abrir o artigo 5.º da Portaria 281/2026/1">art. 5.º, n.º 4, als. a) e c)</a></li>
+      <li><b>Base de cálculo:</b> a produção adicional e a externalizada pagam-se pelos preços das <b>colunas O (internamento) / P (ambulatório)</b> da tabela GDH nova — não pelo preço GDH pleno. <a class="art" href="portaria-281-2026.html#art2" target="_blank" title="Abrir o artigo 2.º da Portaria 281/2026/1 (transcrição com âncoras)">art. 2.º, n.º 4</a></li>
+      <li><b>% da equipa (cirurgia, adicional interna):</b> deixa de haver percentagem única — o Conselho de Administração fixa <b>entre 20% e 80%</b>, por grupo de procedimentos, em regulamento anual validado pela DE-SNS. <a class="art" href="portaria-281-2026.html#art5" target="_blank" title="Abrir o artigo 5.º da Portaria 281/2026/1 (transcrição com âncoras)">art. 5.º, n.º 4, al. b), i</a></li>
+      <li><b>Dedução do material:</b> nos GDH <b>301, 302, 303, 304, 310, 313, 321</b> (e 73, 170, 171, 176, 363), o valor dos dispositivos médicos implantáveis <b>(IVA incluído)</b> é <b>deduzido ao valor a distribuir à equipa</b>. <a class="art" href="portaria-281-2026.html#art5" target="_blank" title="Abrir o artigo 5.º da Portaria 281/2026/1 (transcrição com âncoras)">art. 5.º, n.º 10</a></li>
+      <li><b>Severidades:</b> paga-se pela <b>sev. 1</b>, exceto se a sev. 2 resultar <b>exclusivamente do diagnóstico e procedimento principais</b>; episódios concluídos em sev. 3/4 pagam-se pelo valor da <b>sev. 2</b>. Só contam diagnósticos presentes à admissão; complicações intra/pós-operatórias não elevam a severidade. <a class="art" href="portaria-281-2026.html#art5" target="_blank" title="Abrir o artigo 5.º da Portaria 281/2026/1 (transcrição com âncoras)">art. 5.º, n.º 4, al. b), ii; art. 2.º, n.os 3 e 6</a></li>
+      <li><b>Fim da majoração ×1,2:</b> a majoração de procedimentos complexos desaparece na produção adicional interna; só há majorações pontuais e temporárias por decisão da DE-SNS com autorização ministerial. <a class="art" href="portaria-281-2026.html#art5" target="_blank" title="Abrir o artigo 5.º da Portaria 281/2026/1 (transcrição com âncoras)">art. 5.º, n.º 2</a></li>
+      <li><b>Múltiplos procedimentos independentes:</b> acresce <b>45%</b> do valor dos GDH adicionais, até <b>+60%</b> do GDH principal (mesma equipa) ou <b>+100%</b> (equipa de especialidade diferente). <a class="art" href="portaria-281-2026.html#art2" target="_blank" title="Abrir o artigo 2.º da Portaria 281/2026/1 (transcrição com âncoras)">art. 2.º, n.º 8, al. c)</a></li>
+      <li><b>Acesso ao adicional:</b> exige produção base contratualizada cumprida; o n.º de procedimentos em adicional não pode exceder a produção base; o diretor de serviço classifica cada episódio (base/adicional) no agendamento. <a class="art" href="portaria-281-2026.html#art4" target="_blank" title="Abrir o artigo 4.º da Portaria 281/2026/1 (transcrição com âncoras)">art. 4.º, n.os 4–5</a></li>
+      <li><b>Codificação:</b> não pode ser feita por elementos da equipa que realizou o adicional. <a class="art" href="portaria-281-2026.html#art5" target="_blank" title="Abrir o artigo 5.º da Portaria 281/2026/1 (transcrição com âncoras)">art. 5.º, n.º 1</a></li>
+      <li><b>Externalização — preço compreensivo:</b> o hospital de origem paga a coluna O/P à entidade de destino; inclui consultas e MCDT prévios, estadia, medicação, pós-operatório e seguimento por 2 meses, rotinas pré-operatórias e UCI por conta do destino. Só severidades 1 e 2 (3/4 pagam-se como 2). <a class="art" href="portaria-281-2026.html#art8" target="_blank" title="Abrir o artigo 8.º da Portaria 281/2026/1 (transcrição com âncoras)">arts. 8.º e 9.º, n.º 11</a></li>
+      <li><b>Externalização — material:</b> dispositivos implantáveis <b>&gt;200 €</b> acrescem ao preço com autorização prévia da origem — <b>exceto</b> nos GDH da lista (301, 302, 303, 304, 310, 313, 321…), em que o preço O/P já inclui a prótese, que fica <b>por conta da entidade de destino</b>. <a class="art" href="portaria-281-2026.html#art9" target="_blank" title="Abrir o artigo 9.º da Portaria 281/2026/1 (transcrição com âncoras)">art. 9.º, n.os 1–10</a></li>
+      <li><b>Externalização — complexidade:</b> a portaria cria um suplemento de +<b>20%</b> sobre o preço O/P para procedimentos de «especial complexidade» — mas a lista concreta só existirá quando a ACSS publicar a <b>Circular Normativa</b> prevista (à data, ainda não publicada). Até lá não se sabe que procedimentos beneficiam; o interruptor nos cartões é um cenário. Nota: este suplemento aplica-se apenas à produção <b>externalizada</b> — na produção adicional interna não substitui a antiga majoração ×1,2, que desaparece sem sucessor. <a class="art" href="portaria-281-2026.html#art9" target="_blank" title="Abrir o artigo 9.º da Portaria 281/2026/1 (transcrição com âncoras)">art. 9.º, n.º 12</a></li>
+      <li><b>Transportes:</b> até à cirurgia por conta da origem; depois, do destino; destino escolhido fora das opções: por conta do utente. <a class="art" href="portaria-281-2026.html#art11" target="_blank" title="Abrir o artigo 11.º da Portaria 281/2026/1 (transcrição com âncoras)">art. 11.º, n.os 1–2</a></li>
+      <li><b>Restrição de equipas:</b> a produção numa entidade convencionada <b>não é paga</b> se algum médico da equipa cirúrgica exercer atividade no hospital de origem. <a class="art" href="portaria-281-2026.html#art10" target="_blank" title="Abrir o artigo 10.º da Portaria 281/2026/1 (transcrição com âncoras)">art. 10.º, n.º 6</a></li>
+      <li><b>Consultas e MCDT (adicional interna):</b> consultas até 80% do valor de tabela; MCDT entre 20–80% conforme a coluna aplicável. <a class="art" href="portaria-281-2026.html#art5" target="_blank" title="Abrir o artigo 5.º da Portaria 281/2026/1 (transcrição com âncoras)">art. 5.º, n.º 4, als. a) e c)</a></li>
     </ul>
   </section>
 
@@ -302,9 +310,9 @@ footer { margin-top: 30px; font-size: 11px; color: var(--ink-muted); line-height
     <h2>Leitura para gestão — o que os números mostram (e o que não mostram)</h2>
     <ul>
       <li><b>Indexante a 80% nos GDH com dedução de material</b> (301–304, 310, 313, 321): só perto do teto legal as equipas repõem valores próximos dos anteriores — os cartões calculam a percentagem exata caso a caso. E mesmo a 80%, quando se considera o mix de severidades, a eventual majoração de complexidade na externalização e os encargos que ficam sempre na origem (transportes pré-operatórios, validações, complicações tardias), operar com a equipa da instituição mantém-se económico face a externalizar — a comparação dinâmica está em cada cartão.</li>
-      <li><b>Severidade 2 das comorbilidades — a assimetria escondida:</b> ao externalizar, o hospital paga a severidade 2 ao destino (<a class="art" href="portaria-281-2026.html#art8" target="_blank">art. 8.º, n.º 1</a>); a fazer dentro, paga à equipa a severidade 1 (<a class="art" href="portaria-281-2026.html#art5" target="_blank">art. 5.º, n.º 4</a>). Num serviço com case-mix envelhecido, cada doente comórbido externalizado custa mais — ajuste o mix nos parâmetros globais e veja o efeito no custo esperado.</li>
+      <li><b>Severidade 2 das comorbilidades — a assimetria escondida:</b> ao externalizar, o hospital paga a severidade 2 ao destino (<a class="art" href="portaria-281-2026.html#art8" target="_blank" title="Abrir o artigo 8.º da Portaria 281/2026/1 (transcrição com âncoras)">art. 8.º, n.º 1</a>); a fazer dentro, paga à equipa a severidade 1 (<a class="art" href="portaria-281-2026.html#art5" target="_blank" title="Abrir o artigo 5.º da Portaria 281/2026/1 (transcrição com âncoras)">art. 5.º, n.º 4</a>). Num serviço com case-mix envelhecido, cada doente comórbido externalizado custa mais — ajuste o mix nos parâmetros globais e veja o efeito no custo esperado.</li>
       <li><b>Camas são o recurso escasso:</b> a diferença entre alugar sala e operar dentro, dividida pelas diárias libertadas, dá o preço implícito de libertar uma cama (calculado nos cartões de internamento). Havendo casos sociais ou doentes médicos em camas cirúrgicas, pode compensar pagar até esse valor por diária para os deslocar — libertando camas e mantendo a equipa própria a operar.</li>
-      <li><b>Complicações tardias não estão no preço:</b> o preço compreensivo da externalização cobre apenas 2 meses (<a class="art" href="portaria-281-2026.html#art8" target="_blank">art. 8.º, n.os 2–3</a>). Na artroplastia, uma complicação pode passar despercebida até aos 60 dias — infeção periprotésica, rigidez e dor só se tornam evidentes aos 6–12 meses — e as revisões custam &gt;10 000 € só em material, com internamentos prolongados, por conta do hospital de origem. O histórico do hospital mostra complicações muito superiores nos doentes operados fora — quantifique-o nos parâmetros «Complicações tardias» e o custo esperado passa a entrar na comparação.</li>
+      <li><b>Complicações tardias não estão no preço:</b> o preço compreensivo da externalização cobre apenas 2 meses (<a class="art" href="portaria-281-2026.html#art8" target="_blank" title="Abrir o artigo 8.º da Portaria 281/2026/1 (transcrição com âncoras)">art. 8.º, n.os 2–3</a>). Na artroplastia, uma complicação pode passar despercebida até aos 60 dias — infeção periprotésica, rigidez e dor só se tornam evidentes aos 6–12 meses — e as revisões custam &gt;10 000 € só em material, com internamentos prolongados, por conta do hospital de origem. O histórico do hospital mostra complicações muito superiores nos doentes operados fora — quantifique-o nos parâmetros «Complicações tardias» e o custo esperado passa a entrar na comparação.</li>
       <li><b>Para o doente, ser operado no hospital é melhor medicina:</b> relação de confiança com o cirurgião que o seguiu em consulta, discutiu a indicação e o inscreveu — e que o acompanhará até ao fim da recuperação; equipa de enfermagem treinada que o conhece desde o pré-operatório; integração direta com a ECCI e a MFR, com reabilitação iniciada ainda no internamento.</li>
     </ul>
   </section>
@@ -323,13 +331,14 @@ footer { margin-top: 30px; font-size: 11px; color: var(--ink-muted); line-height
 // old*: Portaria 207/2017 (APR31). new*: colunas O/P da Portaria 274/2026/1 (APR36).
 // deduz: lista do art. 5.º n.º 10 / art. 9.º n.º 10 da Portaria 281/2026/1.
 const GDH = [
+  {g:26,  nome:'Canal cárpico (outros proc. do sistema nervoso)', area:'mão', oi1:1381.33, oi2:2857.39, oa1:1381.33, oa2:2857.39, ni1:2226.25, ni2:3398.94, na1:2226.25, na2:3398.94, deduz:false, cx:false, mat:0},
   {g:301, nome:'Substituição da articulação da anca', area:'anca',   oi1:4484.54, oi2:5351.01, oa1:4386.89, oa2:null,    ni1:5074.34, ni2:6053.53, na1:4976.69, na2:null,     deduz:true,  cx:true,  mat:1599},
   {g:302, nome:'Substituição da articulação do joelho', area:'joelho', oi1:4378.70, oi2:5116.15, oa1:4232.75, oa2:4535.73, ni1:4987.11, ni2:6612.12, na1:4841.16, na2:6418.61, deduz:true,  cx:true,  mat:1750, matAmb:1968},
   {g:303, nome:'Artrodese dorsal e/ou lombar p/ curvatura vertebral', area:'raquis', oi1:5577.69, oi2:7847.38, oa1:5418.19, oa2:null, ni1:6412.58, ni2:7717.20, na1:6253.08, na2:null,    deduz:true,  cx:true,  mat:0},
   {g:304, nome:'Artrodese dorsal e/ou lombar, exceto curvatura', area:'raquis', oi1:3846.75, oi2:6013.67, oa1:3205.63, oa2:5083.44, ni1:4231.42, ni2:6934.75, na1:3526.19, na2:6704.99, deduz:true,  cx:true,  mat:0},
-  {g:305, nome:'Amputação de membros inferiores exceto dedos', area:'geral', oi1:3445.55, oi2:4667.80, oa1:3445.55, oa2:4667.80, ni1:3972.55, ni2:5076.71, na1:3972.55, na2:null,    deduz:false, cx:false, mat:0},
+  {g:305, nome:'Amputação de membros inferiores exceto dedos', area:'geral', oi1:3445.55, oi2:4667.80, oa1:3445.55, oa2:4667.80, ni1:3972.55, ni2:5076.71, na1:3972.55, na2:5076.71, deduz:false, cx:false, mat:0},
   {g:308, nome:'Proc. anca/fémur por traumatismo, exceto substituição', area:'anca', oi1:2828.37, oi2:3676.88, oa1:2828.37, oa2:null, ni1:3276.32, ni2:4101.63, na1:3276.32, na2:null,    deduz:false, cx:false, mat:0},
-  {g:309, nome:'Proc. anca/fémur não traumáticos, exceto substituição', area:'anca', oi1:2196.34, oi2:4844.20, oa1:2196.34, oa2:4844.20, ni1:3858.56, ni2:9419.54, na1:3858.56, na2:null, deduz:false, cx:false, mat:0},
+  {g:309, nome:'Proc. anca/fémur não traumáticos, exceto substituição', area:'anca', oi1:2196.34, oi2:4844.20, oa1:2196.34, oa2:4844.20, ni1:3858.56, ni2:9419.54, na1:3858.56, na2:9419.54, deduz:false, cx:false, mat:0},
   {g:310, nome:'Excisão e/ou descompressão de disco intervertebral', area:'raquis', oi1:1962.72, oi2:2435.35, oa1:1686.36, oa2:2435.35, ni1:2195.35, ni2:3269.30, na1:1918.98, na2:2857.73, deduz:true, cx:false, mat:0},
   {g:312, nome:'Enxerto de pele (exceto mão), sist. músculo-esquelético', area:'geral', oi1:3323.63, oi2:9902.28, oa1:3325.13, oa2:9902.28, ni1:3657.65, ni2:10570.97, na1:3657.65, na2:10570.97, deduz:false, cx:false, mat:0},
   {g:313, nome:'Procedimentos no joelho e/ou perna, exceto no pé', area:'joelho', oi1:1275.37, oi2:3504.73, oa1:1266.96, oa2:3504.73, ni1:2064.00, ni2:3975.99, na1:2064.00, na2:3975.99, deduz:true, cx:false, mat:0},
@@ -345,7 +354,7 @@ const GDH = [
 const DIST = {
   int: {cir: 50.35, an: 23.05, enf: 23.05, ao: 2.5, at: 1.0, out: 0.05, nEnf: 3},
   amb: {cir: 47.75, an: 21.85, enf: 26.85, ao: 2.5, at: 1.0, out: 0.05, nEnf: 4},
-  nCir: 2,
+  pCir: 50, // % da fatia dos cirurgiões que cabe ao cirurgião selecionado (principal vs. ajudante / interno)
 };
 let role = 'equipa';
 const ROLES = [
@@ -360,7 +369,7 @@ const ROLES = [
 function roleShare(amb) {
   const d = DIST[amb ? 'amb' : 'int'];
   switch (role) {
-    case 'cir': return d.cir / 100 / DIST.nCir;
+    case 'cir': return d.cir / 100 * DIST.pCir / 100;
     case 'an':  return d.an / 100;
     case 'enf': return d.enf / 100 / d.nEnf;
     case 'ao':  return d.ao / 100;
@@ -373,7 +382,7 @@ function roleDesc(amb) {
   const d = DIST[amb ? 'amb' : 'int'];
   const p = v => v.toLocaleString('pt-PT', {maximumFractionDigits: 2});
   switch (role) {
-    case 'cir': return `Cirurgião (${p(d.cir)}% ÷ ${DIST.nCir})`;
+    case 'cir': return `Cirurgião (${p(d.cir)}% × ${p(DIST.pCir)}%)`;
     case 'an':  return `Anestesista (${p(d.an)}%)`;
     case 'enf': return `Enfermeiro (${p(d.enf)}% ÷ ${d.nEnf})`;
     case 'ao':  return `Assistente operacional (${p(d.ao)}%)`;
@@ -408,14 +417,15 @@ function renderDist() {
         <td style="${sumSty('amb')}">${sum('amb').toLocaleString('pt-PT', {maximumFractionDigits: 2})}%</td></tr>
     </table></div>
     <div class="globals" style="margin-top:12px;max-width:560px">
-      <div class="field"><label>N.º de cirurgiões</label><input id="dNCir" type="number" min="1" step="1" value="${DIST.nCir}"></div>
+      <div class="field"><label>% do cirurgião na fatia dos cirurgiões:<span class="slval">${DIST.pCir.toLocaleString('pt-PT')}%</span></label><input id="dPCir" type="range" min="30" max="70" step="10" value="${DIST.pCir}"></div>
       <div class="field"><label>N.º enfermeiros — internamento</label><input id="dNEnfI" type="number" min="1" step="1" value="${DIST.int.nEnf}"></div>
       <div class="field"><label>N.º enfermeiros — ambulatório</label><input id="dNEnfA" type="number" min="1" step="1" value="${DIST.amb.nEnf}"></div>
     </div>`;
   document.querySelectorAll('.dist-in').forEach(i => i.addEventListener('change', () => {
     DIST[i.dataset.reg][i.dataset.k] = parseFloat(i.value) || 0; renderDist(); render();
   }));
-  document.getElementById('dNCir').addEventListener('change', e => { DIST.nCir = Math.max(1, parseInt(e.target.value) || 1); renderDist(); render(); });
+  document.getElementById('dPCir').addEventListener('change', e => { DIST.pCir = Math.min(70, Math.max(30, parseFloat(e.target.value) || 50)); renderDist(); render(); });
+  decorateSliders(document.getElementById('distWrap'));
   document.getElementById('dNEnfI').addEventListener('change', e => { DIST.int.nEnf = Math.max(1, parseInt(e.target.value) || 1); renderDist(); render(); });
   document.getElementById('dNEnfA').addEventListener('change', e => { DIST.amb.nEnf = Math.max(1, parseInt(e.target.value) || 1); renderDist(); render(); });
 }
@@ -424,11 +434,12 @@ function renderDist() {
 const state = {}; // por GDH: {on, amb, mat, pct, cxOld, cxNew, custos, custosTouched, matTouched}
 GDH.forEach(d => state[d.g] = {
   on: d.g === 302 || d.g === 313,
-  amb: d.g === 313,
+  amb: d.g === 313 || d.g === 26,
   mat: d.mat, // 302 começa em internamento (PTJ: 1 750 € c/ IVA; em ambulatório passa a 1 968 €)
   pct: null,           // null = herda global
   cxOld: d.cx, cxNew: d.cx,
   compl: d.g === 301 || d.g === 302, // risco de complicações tardias na externalização (artroplastias)
+  nproc: 0, // procedimentos associados do mesmo GDH (+45% cada, teto +60% — art. 2.º, n.º 8, al. c)
   vol: d.g === 302 ? 150 : (d.g === 313 ? 50 : 0), // episódios/ano em produção adicional
   custos: null, matTouched: false,
 });
@@ -487,6 +498,23 @@ GDH.forEach(d => {
   chipsEl.appendChild(c);
 });
 
+// pontos de passo nos sliders
+function decorateSliders(root) {
+  (root || document).querySelectorAll('input[type=range]').forEach(sl => {
+    if (sl.parentElement.classList.contains('sl')) return;
+    const wrap = document.createElement('div'); wrap.className = 'sl';
+    sl.parentNode.insertBefore(wrap, sl); wrap.appendChild(sl);
+    const dots = document.createElement('div'); dots.className = 'sl-dots';
+    const min = +sl.min, max = +sl.max, step = +sl.step || 1, n = Math.max(1, Math.round((max - min) / step));
+    for (let i = 0; i <= n; i++) {
+      const d = document.createElement('i');
+      d.style.left = (i / n * 100) + '%';
+      dots.appendChild(d);
+    }
+    wrap.appendChild(dots);
+  });
+}
+
 const SLV = {gPct: 'gPctV', gPctOld: 'gPctOldV', gP2: 'gP2V', gP34: 'gP34V'};
 function syncSlv() {
   Object.entries(SLV).forEach(([i, v]) => document.getElementById(v).textContent = G(i).toLocaleString('pt-PT') + '%');
@@ -507,11 +535,15 @@ function calc(d) {
   const nov1 = amb ? d.na1 : d.ni1, nov2 = amb ? d.na2 : d.ni2;
   const majOld = s.cxOld ? 1.2 : 1;
 
-  const eqOld1 = old1 !== null ? pctOld * old1 * majOld : null;
-  const eqOld2 = old2 !== null ? pctOld * old2 * majOld : null;
+  // procedimentos associados do mesmo GDH: +45% cada, teto acumulado +60% — regra igual
+  // no regime novo (art. 2.º, n.º 8, al. c da Portaria 281/2026/1) e no antigo (Portaria 207/2017)
+  const nproc = s.nproc || 0;
+  const fak = 1 + Math.min(nproc * 0.45, 0.60);
+  const eqOld1 = old1 !== null ? pctOld * old1 * majOld * fak : null;
+  const eqOld2 = old2 !== null ? pctOld * old2 * majOld * fak : null;
   const ded = d.deduz ? mat : 0;
-  const eqNov1 = nov1 !== null ? pct * nov1 - ded : null;
-  const eqNov2 = nov2 !== null ? pct * nov2 - ded : null;
+  const eqNov1 = nov1 !== null ? pct * nov1 * fak - ded : null;
+  const eqNov2 = nov2 !== null ? pct * nov2 * fak - ded : null;
 
   // mix de severidades (case-mix): sev2 por comorbilidades paga sev1 à equipa interna,
   // mas sev2 ao destino na externalização (art. 8.º n.º 1 vs art. 5.º n.º 4 b) ii)
@@ -525,21 +557,21 @@ function calc(d) {
   const interno = (eqMix !== null ? eqMix : 0) + mat + custos;
   const externExtra = (!d.deduz && mat > 200) ? mat : 0; // dispositivo acresce (art. 9.º n.º 1)
   const compExtra = s.compl ? G('gCompRate') / 100 * G('gCompCost') : 0; // risco de complicações tardias
-  const extern = nov1 === null ? null : (p1 * nov1 + (p2 + p34) * nov2eff) * maj + externExtra + compExtra;
+  const extern = nov1 === null ? null : (p1 * nov1 + (p2 + p34) * nov2eff) * fak * maj + externExtra + compExtra;
   const fracSala = (amb ? G('gFracAmb') : G('gFracInt')) / 100;
   const sala = G('gSala') + mat + (eqMix !== null ? eqMix * fracSala : 0);
 
   // indicadores de gestão
-  const pctIgualar = (eqOld1 !== null && nov1) ? (eqOld1 + ded) / nov1 : null;
-  const eqMix80 = nov1 === null ? null : (p1 + p2) * (0.8 * nov1 - ded) + p34 * (0.8 * nov2eff - ded);
+  const pctIgualar = (eqOld1 !== null && nov1) ? (eqOld1 + ded) / (nov1 * fak) : null;
+  const eqMix80 = nov1 === null ? null : (p1 + p2) * (0.8 * nov1 * fak - ded) + p34 * (0.8 * nov2eff * fak - ded);
   const interno80 = eqMix80 === null ? null : eqMix80 + mat + custos;
-  const sev2Extra = nov2 !== null ? (nov2 - nov1) * maj : null; // custo extra por comórbido externalizado
+  const sev2Extra = nov2 !== null ? (nov2 - nov1) * fak * maj : null; // custo extra por comórbido externalizado
   const dias = Math.max(1, G('gDias'));
   const deltaSala = sala - interno;
   const diariaBE = deltaSala / dias;
 
   return {amb, pct, pctOld, mat, custos, old1, old2, nov1, nov2, nov2eff, eqOld1, eqOld2, eqNov1, eqNov2, eqNov2eff,
-          p1, p2, p34, eqMix, interno, extern, externExtra, compExtra, sala, ded,
+          p1, p2, p34, eqMix, interno, extern, externExtra, compExtra, sala, ded, nproc, fak,
           pctIgualar, interno80, sev2Extra, dias, deltaSala, diariaBE};
 }
 
@@ -622,11 +654,13 @@ function render() {
     // fórmulas dos tooltips
     const pctTxt = (r.pct * 100).toLocaleString('pt-PT'), pctOldTxt = (r.pctOld * 100).toLocaleString('pt-PT');
     const pTxt = v => (v * 100).toLocaleString('pt-PT') + '%';
-    const fOld = sev => `${pctOldTxt}% × ${fmt(sev === 1 ? r.old1 : r.old2)} (GDH antigo, sev. ${sev})${s.cxOld ? ' × 1,2 (complexo)' : ''} = ${fmt(sev === 1 ? r.eqOld1 : r.eqOld2)}`;
+    const fakTxt = r.nproc ? ` × ${r.fak.toLocaleString('pt-PT')} (${r.nproc} proc. associado${r.nproc > 1 ? 's' : ''}: +45% cada, teto +60% — art. 2.º, n.º 8, al. c)` : '';
+    const fakOldTxt = r.nproc ? ` × ${r.fak.toLocaleString('pt-PT')} (${r.nproc} proc. associado${r.nproc > 1 ? 's' : ''}: +45% cada, teto +60% — regra idêntica na Portaria 207/2017)` : '';
+    const fOld = sev => `${pctOldTxt}% × ${fmt(sev === 1 ? r.old1 : r.old2)} (GDH antigo, sev. ${sev})${s.cxOld ? ' × 1,2 (complexo)' : ''}${fakOldTxt} = ${fmt(sev === 1 ? r.eqOld1 : r.eqOld2)}`;
     const fNov = sev => { const res = sev === 1 ? r.eqNov1 : r.eqNov2;
-      return `${pctTxt}% × ${fmt(sev === 1 ? r.nov1 : r.nov2)} (col. ${r.amb ? 'P' : 'O'}, sev. ${sev})${r.ded ? ` − ${fmt(r.ded)} material c/ IVA (art. 5.º, n.º 10)` : ''} = ${fmt(res)}${res !== null && res < 0 ? ' — ⚠ o material excede a verba da equipa' : ''}`; };
+      return `${pctTxt}% × ${fmt(sev === 1 ? r.nov1 : r.nov2)} (col. ${r.amb ? 'P' : 'O'}, sev. ${sev})${fakTxt}${r.ded ? ` − ${fmt(r.ded)} material c/ IVA (art. 5.º, n.º 10)` : ''} = ${fmt(res)}${res !== null && res < 0 ? ' — ⚠ o material excede a verba da equipa' : ''}`; };
     const fInt = `equipa mix: ${pTxt(r.p1 + r.p2)} × ${fmt(r.eqNov1)} (sev. paga 1) + ${pTxt(r.p34)} × ${fmt(r.eqNov2eff)} (sev. paga 2) = ${fmt(r.eqMix)}; + material ${fmt(r.mat)} + custos internos ${fmt(r.custos)} = ${fmt(r.interno)}<span class="nota">A sev. 2 por comorbilidades paga-se à equipa pela sev. 1 (art. 5.º, n.º 4).</span>`;
-    const fExt = `${pTxt(r.p1)} × ${fmt(r.nov1)} (sev. 1) + ${pTxt(r.p2 + r.p34)} × ${fmt(r.nov2eff)} (sev. 2)${s.cxNew ? ', × 1,2 (especial complexidade)' : ''}${r.externExtra ? `, + ${fmt(r.externExtra)} dispositivo (art. 9.º, n.º 1)` : ''}${r.compExtra ? `, + ${G('gCompRate').toLocaleString('pt-PT')}% × ${fmt(G('gCompCost'))} risco de complicações` : ''} = ${fmt(r.extern)}<span class="nota">A sev. 2 por comorbilidades paga-se ao destino pela sev. 2 (art. 8.º, n.º 1). ${d.deduz ? 'Prótese incluída no preço — por conta do destino (art. 9.º, n.º 10).' : (r.externExtra ? 'Inclui dispositivo pago pela origem (art. 9.º, n.º 1).' : 'Preço compreensivo: inclui pré-op., estadia e 2 meses de seguimento.')}${r.compExtra ? ' O risco de complicações tardias (após os 2 meses cobertos) recai na origem — taxa e custo editáveis nos parâmetros globais.' : ''}</span>`;
+    const fExt = `${pTxt(r.p1)} × ${fmt(r.nov1)} (sev. 1) + ${pTxt(r.p2 + r.p34)} × ${fmt(r.nov2eff)} (sev. 2)${fakTxt}${s.cxNew ? ', × 1,2 (especial complexidade)' : ''}${r.externExtra ? `, + ${fmt(r.externExtra)} dispositivo (art. 9.º, n.º 1)` : ''}${r.compExtra ? `, + ${G('gCompRate').toLocaleString('pt-PT')}% × ${fmt(G('gCompCost'))} risco de complicações` : ''} = ${fmt(r.extern)}<span class="nota">A sev. 2 por comorbilidades paga-se ao destino pela sev. 2 (art. 8.º, n.º 1). ${d.deduz ? 'Prótese incluída no preço — por conta do destino (art. 9.º, n.º 10).' : (r.externExtra ? 'Inclui dispositivo pago pela origem (art. 9.º, n.º 1).' : 'Preço compreensivo: inclui pré-op., estadia e 2 meses de seguimento.')}${r.compExtra ? ' O risco de complicações tardias (após os 2 meses cobertos) recai na origem — taxa e custo editáveis nos parâmetros globais.' : ''}</span>`;
     const fSala = `${fmt(G('gSala'))} sala + ${fmt(r.mat)} material + ${(r.amb ? G('gFracAmb') : G('gFracInt')).toLocaleString('pt-PT')}% × ${fmt(r.eqMix)} equipa mix = ${fmt(r.sala)}<span class="nota">O hospital paga apenas cirurgiões + instrumentistas; anestesia e enfermagem de sala incluídas no preço da sala.</span>`;
     const neg = v => v !== null && v < 0 ? ' class="negv"' : '';
 
@@ -650,6 +684,8 @@ function render() {
             <input type="number" data-k="mat" value="${s.mat}" min="0" step="50"></div>
           <div class="field"><label>Custos internos do hospital (€)</label>
             <input type="number" data-k="custos" value="${r.custos}" min="0" step="50"></div>
+          <div class="field"><label>Procedimentos associados (mesmo GDH):<span class="slval">${r.nproc}</span></label>
+            <input type="range" data-k="nproc" value="${r.nproc}" min="0" max="3" step="1"></div>
         </div>
         <div class="controls sw-row">
           <div class="field"><label>Complexo no regime antigo (×1,2)</label>
@@ -725,6 +761,7 @@ function render() {
       const k = inp.dataset.k, v = inp.value === '' ? null : parseFloat(inp.value);
       if (k === 'mat') { s.mat = v || 0; s.matTouched = true; }
       if (k === 'pct') { s.pct = v; }
+      if (k === 'nproc') { s.nproc = v || 0; }
       if (k === 'custos') { s.custos = v; }
       render();
     }));
@@ -737,11 +774,13 @@ function render() {
     host.appendChild(card);
   });
   renderAnual();
+  decorateSliders(host);
 }
 renderRoles();
 renderDist();
 syncSlv();
 render();
+decorateSliders();
 </script>
 </body>
 </html>
