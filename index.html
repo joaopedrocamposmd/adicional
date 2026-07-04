@@ -127,7 +127,20 @@ input.est { background: rgba(230,126,34,.07); border-color: rgba(230,126,34,.4);
 #gpop.show { opacity: 1; visibility: visible; }
 #gpop .nota { color: var(--ink-muted); font-family: var(--font-sans); display: block; margin-top: 5px; padding-top: 5px; border-top: 1px solid var(--rule-soft); }
 
-/* chips seletor GDH */
+/* tabela seletora de GDH — compacta */
+.gtable td, .gtable th { padding: 3px 8px; font-size: 12px; }
+.gtable td { line-height: 1.25; }
+.gtable th { padding: 6px 8px 4px; }
+.gtable input[type="number"] { min-height: 24px; padding: 2px 6px; font-size: 12px; }
+.gtable tr.grow { cursor: pointer; }
+.gtable tr.grow:hover td { background: rgba(59,135,123,.06); }
+.gtable tr.onrow td { background: rgba(59,135,123,.14); }
+.gtable tr.onrow td:first-child { box-shadow: inset 3px 0 0 var(--color-primary); }
+.gtable tr.area-row td { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--ink-soft); background: var(--bg-tint); padding: 4px 8px; text-align: left; }
+.gtable tr.trow td { border-top: 2px solid var(--rule); font-weight: 600; background: var(--bg-tint); }
+.gtable td:first-child { font-family: var(--font-mono); font-weight: 600; }
+
+/* chips (perfil) */
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip {
   border: 1px solid var(--rule); background: rgba(255,255,255,.85); color: var(--ink-soft);
@@ -303,7 +316,8 @@ footer { margin-top: 30px; font-size: 11px; color: var(--ink-muted); line-height
 
   <div class="glass panel">
     <h2><span class="eyebrow" style="margin:0">GDH ortopédicos — selecionar para analisar</span></h2>
-    <div class="chips" id="chips"></div>
+    <div id="gdhTable" style="overflow:auto; background: rgba(255,255,255,.85); border: 1px solid var(--rule); border-radius: var(--radius-md);"></div>
+    <div class="group-note">Clique numa linha para abrir/fechar o cartão de análise detalhada. Valores de <b>severidade 1</b>, no regime por defeito de cada GDH; as linhas com cartão aberto seguem os ajustes desse cartão (regime, %, majorações). O valor dos implantes é editável aqui e no cartão — sincronizados. «Antes/Agora» refletem o perfil escolhido acima (equipa completa ou elemento individual).</div>
   </div>
 
   <div id="cards"></div>
@@ -357,21 +371,21 @@ footer { margin-top: 30px; font-size: 11px; color: var(--ink-muted); line-height
 const GDH = [
   {g:26,  nome:'Canal cárpico (outros proc. do sistema nervoso)', area:'mão', oi1:1381.33, oi2:2857.39, oa1:1381.33, oa2:2857.39, ni1:2226.25, ni2:3398.94, na1:2226.25, na2:3398.94, deduz:false, cx:false, mat:0},
   {g:301, nome:'Substituição da articulação da anca', area:'anca',   oi1:4484.54, oi2:5351.01, oa1:4386.89, oa2:null,    ni1:5074.34, ni2:6053.53, na1:4976.69, na2:null,     deduz:true,  cx:true,  mat:1602.69},
-  {g:302, nome:'Substituição da articulação do joelho', area:'joelho', oi1:4378.70, oi2:5116.15, oa1:4232.75, oa2:4535.73, ni1:4987.11, ni2:6612.12, na1:4841.16, na2:6418.61, deduz:true,  cx:true,  mat:1152.20, matAmb:1968},
-  {g:303, nome:'Artrodese dorsal e/ou lombar p/ curvatura vertebral', area:'raquis', oi1:5577.69, oi2:7847.38, oa1:5418.19, oa2:null, ni1:6412.58, ni2:7717.20, na1:6253.08, na2:null,    deduz:true,  cx:true,  mat:0},
-  {g:304, nome:'Artrodese dorsal e/ou lombar, exceto curvatura', area:'raquis', oi1:3846.75, oi2:6013.67, oa1:3205.63, oa2:5083.44, ni1:4231.42, ni2:6934.75, na1:3526.19, na2:6704.99, deduz:true,  cx:true,  mat:0},
+  {g:302, nome:'Substituição da articulação do joelho', area:'joelho', oi1:4378.70, oi2:5116.15, oa1:4232.75, oa2:4535.73, ni1:4987.11, ni2:6612.12, na1:4841.16, na2:6418.61, deduz:true,  cx:true,  mat:1156.20, matAmb:1968},
+  {g:303, nome:'Artrodese dorsal e/ou lombar p/ curvatura vertebral', area:'raquis', oi1:5577.69, oi2:7847.38, oa1:5418.19, oa2:null, ni1:6412.58, ni2:7717.20, na1:6253.08, na2:null,    deduz:true,  cx:true,  mat:553.50},
+  {g:304, nome:'Artrodese dorsal e/ou lombar, exceto curvatura', area:'raquis', oi1:3846.75, oi2:6013.67, oa1:3205.63, oa2:5083.44, ni1:4231.42, ni2:6934.75, na1:3526.19, na2:6704.99, deduz:true,  cx:true,  mat:553.50},
   {g:305, nome:'Amputação de membros inferiores exceto dedos', area:'geral', oi1:3445.55, oi2:4667.80, oa1:3445.55, oa2:4667.80, ni1:3972.55, ni2:5076.71, na1:3972.55, na2:5076.71, deduz:false, cx:false, mat:0},
   {g:308, nome:'Proc. anca/fémur por traumatismo, exceto substituição', area:'anca', oi1:2828.37, oi2:3676.88, oa1:2828.37, oa2:null, ni1:3276.32, ni2:4101.63, na1:3276.32, na2:null,    deduz:false, cx:false, mat:0},
   {g:309, nome:'Proc. anca/fémur não traumáticos, exceto substituição', area:'anca', oi1:2196.34, oi2:4844.20, oa1:2196.34, oa2:4844.20, ni1:3858.56, ni2:9419.54, na1:3858.56, na2:9419.54, deduz:false, cx:false, mat:0},
   {g:310, nome:'Excisão e/ou descompressão de disco intervertebral', area:'raquis', oi1:1962.72, oi2:2435.35, oa1:1686.36, oa2:2435.35, ni1:2195.35, ni2:3269.30, na1:1918.98, na2:2857.73, deduz:true, cx:false, mat:0},
   {g:312, nome:'Enxerto de pele (exceto mão), sist. músculo-esquelético', area:'geral', oi1:3323.63, oi2:9902.28, oa1:3325.13, oa2:9902.28, ni1:3657.65, ni2:10570.97, na1:3657.65, na2:10570.97, deduz:false, cx:false, mat:0},
-  {g:313, nome:'Procedimentos no joelho e/ou perna, exceto no pé', area:'joelho', oi1:1275.37, oi2:3504.73, oa1:1266.96, oa2:3504.73, ni1:2064.00, ni2:3975.99, na1:2064.00, na2:3975.99, deduz:true, cx:false, mat:0},
+  {g:313, nome:'Procedimentos no joelho e/ou perna, exceto no pé', area:'joelho', oi1:1275.37, oi2:3504.73, oa1:1266.96, oa2:3504.73, ni1:2064.00, ni2:3975.99, na1:2064.00, na2:3975.99, deduz:true, cx:false, mat:467.40},
   {g:314, nome:'Procedimentos no pé e/ou dedos', area:'pé', oi1:1325.25, oi2:3098.69, oa1:1150.41, oa2:3098.69, ni1:1751.68, ni2:3168.18, na1:1751.68, na2:3168.18, deduz:false, cx:false, mat:0},
   {g:315, nome:'Procedimentos no ombro, braço e/ou antebraço', area:'ombro', oi1:1168.05, oi2:2860.20, oa1:1075.75, oa2:2537.95, ni1:1949.37, ni2:3539.34, na1:1949.37, na2:3539.34, deduz:false, cx:false, mat:0},
   {g:316, nome:'Procedimentos na mão e/ou punho', area:'mão', oi1:921.31, oi2:2166.18, oa1:921.31, oa2:2166.18, ni1:1485.39, ni2:2383.84, na1:1485.39, na2:2383.84, deduz:false, cx:false, mat:0},
   {g:317, nome:'Procedimentos no tendão, músculo e/ou tecidos moles', area:'geral', oi1:1063.03, oi2:2958.16, oa1:1063.03, oa2:2958.16, ni1:1684.62, ni2:4104.45, na1:1684.62, na2:4104.45, deduz:false, cx:false, mat:0},
   {g:320, nome:'Outros proc. sist. músculo-esquelético / tecido conjuntivo', area:'geral', oi1:1127.18, oi2:4250.79, oa1:1101.26, oa2:4250.79, ni1:1851.27, ni2:3384.45, na1:1851.27, na2:3384.45, deduz:false, cx:false, mat:0},
-  {g:321, nome:'Artrodese cervical / outros proc. dorso-pescoço', area:'raquis', oi1:2233.02, oi2:3633.61, oa1:1978.81, oa2:3633.61, ni1:2953.53, ni2:5304.96, na1:2953.53, na2:5304.96, deduz:true, cx:false, mat:0},
+  {g:321, nome:'Artrodese cervical / outros proc. dorso-pescoço', area:'raquis', oi1:2233.02, oi2:3633.61, oa1:1978.81, oa2:3633.61, ni1:2953.53, ni2:5304.96, na1:2953.53, na2:5304.96, deduz:true, cx:false, mat:473.55},
 ];
 
 // ---- distribuição do valor da equipa (Modelos A/B do hospital) -------------
@@ -464,6 +478,7 @@ GDH.forEach(d => state[d.g] = {
   cxOld: d.cx, cxNew: d.cx,
   compl: d.g === 301 || d.g === 302, // risco de complicações tardias na externalização (artroplastias)
   nproc: 0, // procedimentos associados do mesmo GDH (+45% cada, teto +60% — art. 2.º, n.º 8, al. c)
+  ns: 0, // n.º de episódios deste GDH numa sessão (para o somatório da tabela)
   vol: d.g === 302 ? 150 : (d.g === 313 ? 50 : 0), // episódios/ano em produção adicional
   custos: null, matTouched: false,
 });
@@ -512,15 +527,74 @@ const F = (val, formula) => `<span class="vf">${val}<span class="u-info"><i>i</i
   window.addEventListener('scroll', () => { pinned = false; closeInfo(); }, true);
 })();
 
-// ---- chips ----------------------------------------------------------------
-const chipsEl = document.getElementById('chips');
-GDH.forEach(d => {
-  const c = document.createElement('div');
-  c.className = 'chip' + (state[d.g].on ? ' on' : '');
-  c.innerHTML = `<span class="n">${d.g}</span> ${d.nome} <span class="area">· ${d.area}</span>`;
-  c.onclick = () => { state[d.g].on = !state[d.g].on; c.classList.toggle('on'); render(); };
-  chipsEl.appendChild(c);
-});
+// ---- tabela seletora de GDH (organizada por área) ---------------------------
+const AREAS = ['anca', 'joelho', 'mão', 'ombro', 'pé', 'raquis', 'geral'];
+// ao desselecionar uma linha, o GDH volta aos valores por defeito (mantém implantes e n.º/sessão)
+function resetGdh(g) {
+  const d = GDH.find(x => x.g === g), s = state[g];
+  s.amb = d.g === 313 || d.g === 26;
+  s.pct = null;
+  s.cxOld = d.cx;
+  s.cxNew = d.cx;
+  s.compl = d.g === 301 || d.g === 302;
+  s.nproc = 0;
+  s.custos = null;
+  if (!s.matTouched) s.mat = (s.amb && d.matAmb) ? d.matAmb : d.mat;
+}
+function renderTable() {
+  const host = document.getElementById('gdhTable');
+  const perfil = ROLES.find(x => x.k === role).lbl;
+  const cls = v => v >= 0 ? 'pos' : 'negv';
+  let rows = '', tN = 0, tA = 0, tG = 0;
+  AREAS.forEach(area => {
+    const ds = GDH.filter(d => d.area === area);
+    if (!ds.length) return;
+    rows += `<tr class="area-row"><td colspan="8">${area}</td></tr>`;
+    ds.forEach(d => {
+      const s = state[d.g], r = calc(d);
+      const sh = roleShare(r.amb), f = sh === null ? 1 : sh;
+      const a = r.eqOld1 === null ? null : r.eqOld1 * f;
+      const g2 = r.eqNov1 === null ? null : r.eqNov1 * f;
+      const dl = a !== null && g2 !== null ? g2 - a : null;
+      const n = s.ns || 0;
+      tN += n; if (a !== null) tA += a * n; if (g2 !== null) tG += g2 * n;
+      rows += `<tr class="grow${s.on ? ' onrow' : ''}" data-g="${d.g}">
+        <td>${d.g}</td>
+        <td style="white-space:normal;text-align:left;font-family:var(--font-sans)">${d.nome} <span class="muted" style="font-size:10.5px">· ${r.amb ? 'amb.' : 'int.'}</span></td>
+        <td>${d.deduz ? `<input type="number" class="tmat" data-g="${d.g}" value="${s.mat}" min="0" step="10" style="width:92px">` : ''}</td>
+        <td>${a === null ? '—' : fmt(a)}</td>
+        <td>${g2 === null ? '—' : fmt(g2)}</td>
+        <td class="${dl === null ? '' : cls(dl)}">${dl === null ? '—' : fmtD(dl)}</td>
+        <td class="${dl === null ? '' : cls(dl)}">${dl === null || !a ? '—' : fmtP(dl / a)}</td>
+        <td><input type="number" class="tns" data-g="${d.g}" value="${n}" min="0" step="1" style="width:64px"></td>
+      </tr>`;
+    });
+  });
+  const tD = tG - tA;
+  host.innerHTML = `<table class="gtable">
+    <tr><th>GDH</th><th style="text-align:left">Nome</th><th>Implantes c/ IVA (€)</th><th>Antes</th><th>Agora</th><th>Δ €</th><th>Δ %</th><th>N.º / sessão</th></tr>
+    ${rows}
+    <tr class="trow"><td></td><td style="font-family:var(--font-sans);text-align:left">TOTAL DA SESSÃO — ${perfil}</td><td></td>
+      <td>${fmt(tA)}</td><td>${fmt(tG)}</td>
+      <td class="${cls(tD)}">${fmtD(tD)}</td><td class="${cls(tD)}">${tA ? fmtP(tD / tA) : '—'}</td>
+      <td>${tN}</td></tr>
+  </table>`;
+  host.querySelectorAll('tr.grow').forEach(tr => tr.addEventListener('click', e => {
+    if (e.target.tagName === 'INPUT') return;
+    const g = +tr.dataset.g;
+    state[g].on = !state[g].on;
+    if (!state[g].on) resetGdh(g);
+    render();
+  }));
+  host.querySelectorAll('input.tmat').forEach(i => {
+    i.addEventListener('click', e => e.stopPropagation());
+    i.addEventListener('change', () => { const g = +i.dataset.g; state[g].mat = parseFloat(i.value) || 0; state[g].matTouched = true; render(); });
+  });
+  host.querySelectorAll('input.tns').forEach(i => {
+    i.addEventListener('click', e => e.stopPropagation());
+    i.addEventListener('change', () => { const g = +i.dataset.g; state[g].ns = Math.max(0, parseInt(i.value) || 0); render(); });
+  });
+}
 
 // pontos de passo nos sliders
 function decorateSliders(root) {
@@ -665,11 +739,12 @@ function renderAnual() {
 
 // ---- render ---------------------------------------------------------------
 function render() {
+  renderTable();
   const host = document.getElementById('cards');
   host.innerHTML = '';
   const active = GDH.filter(d => state[d.g].on);
   if (!active.length) {
-    host.innerHTML = '<div class="glass panel empty">Selecione um ou mais GDH acima para ver a análise.</div>';
+    host.innerHTML = '<div class="glass panel empty">Selecione um ou mais GDH na tabela acima para ver a análise detalhada.</div>';
     renderAnual();
     return;
   }
