@@ -67,12 +67,14 @@ h1 em { font-style: normal; font-weight: 600; color: var(--color-primary); }
 
 .globals { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; }
 .group + .group { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--rule-soft); }
-#distGroup { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--rule-soft); }
-#distGroup summary { cursor: pointer; user-select: none; list-style: none; }
-#distGroup summary::-webkit-details-marker { display: none; }
-#distGroup summary::before { content: '▸  '; color: var(--color-primary); }
-#distGroup[open] summary::before { content: '▾  '; }
-#distGroup summary:hover { color: var(--color-primary-dark); }
+details.group { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--rule-soft); }
+details.group summary { cursor: pointer; user-select: none; list-style: none; }
+details.group summary::-webkit-details-marker { display: none; }
+details.group summary::before { content: '▸  '; color: var(--color-primary); }
+details.group[open] summary::before { content: '▾  '; }
+details.group summary:hover { color: var(--color-primary-dark); }
+.subgroup { margin-top: 6px; }
+.subgroup + .subgroup { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--rule-soft); }
 .group-title { font-family: var(--font-mono); font-size: 10.5px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 10px; }
 .group-note { font-size: 11px; color: var(--ink-muted); margin-top: 8px; line-height: 1.5; }
 .field label { display: flex; align-items: flex-end; min-height: 30px; font-size: 11.5px; font-weight: 600; color: var(--ink-muted); margin-bottom: 5px; line-height: 1.35; }
@@ -83,16 +85,17 @@ input[type="number"], select {
   font-family: var(--font-mono); text-align: right;
 }
 input:focus, select:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(59,135,123,0.15); }
-input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; min-height: 35px; background: transparent; border: none; padding: 0; cursor: pointer; position: relative; z-index: 1; }
+input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; min-height: 35px; background: transparent; border: none; padding: 0; cursor: pointer; position: relative; z-index: 2; }
 input[type="range"]:focus { box-shadow: none; }
-input[type="range"]::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: var(--rule); }
+input[type="range"]::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: transparent; }
 input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--color-primary); margin-top: -6px; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(59,135,123,.45); }
-input[type="range"]::-moz-range-track { height: 4px; border-radius: 2px; background: var(--rule); }
+input[type="range"]::-moz-range-track { height: 4px; border-radius: 2px; background: transparent; }
 input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: var(--color-primary); border: 2px solid #fff; box-shadow: 0 1px 4px rgba(59,135,123,.45); }
 .sl { position: relative; line-height: 0; }
 .sl input[type="range"] { display: block; }
-.sl-dots { position: absolute; top: 50%; left: 8px; right: 8px; height: 0; pointer-events: none; }
-.sl-dots i { position: absolute; top: 0; width: 5px; height: 5px; border-radius: 50%; background: var(--ink-muted); opacity: .45; transform: translate(-50%, -50%); }
+.sl::before { content: ""; position: absolute; left: 8px; right: 8px; top: 50%; height: 4px; transform: translateY(-50%); background: #c3d0cb; border-radius: 2px; z-index: 0; }
+.sl-dots { position: absolute; top: 50%; left: 8px; right: 8px; height: 0; pointer-events: none; z-index: 1; }
+.sl-dots i { position: absolute; top: 0; width: 9px; height: 9px; border-radius: 50%; background: #fff; border: 1.5px solid #9db3ab; box-shadow: 0 1px 2px rgba(44,62,80,.25); transform: translate(-50%, -50%); }
 .slval { font-family: var(--font-mono); font-weight: 600; color: var(--color-primary-dark); margin-left: 4px; }
 input.est { background: rgba(230,126,34,.07); border-color: rgba(230,126,34,.4); }
 .reset { border: none; background: none; color: var(--ink-muted); cursor: pointer; font-size: 10.5px; padding: 0 4px; text-decoration: underline dotted; }
@@ -233,29 +236,49 @@ footer { margin-top: 30px; font-size: 11px; color: var(--ink-muted); line-height
     <div class="group">
       <div class="group-title">Produção adicional</div>
       <div class="globals">
-        <div class="field"><label>% equipa por defeito — novo (CA fixa 20–80%):<span class="slval" id="gPctV">45%</span></label><input type="range" id="gPct" value="45" min="20" max="80" step="5"></div>
         <div class="field"><label>% equipa — regime antigo:<span class="slval" id="gPctOldV">45%</span></label><input type="range" id="gPctOld" value="45" min="35" max="55" step="10"></div>
-        <div class="field"><label>Custos internos por defeito — internamento (€)</label><input type="number" id="gIntCost" value="1500" min="0" step="50"></div>
-        <div class="field"><label>Custos internos por defeito — ambulatório (€)</label><input type="number" id="gAmbCost" value="500" min="0" step="50"></div>
+        <div class="field"><label>% equipa por defeito — novo (CA fixa 20–80%):<span class="slval" id="gPctV">45%</span></label><input type="range" id="gPct" value="45" min="20" max="80" step="5"></div>
       </div>
+      <div class="globals" style="margin-top:12px">
+        <div class="field" style="grid-column: span 2; min-width: 320px"><label>Dedução dos implantes à equipa (art. 5.º, n.º 10 — duas leituras)</label>
+          <div class="seg" id="gDedMode">
+            <button data-m="bolo" class="sel">(GDH − implante) × %</button>
+            <button data-m="equipa">GDH × % − implante</button>
+          </div>
+        </div>
+        <div class="field"><label>Atualizar valores antigos pela inflação desde 2017</label>
+          <div class="sw" id="gInfl"><div class="track"></div><span class="lbl">aplicar a taxa ao «antes»</span></div>
+        </div>
+        <div class="field"><label>Inflação acumulada 2017→2026 (%)</label><input type="number" id="gInflPct" value="23" min="0" step="0.5"></div>
+      </div>
+      <div class="group-note"><b>Dedução dos implantes</b> — o art. 5.º, n.º 10 admite duas leituras: «(GDH − implante) × %» desconta o implante ao bolo e a equipa recebe a percentagem do restante (leitura adotada pelo CA); «GDH × % − implante» desconta o implante à verba da equipa (leitura literal). <b>Inflação</b> — os preços da Portaria 207/2017 nunca foram atualizados; o IPC acumulado desde julho de 2017 é ≈ 22–23% (INE, taxas médias anuais). Com o interruptor ativo, os valores «antes» são multiplicados por (1 + taxa) para comparação a preços de hoje.</div>
     </div>
-    <div class="group">
+    <details class="group" id="custosGroup">
+      <summary class="group-title">Contabilização de custos por episódio</summary>
+      <div class="subgroup">
+        <div class="group-title">Custos internos do hospital</div>
+        <div class="globals">
+          <div class="field"><label>Custos internos por defeito — internamento (€)</label><input type="number" id="gIntCost" value="1500" min="0" step="50"></div>
+          <div class="field"><label>Custos internos por defeito — ambulatório (€)</label><input type="number" id="gAmbCost" value="500" min="0" step="50"></div>
+        </div>
+      </div>
+      <div class="subgroup">
       <div class="group-title">Mix de severidades (case-mix do serviço)</div>
       <div class="globals">
         <div class="field"><label>% de doentes concluídos em sev. 2 por comorbilidades:<span class="slval" id="gP2V">25%</span></label><input type="range" id="gP2" value="25" min="0" max="60" step="5"></div>
         <div class="field"><label>% de doentes em sev. 3/4:<span class="slval" id="gP34V">5%</span></label><input type="range" id="gP34" value="5" min="0" max="30" step="5"></div>
       </div>
       <div class="group-note">Na externalização pagam-se severidades 1 e 2 — a sev. 2 <b>por comorbilidades</b> é paga ao hospital de destino (art. 8.º, n.º 1); às equipas internas paga-se a sev. 1, salvo se a sev. 2 resultar do diagnóstico + procedimento principais (art. 5.º, n.º 4). Sev. 3/4 pagam-se pela sev. 2 em ambos os casos. O «custo esperado por episódio» nos cartões reflete este mix.</div>
-    </div>
-    <div class="group">
+      </div>
+      <div class="subgroup">
       <div class="group-title">Complicações tardias (dados do hospital — editar)</div>
       <div class="globals">
         <div class="field"><label>Taxa adicional de revisão nos operados fora (p.p.)</label><input type="number" id="gCompRate" class="est" value="2" min="0" step="0.5"></div>
         <div class="field"><label>Custo médio de uma revisão (€)</label><input type="number" id="gCompCost" class="est" value="15000" min="0" step="500"></div>
       </div>
       <div class="group-note">Estimativas de partida — <b>substitua pelos dados do próprio hospital</b>. O preço compreensivo da externalização cobre apenas 2 meses (art. 8.º); infeção periprotésica, rigidez e dor evidenciam-se aos 6–12 meses e as revisões (&gt;10 000 € só em material, com internamento prolongado) ficam por conta do hospital de origem. O acréscimo esperado (taxa × custo) soma-se ao custo de externalizar nos GDH com o interruptor «risco de complicações» ativo — artroplastias (301, 302) por defeito.</div>
-    </div>
-    <div class="group">
+      </div>
+      <div class="subgroup">
       <div class="group-title">Sala privada alugada</div>
       <div class="globals">
         <div class="field"><label>Sala + internamento (€/episódio)</label><input type="number" id="gSala" value="2460" min="0" step="10"></div>
@@ -264,7 +287,8 @@ footer { margin-top: 30px; font-size: 11px; color: var(--ink-muted); line-height
         <div class="field"><label>Demora média do internamento (dias)</label><input type="number" id="gDias" value="3" min="1" step="1"></div>
       </div>
       <div class="group-note">No cenário de sala alugada, o hospital paga apenas cirurgiões + instrumentistas (fração da equipa acima); anestesia e enfermagem de sala estão incluídas no preço da sala. A demora média serve para calcular o preço implícito de cada diária de internamento libertada.</div>
-    </div>
+      </div>
+    </details>
   </div>
 
   <div class="glass panel">
@@ -291,7 +315,7 @@ footer { margin-top: 30px; font-size: 11px; color: var(--ink-muted); line-height
     <ul>
       <li><b>Base de cálculo:</b> a produção adicional e a externalizada pagam-se pelos preços das <b>colunas O (internamento) / P (ambulatório)</b> da tabela GDH nova — não pelo preço GDH pleno. <a class="art" href="portaria-281-2026.html#art2" target="_blank" title="Abrir o artigo 2.º da Portaria 281/2026/1 (transcrição com âncoras)">art. 2.º, n.º 4</a></li>
       <li><b>% da equipa (cirurgia, adicional interna):</b> deixa de haver percentagem única — o Conselho de Administração fixa <b>entre 20% e 80%</b>, por grupo de procedimentos, em regulamento anual validado pela DE-SNS. <a class="art" href="portaria-281-2026.html#art5" target="_blank" title="Abrir o artigo 5.º da Portaria 281/2026/1 (transcrição com âncoras)">art. 5.º, n.º 4, al. b), i</a></li>
-      <li><b>Dedução do material:</b> nos GDH <b>301, 302, 303, 304, 310, 313, 321</b> (e 73, 170, 171, 176, 363), o valor dos dispositivos médicos implantáveis <b>(IVA incluído)</b> é <b>deduzido ao valor a distribuir à equipa</b>. <a class="art" href="portaria-281-2026.html#art5" target="_blank" title="Abrir o artigo 5.º da Portaria 281/2026/1 (transcrição com âncoras)">art. 5.º, n.º 10</a></li>
+      <li><b>Dedução do material:</b> nos GDH <b>301, 302, 303, 304, 310, 313, 321</b> (e 73, 170, 171, 176, 363), o valor dos dispositivos médicos implantáveis <b>(IVA incluído)</b> é <b>deduzido ao valor a distribuir à equipa</b>. A redação admite duas leituras — descontar o implante ao bolo e aplicar a % ao restante, «(GDH − implante) × %» (leitura adotada pelo CA), ou descontar o implante à verba já calculada da equipa, «GDH × % − implante» (leitura literal) — selecionável nos parâmetros globais. <a class="art" href="portaria-281-2026.html#art5" target="_blank" title="Abrir o artigo 5.º da Portaria 281/2026/1 (transcrição com âncoras)">art. 5.º, n.º 10</a></li>
       <li><b>Severidades:</b> paga-se pela <b>sev. 1</b>, exceto se a sev. 2 resultar <b>exclusivamente do diagnóstico e procedimento principais</b>; episódios concluídos em sev. 3/4 pagam-se pelo valor da <b>sev. 2</b>. Só contam diagnósticos presentes à admissão; complicações intra/pós-operatórias não elevam a severidade. <a class="art" href="portaria-281-2026.html#art5" target="_blank" title="Abrir o artigo 5.º da Portaria 281/2026/1 (transcrição com âncoras)">art. 5.º, n.º 4, al. b), ii; art. 2.º, n.os 3 e 6</a></li>
       <li><b>Fim da majoração ×1,2:</b> a majoração de procedimentos complexos desaparece na produção adicional interna; só há majorações pontuais e temporárias por decisão da DE-SNS com autorização ministerial. <a class="art" href="portaria-281-2026.html#art5" target="_blank" title="Abrir o artigo 5.º da Portaria 281/2026/1 (transcrição com âncoras)">art. 5.º, n.º 2</a></li>
       <li><b>Múltiplos procedimentos independentes:</b> acresce <b>45%</b> do valor dos GDH adicionais, até <b>+60%</b> do GDH principal (mesma equipa) ou <b>+100%</b> (equipa de especialidade diferente). <a class="art" href="portaria-281-2026.html#art2" target="_blank" title="Abrir o artigo 2.º da Portaria 281/2026/1 (transcrição com âncoras)">art. 2.º, n.º 8, al. c)</a></li>
@@ -332,8 +356,8 @@ footer { margin-top: 30px; font-size: 11px; color: var(--ink-muted); line-height
 // deduz: lista do art. 5.º n.º 10 / art. 9.º n.º 10 da Portaria 281/2026/1.
 const GDH = [
   {g:26,  nome:'Canal cárpico (outros proc. do sistema nervoso)', area:'mão', oi1:1381.33, oi2:2857.39, oa1:1381.33, oa2:2857.39, ni1:2226.25, ni2:3398.94, na1:2226.25, na2:3398.94, deduz:false, cx:false, mat:0},
-  {g:301, nome:'Substituição da articulação da anca', area:'anca',   oi1:4484.54, oi2:5351.01, oa1:4386.89, oa2:null,    ni1:5074.34, ni2:6053.53, na1:4976.69, na2:null,     deduz:true,  cx:true,  mat:1599},
-  {g:302, nome:'Substituição da articulação do joelho', area:'joelho', oi1:4378.70, oi2:5116.15, oa1:4232.75, oa2:4535.73, ni1:4987.11, ni2:6612.12, na1:4841.16, na2:6418.61, deduz:true,  cx:true,  mat:1750, matAmb:1968},
+  {g:301, nome:'Substituição da articulação da anca', area:'anca',   oi1:4484.54, oi2:5351.01, oa1:4386.89, oa2:null,    ni1:5074.34, ni2:6053.53, na1:4976.69, na2:null,     deduz:true,  cx:true,  mat:1602.69},
+  {g:302, nome:'Substituição da articulação do joelho', area:'joelho', oi1:4378.70, oi2:5116.15, oa1:4232.75, oa2:4535.73, ni1:4987.11, ni2:6612.12, na1:4841.16, na2:6418.61, deduz:true,  cx:true,  mat:1152.20, matAmb:1968},
   {g:303, nome:'Artrodese dorsal e/ou lombar p/ curvatura vertebral', area:'raquis', oi1:5577.69, oi2:7847.38, oa1:5418.19, oa2:null, ni1:6412.58, ni2:7717.20, na1:6253.08, na2:null,    deduz:true,  cx:true,  mat:0},
   {g:304, nome:'Artrodese dorsal e/ou lombar, exceto curvatura', area:'raquis', oi1:3846.75, oi2:6013.67, oa1:3205.63, oa2:5083.44, ni1:4231.42, ni2:6934.75, na1:3526.19, na2:6704.99, deduz:true,  cx:true,  mat:0},
   {g:305, nome:'Amputação de membros inferiores exceto dedos', area:'geral', oi1:3445.55, oi2:4667.80, oa1:3445.55, oa2:4667.80, ni1:3972.55, ni2:5076.71, na1:3972.55, na2:5076.71, deduz:false, cx:false, mat:0},
@@ -519,8 +543,22 @@ const SLV = {gPct: 'gPctV', gPctOld: 'gPctOldV', gP2: 'gP2V', gP34: 'gP34V'};
 function syncSlv() {
   Object.entries(SLV).forEach(([i, v]) => document.getElementById(v).textContent = G(i).toLocaleString('pt-PT') + '%');
 }
-['gPct','gPctOld','gIntCost','gAmbCost','gSala','gFracInt','gFracAmb','gP2','gP34','gDias','gCompRate','gCompCost'].forEach(id =>
+['gPct','gPctOld','gIntCost','gAmbCost','gSala','gFracInt','gFracAmb','gP2','gP34','gDias','gCompRate','gCompCost','gInflPct'].forEach(id =>
   document.getElementById(id).addEventListener('input', () => { syncSlv(); render(); }));
+
+// leitura do art. 5.º, n.º 10 (dedução dos implantes) e inflação sobre os valores antigos
+let dedMode = 'bolo'; // 'bolo' = (GDH − implante) × % (leitura do CA) · 'equipa' = GDH × % − implante (leitura literal)
+let inflOn = false;
+document.querySelectorAll('#gDedMode button').forEach(b => b.onclick = () => {
+  dedMode = b.dataset.m;
+  document.querySelectorAll('#gDedMode button').forEach(x => x.classList.toggle('sel', x === b));
+  render();
+});
+document.getElementById('gInfl').onclick = () => {
+  inflOn = !inflOn;
+  document.getElementById('gInfl').classList.toggle('on', inflOn);
+  render();
+};
 
 // ---- cálculo por GDH ------------------------------------------------------
 function calc(d) {
@@ -539,11 +577,14 @@ function calc(d) {
   // no regime novo (art. 2.º, n.º 8, al. c da Portaria 281/2026/1) e no antigo (Portaria 207/2017)
   const nproc = s.nproc || 0;
   const fak = 1 + Math.min(nproc * 0.45, 0.60);
-  const eqOld1 = old1 !== null ? pctOld * old1 * majOld * fak : null;
-  const eqOld2 = old2 !== null ? pctOld * old2 * majOld * fak : null;
+  const inflF = inflOn ? 1 + G('gInflPct') / 100 : 1; // atualização dos preços antigos (2017) pela inflação
+  const eqOld1 = old1 !== null ? pctOld * old1 * majOld * fak * inflF : null;
+  const eqOld2 = old2 !== null ? pctOld * old2 * majOld * fak * inflF : null;
   const ded = d.deduz ? mat : 0;
-  const eqNov1 = nov1 !== null ? pct * nov1 * fak - ded : null;
-  const eqNov2 = nov2 !== null ? pct * nov2 * fak - ded : null;
+  // duas leituras do art. 5.º, n.º 10: 'bolo' = (GDH − implante) × % · 'equipa' = GDH × % − implante
+  const eqAt = (base, pctv) => ded ? (dedMode === 'bolo' ? (base - ded) * pctv : base * pctv - ded) : base * pctv;
+  const eqNov1 = nov1 !== null ? eqAt(nov1 * fak, pct) : null;
+  const eqNov2 = nov2 !== null ? eqAt(nov2 * fak, pct) : null;
 
   // mix de severidades (case-mix): sev2 por comorbilidades paga sev1 à equipa interna,
   // mas sev2 ao destino na externalização (art. 8.º n.º 1 vs art. 5.º n.º 4 b) ii)
@@ -562,8 +603,11 @@ function calc(d) {
   const sala = G('gSala') + mat + (eqMix !== null ? eqMix * fracSala : 0);
 
   // indicadores de gestão
-  const pctIgualar = (eqOld1 !== null && nov1) ? (eqOld1 + ded) / (nov1 * fak) : null;
-  const eqMix80 = nov1 === null ? null : (p1 + p2) * (0.8 * nov1 * fak - ded) + p34 * (0.8 * nov2eff * fak - ded);
+  const pctIgualar = (eqOld1 !== null && nov1) ?
+    (ded && dedMode === 'bolo'
+      ? (nov1 * fak - ded > 0 ? eqOld1 / (nov1 * fak - ded) : null)
+      : (eqOld1 + ded) / (nov1 * fak)) : null;
+  const eqMix80 = nov1 === null ? null : (p1 + p2) * eqAt(nov1 * fak, 0.8) + p34 * eqAt(nov2eff * fak, 0.8);
   const interno80 = eqMix80 === null ? null : eqMix80 + mat + custos;
   const sev2Extra = nov2 !== null ? (nov2 - nov1) * fak * maj : null; // custo extra por comórbido externalizado
   const dias = Math.max(1, G('gDias'));
@@ -656,9 +700,16 @@ function render() {
     const pTxt = v => (v * 100).toLocaleString('pt-PT') + '%';
     const fakTxt = r.nproc ? ` × ${r.fak.toLocaleString('pt-PT')} (${r.nproc} proc. associado${r.nproc > 1 ? 's' : ''}: +45% cada, teto +60% — art. 2.º, n.º 8, al. c)` : '';
     const fakOldTxt = r.nproc ? ` × ${r.fak.toLocaleString('pt-PT')} (${r.nproc} proc. associado${r.nproc > 1 ? 's' : ''}: +45% cada, teto +60% — regra idêntica na Portaria 207/2017)` : '';
-    const fOld = sev => `${pctOldTxt}% × ${fmt(sev === 1 ? r.old1 : r.old2)} (GDH antigo, sev. ${sev})${s.cxOld ? ' × 1,2 (complexo)' : ''}${fakOldTxt} = ${fmt(sev === 1 ? r.eqOld1 : r.eqOld2)}`;
+    const inflTxt = inflOn ? ` × ${(1 + G('gInflPct') / 100).toLocaleString('pt-PT')} (inflação 2017→2026)` : '';
+    const fOld = sev => `${pctOldTxt}% × ${fmt(sev === 1 ? r.old1 : r.old2)} (GDH antigo, sev. ${sev})${s.cxOld ? ' × 1,2 (complexo)' : ''}${fakOldTxt}${inflTxt} = ${fmt(sev === 1 ? r.eqOld1 : r.eqOld2)}`;
     const fNov = sev => { const res = sev === 1 ? r.eqNov1 : r.eqNov2;
-      return `${pctTxt}% × ${fmt(sev === 1 ? r.nov1 : r.nov2)} (col. ${r.amb ? 'P' : 'O'}, sev. ${sev})${fakTxt}${r.ded ? ` − ${fmt(r.ded)} material c/ IVA (art. 5.º, n.º 10)` : ''} = ${fmt(res)}${res !== null && res < 0 ? ' — ⚠ o material excede a verba da equipa' : ''}`; };
+      const baseTxt = `${fmt(sev === 1 ? r.nov1 : r.nov2)} (col. ${r.amb ? 'P' : 'O'}, sev. ${sev})${fakTxt}`;
+      const core = r.ded
+        ? (dedMode === 'bolo'
+          ? `${pctTxt}% × [${baseTxt} − ${fmt(r.ded)} material c/ IVA] — leitura: implante descontado ao bolo (art. 5.º, n.º 10)`
+          : `${pctTxt}% × ${baseTxt} − ${fmt(r.ded)} material c/ IVA — leitura: implante descontado à equipa (art. 5.º, n.º 10)`)
+        : `${pctTxt}% × ${baseTxt}`;
+      return `${core} = ${fmt(res)}${res !== null && res < 0 ? ' — ⚠ o material excede a verba da equipa' : ''}`; };
     const fInt = `equipa mix: ${pTxt(r.p1 + r.p2)} × ${fmt(r.eqNov1)} (sev. paga 1) + ${pTxt(r.p34)} × ${fmt(r.eqNov2eff)} (sev. paga 2) = ${fmt(r.eqMix)}; + material ${fmt(r.mat)} + custos internos ${fmt(r.custos)} = ${fmt(r.interno)}<span class="nota">A sev. 2 por comorbilidades paga-se à equipa pela sev. 1 (art. 5.º, n.º 4).</span>`;
     const fExt = `${pTxt(r.p1)} × ${fmt(r.nov1)} (sev. 1) + ${pTxt(r.p2 + r.p34)} × ${fmt(r.nov2eff)} (sev. 2)${fakTxt}${s.cxNew ? ', × 1,2 (especial complexidade)' : ''}${r.externExtra ? `, + ${fmt(r.externExtra)} dispositivo (art. 9.º, n.º 1)` : ''}${r.compExtra ? `, + ${G('gCompRate').toLocaleString('pt-PT')}% × ${fmt(G('gCompCost'))} risco de complicações` : ''} = ${fmt(r.extern)}<span class="nota">A sev. 2 por comorbilidades paga-se ao destino pela sev. 2 (art. 8.º, n.º 1). ${d.deduz ? 'Prótese incluída no preço — por conta do destino (art. 9.º, n.º 10).' : (r.externExtra ? 'Inclui dispositivo pago pela origem (art. 9.º, n.º 1).' : 'Preço compreensivo: inclui pré-op., estadia e 2 meses de seguimento.')}${r.compExtra ? ' O risco de complicações tardias (após os 2 meses cobertos) recai na origem — taxa e custo editáveis nos parâmetros globais.' : ''}</span>`;
     const fSala = `${fmt(G('gSala'))} sala + ${fmt(r.mat)} material + ${(r.amb ? G('gFracAmb') : G('gFracInt')).toLocaleString('pt-PT')}% × ${fmt(r.eqMix)} equipa mix = ${fmt(r.sala)}<span class="nota">O hospital paga apenas cirurgiões + instrumentistas; anestesia e enfermagem de sala incluídas no preço da sala.</span>`;
