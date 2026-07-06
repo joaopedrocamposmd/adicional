@@ -250,7 +250,8 @@ footer { margin-top: 30px; font-size: 11px; color: var(--ink-muted); line-height
       <div class="group-title">Produção adicional</div>
       <div class="globals">
         <div class="field"><label>% equipa — regime antigo:<span class="slval" id="gPctOldV">45%</span></label><input type="range" id="gPctOld" value="45" min="35" max="55" step="10"></div>
-        <div class="field"><label>% equipa por defeito — novo (CA fixa 20–80%):<span class="slval" id="gPctV">45%</span></label><input type="range" id="gPct" value="45" min="20" max="80" step="5"></div>
+        <div class="field"><label>% equipa novo — GDH com dedução de implantes:<span class="slval" id="gPctDedV">45%</span></label><input type="range" id="gPctDed" value="45" min="20" max="80" step="5"></div>
+        <div class="field"><label>% equipa novo — GDH sem dedução:<span class="slval" id="gPctNDV">45%</span></label><input type="range" id="gPctND" value="45" min="20" max="80" step="5"></div>
       </div>
       <div class="globals" style="margin-top:12px">
         <div class="field" style="grid-column: span 2; min-width: 320px"><label>Dedução dos implantes à equipa (art. 5.º, n.º 10 — duas leituras)</label>
@@ -266,6 +267,14 @@ footer { margin-top: 30px; font-size: 11px; color: var(--ink-muted); line-height
       </div>
       <div class="group-note"><b>Dedução dos implantes</b> — o art. 5.º, n.º 10 admite duas leituras: «(GDH − implante) × %» desconta o implante ao bolo e a equipa recebe a percentagem do restante (leitura adotada pelo CA); «GDH × % − implante» desconta o implante à verba da equipa (leitura literal). <b>Inflação</b> — os preços da Portaria 207/2017 nunca foram atualizados; o IPC acumulado desde julho de 2017 é ≈ 22–23% (INE, taxas médias anuais). Com o interruptor ativo, os valores «antes» são multiplicados por (1 + taxa) para comparação a preços de hoje.</div>
     </div>
+    <div class="group">
+      <div class="group-title">Mix de severidades (case-mix do serviço)</div>
+      <div class="globals">
+        <div class="field"><label>% de doentes concluídos em sev. 2 por comorbilidades:<span class="slval" id="gP2V">25%</span></label><input type="range" id="gP2" value="25" min="0" max="60" step="5"></div>
+        <div class="field"><label>% de doentes em sev. 3/4:<span class="slval" id="gP34V">5%</span></label><input type="range" id="gP34" value="5" min="0" max="30" step="5"></div>
+      </div>
+      <div class="group-note">Na externalização pagam-se severidades 1 e 2 — a sev. 2 <b>por comorbilidades</b> é paga ao hospital de destino (art. 8.º, n.º 1); às equipas internas paga-se a sev. 1, salvo se a sev. 2 resultar do diagnóstico + procedimento principais (art. 5.º, n.º 4). Sev. 3/4 pagam-se pela sev. 2 em ambos os casos. No regime antigo pagava-se a severidade codificada (1 ou 2), sem restrição de origem. Os «Antes/Agora» da tabela e o «custo esperado por episódio» nos cartões refletem este mix.</div>
+    </div>
     <details class="group" id="custosGroup">
       <summary class="group-title">Contabilização de custos por episódio</summary>
       <div class="subgroup">
@@ -274,14 +283,6 @@ footer { margin-top: 30px; font-size: 11px; color: var(--ink-muted); line-height
           <div class="field"><label>Custos internos por defeito — internamento (€)</label><input type="number" id="gIntCost" value="1500" min="0" step="50"></div>
           <div class="field"><label>Custos internos por defeito — ambulatório (€)</label><input type="number" id="gAmbCost" value="500" min="0" step="50"></div>
         </div>
-      </div>
-      <div class="subgroup">
-      <div class="group-title">Mix de severidades (case-mix do serviço)</div>
-      <div class="globals">
-        <div class="field"><label>% de doentes concluídos em sev. 2 por comorbilidades:<span class="slval" id="gP2V">25%</span></label><input type="range" id="gP2" value="25" min="0" max="60" step="5"></div>
-        <div class="field"><label>% de doentes em sev. 3/4:<span class="slval" id="gP34V">5%</span></label><input type="range" id="gP34" value="5" min="0" max="30" step="5"></div>
-      </div>
-      <div class="group-note">Na externalização pagam-se severidades 1 e 2 — a sev. 2 <b>por comorbilidades</b> é paga ao hospital de destino (art. 8.º, n.º 1); às equipas internas paga-se a sev. 1, salvo se a sev. 2 resultar do diagnóstico + procedimento principais (art. 5.º, n.º 4). Sev. 3/4 pagam-se pela sev. 2 em ambos os casos. O «custo esperado por episódio» nos cartões reflete este mix.</div>
       </div>
       <div class="subgroup">
       <div class="group-title">Complicações tardias (dados do hospital — editar)</div>
@@ -317,7 +318,7 @@ footer { margin-top: 30px; font-size: 11px; color: var(--ink-muted); line-height
   <div class="glass panel">
     <h2><span class="eyebrow" style="margin:0">GDH ortopédicos — selecionar para analisar</span></h2>
     <div id="gdhTable" style="overflow:auto; background: rgba(255,255,255,.85); border: 1px solid var(--rule); border-radius: var(--radius-md);"></div>
-    <div class="group-note">Clique numa linha para abrir/fechar o cartão de análise detalhada. Valores de <b>severidade 1</b>, no regime por defeito de cada GDH; as linhas com cartão aberto seguem os ajustes desse cartão (regime, %, majorações). O valor dos implantes é editável aqui e no cartão — sincronizados. «Antes/Agora» refletem o perfil escolhido acima (equipa completa ou elemento individual).</div>
+    <div class="group-note">Clique numa linha para abrir/fechar o cartão de análise detalhada. «Antes/Agora» são <b>valores esperados por episódio com o mix de severidades</b> (parâmetros acima): no antigo pagava-se a severidade codificada; no novo, a sev. 2 por comorbilidades paga-se pela sev. 1. Linhas com cartão aberto seguem os ajustes desse cartão (regime, %, majorações); as restantes seguem os defeitos (% conforme o GDH tem ou não dedução de implantes). O valor dos implantes é editável aqui e no cartão — sincronizados. Os valores refletem o perfil escolhido acima.</div>
   </div>
 
   <div id="cards"></div>
@@ -553,17 +554,30 @@ function renderTable() {
     ds.forEach(d => {
       const s = state[d.g], r = calc(d);
       const sh = roleShare(r.amb), f = sh === null ? 1 : sh;
-      const a = r.eqOld1 === null ? null : r.eqOld1 * f;
-      const g2 = r.eqNov1 === null ? null : r.eqNov1 * f;
+      const a = r.eqOldMix === null ? null : r.eqOldMix * f;
+      const g2 = r.eqMix === null ? null : r.eqMix * f;
       const dl = a !== null && g2 !== null ? g2 - a : null;
       const n = s.ns || 0;
       tN += n; if (a !== null) tA += a * n; if (g2 !== null) tG += g2 * n;
+      const pTxt = v => (v * 100).toLocaleString('pt-PT') + '%';
+      const shTxt = f === 1 ? '' : `, × ${roleDesc(r.amb)}`;
+      const pctTxtN = (r.pct * 100).toLocaleString('pt-PT'), pctTxtO = (r.pctOld * 100).toLocaleString('pt-PT');
+      const fakT = r.nproc ? ` × ${r.fak.toLocaleString('pt-PT')} (${r.nproc} proc. assoc.)` : '';
+      const inflT = inflOn ? ` × ${(1 + G('gInflPct') / 100).toLocaleString('pt-PT')} (inflação)` : '';
+      const oldTerm = base => `${pctTxtO}% × ${fmt(base)}${s.cxOld ? ' × 1,2 (complexo)' : ''}${fakT}${inflT}`;
+      const novTerm = base => r.ded
+        ? (dedMode === 'bolo'
+          ? `${pctTxtN}% × (${fmt(base)}${fakT} − ${fmt(r.ded)} implante)`
+          : `${pctTxtN}% × ${fmt(base)}${fakT} − ${fmt(r.ded)} implante`)
+        : `${pctTxtN}% × ${fmt(base)}${fakT}`;
+      const fA = `${pTxt(r.p1)} × [${oldTerm(r.old1)}] (sev. 1) + ${pTxt(r.p2 + r.p34)} × [${oldTerm(r.old2 !== null ? r.old2 : r.old1)}] (sev. 2)${shTxt} = ${fmt(a)}<span class="nota">GDH antigo (col. SIGIC ${r.amb ? 'ambulatório' : 'internamento'}, APR31): sev. 1 ${fmt(r.old1)} · sev. 2 ${fmt(r.old2 !== null ? r.old2 : r.old1)}. Pagava-se a severidade codificada (1 ou 2), sem restrição de origem.</span>`;
+      const fG = `${pTxt(r.p1 + r.p2)} × [${novTerm(r.nov1)}] (sev. paga 1) + ${pTxt(r.p34)} × [${novTerm(r.nov2eff)}] (sev. paga 2)${shTxt} = ${fmt(g2)}<span class="nota">GDH novo (col. ${r.amb ? 'P' : 'O'}, APR36): sev. 1 ${fmt(r.nov1)} · sev. 2 ${fmt(r.nov2eff)}. A sev. 2 por comorbilidades paga-se à equipa pela sev. 1 (art. 5.º, n.º 4); sev. 3/4 pela sev. 2.</span>`;
       rows += `<tr class="grow${s.on ? ' onrow' : ''}" data-g="${d.g}">
         <td>${d.g}</td>
         <td style="white-space:normal;text-align:left;font-family:var(--font-sans)">${d.nome} <span class="muted" style="font-size:10.5px">· ${r.amb ? 'amb.' : 'int.'}</span></td>
         <td>${d.deduz ? `<input type="number" class="tmat" data-g="${d.g}" value="${s.mat}" min="0" step="10" style="width:92px">` : ''}</td>
-        <td>${a === null ? '—' : fmt(a)}</td>
-        <td>${g2 === null ? '—' : fmt(g2)}</td>
+        <td>${a === null ? '—' : F(fmt(a), fA)}</td>
+        <td>${g2 === null ? '—' : F(fmt(g2), fG)}</td>
         <td class="${dl === null ? '' : cls(dl)}">${dl === null ? '—' : fmtD(dl)}</td>
         <td class="${dl === null ? '' : cls(dl)}">${dl === null || !a ? '—' : fmtP(dl / a)}</td>
         <td><input type="number" class="tns" data-g="${d.g}" value="${n}" min="0" step="1" style="width:64px"></td>
@@ -613,11 +627,11 @@ function decorateSliders(root) {
   });
 }
 
-const SLV = {gPct: 'gPctV', gPctOld: 'gPctOldV', gP2: 'gP2V', gP34: 'gP34V'};
+const SLV = {gPctOld: 'gPctOldV', gPctDed: 'gPctDedV', gPctND: 'gPctNDV', gP2: 'gP2V', gP34: 'gP34V'};
 function syncSlv() {
   Object.entries(SLV).forEach(([i, v]) => document.getElementById(v).textContent = G(i).toLocaleString('pt-PT') + '%');
 }
-['gPct','gPctOld','gIntCost','gAmbCost','gSala','gFracInt','gFracAmb','gP2','gP34','gDias','gCompRate','gCompCost','gInflPct'].forEach(id =>
+['gPctOld','gPctDed','gPctND','gIntCost','gAmbCost','gSala','gFracInt','gFracAmb','gP2','gP34','gDias','gCompRate','gCompCost','gInflPct'].forEach(id =>
   document.getElementById(id).addEventListener('input', () => { syncSlv(); render(); }));
 
 // leitura do art. 5.º, n.º 10 (dedução dos implantes) e inflação sobre os valores antigos
@@ -638,7 +652,7 @@ document.getElementById('gInfl').onclick = () => {
 function calc(d) {
   const s = state[d.g];
   const amb = s.amb;
-  const pct = (s.pct === null ? G('gPct') : s.pct) / 100;
+  const pct = (s.pct === null ? G(d.deduz ? 'gPctDed' : 'gPctND') : s.pct) / 100;
   const pctOld = G('gPctOld') / 100;
   const mat = s.mat || 0;
   const custos = s.custos === null ? (amb ? G('gAmbCost') : G('gIntCost')) : s.custos;
@@ -666,6 +680,9 @@ function calc(d) {
   const nov2eff = nov2 !== null ? nov2 : nov1;
   const eqNov2eff = eqNov2 !== null ? eqNov2 : eqNov1;
   const eqMix = eqNov1 === null ? null : (p1 + p2) * eqNov1 + p34 * eqNov2eff;
+  // regime antigo: pagava-se a severidade codificada (1 ou 2), sem restrição de origem
+  const eqOld2eff = eqOld2 !== null ? eqOld2 : eqOld1;
+  const eqOldMix = eqOld1 === null ? null : p1 * eqOld1 + (p2 + p34) * eqOld2eff;
 
   // hospital — custo esperado por episódio com o mix
   const maj = s.cxNew ? 1.2 : 1;
@@ -689,7 +706,7 @@ function calc(d) {
   const diariaBE = deltaSala / dias;
 
   return {amb, pct, pctOld, mat, custos, old1, old2, nov1, nov2, nov2eff, eqOld1, eqOld2, eqNov1, eqNov2, eqNov2eff,
-          p1, p2, p34, eqMix, interno, extern, externExtra, compExtra, sala, ded, nproc, fak,
+          p1, p2, p34, eqMix, eqOldMix, eqOld2eff, interno, extern, externExtra, compExtra, sala, ded, nproc, fak,
           pctIgualar, interno80, sev2Extra, dias, deltaSala, diariaBE};
 }
 
