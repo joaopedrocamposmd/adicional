@@ -50,6 +50,13 @@ body {
 .brand-logo { height: 32px; width: auto; display: block; }
 h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; margin: 0 0 6px; }
 h1 em { font-style: normal; font-weight: 600; color: var(--color-primary); }
+select.hsel {
+  font: 700 26px var(--font-sans); letter-spacing: -0.5px; color: var(--color-primary);
+  background: transparent; border: none; border-bottom: 2px dotted var(--color-primary);
+  padding: 0 2px 1px; cursor: pointer; min-height: 0; width: auto; text-align: left;
+  -webkit-appearance: none; appearance: none;
+}
+select.hsel:focus { outline: none; box-shadow: none; border-bottom-style: solid; }
 .sub { color: var(--ink-soft); font-size: 13.5px; margin: 0 0 24px; max-width: 900px; line-height: 1.55; }
 .sub b { color: var(--ink); }
 
@@ -241,7 +248,7 @@ footer { margin-top: 30px; font-size: 11px; color: var(--ink-muted); line-height
     </svg>
   </a>
 
-  <h1>Produção adicional <em>SINACC</em> — Ortopedia</h1>
+  <h1>Produção adicional <em>SINACC</em> — <select id="espDrop" class="hsel" title="Escolher especialidade"></select></h1>
   <p class="sub">Comparador do regime antigo (Portaria n.º 207/2017, SIGIC) com o novo regime em vigor desde <b>1 de julho de 2026</b> (<a href="https://diariodarepublica.pt/dr/detalhe/portaria/274-2026-1138714124" target="_blank" rel="noopener">Portaria n.º 274/2026/1</a> — tabelas de preços APR36; <a href="https://diariodarepublica.pt/dr/detalhe/portaria/281-2026-1139897695" target="_blank" rel="noopener">Portaria n.º 281/2026/1</a> — regras de pagamento da produção adicional e externalizada, ao abrigo do <a href="https://diariodarepublica.pt/dr/detalhe/decreto-lei/12-2026-1019913911" target="_blank" rel="noopener">DL n.º 12/2026</a> — SINACC). Selecione os GDH, ajuste material, regime e percentagem da equipa; passe o rato (ou toque) no <span class="u-info" style="margin:0 1px"><i>i</i></span> junto a cada valor para ver a fórmula completa. As citações de artigos (ex.: <a class="art" href="portaria-281-2026.html#art5" target="_blank" title="Abrir o artigo 5.º da Portaria 281/2026/1 (transcrição com âncoras)">art. 5.º</a>) saltam diretamente para o artigo no <a href="portaria-281-2026.html" target="_blank">texto integral da Portaria 281/2026/1</a> (transcrição anotada, com ligação ao texto oficial do DR) — o sítio do Diário da República não permite ligação direta a cada artigo.</p>
 
   <div class="glass panel">
@@ -316,7 +323,7 @@ footer { margin-top: 30px; font-size: 11px; color: var(--ink-muted); line-height
   </div>
 
   <div class="glass panel">
-    <h2><span class="eyebrow" style="margin:0">GDH ortopédicos — selecionar para analisar</span></h2>
+    <h2><span class="eyebrow" style="margin:0">GDH da especialidade — selecionar para analisar</span></h2>
     <div id="gdhTable" style="overflow:auto; background: rgba(255,255,255,.85); border: 1px solid var(--rule); border-radius: var(--radius-md);"></div>
     <div class="group-note">Clique numa linha para abrir/fechar o cartão de análise detalhada. «Antes/Agora» são <b>valores esperados por episódio com o mix de severidades</b> (parâmetros acima): no antigo pagava-se a severidade codificada; no novo, a sev. 2 por comorbilidades paga-se pela sev. 1. Linhas com cartão aberto seguem os ajustes desse cartão (regime, %, majorações); as restantes seguem os defeitos (% conforme o GDH tem ou não dedução de implantes). O valor dos implantes é editável aqui e no cartão — sincronizados. Os valores refletem o perfil escolhido acima.</div>
   </div>
@@ -370,24 +377,97 @@ footer { margin-top: 30px; font-size: 11px; color: var(--ink-muted); line-height
 // old*: Portaria 207/2017 (APR31). new*: colunas O/P da Portaria 274/2026/1 (APR36).
 // deduz: lista do art. 5.º n.º 10 / art. 9.º n.º 10 da Portaria 281/2026/1.
 const GDH = [
-  {g:26,  nome:'Canal cárpico (outros proc. do sistema nervoso)', area:'mão', oi1:1381.33, oi2:2857.39, oa1:1381.33, oa2:2857.39, ni1:2226.25, ni2:3398.94, na1:2226.25, na2:3398.94, deduz:false, cx:false, mat:0},
-  {g:301, nome:'Substituição da articulação da anca', area:'anca',   oi1:4484.54, oi2:5351.01, oa1:4386.89, oa2:null,    ni1:5074.34, ni2:6053.53, na1:4976.69, na2:null,     deduz:true,  cx:true,  mat:1602.69},
-  {g:302, nome:'Substituição da articulação do joelho', area:'joelho', oi1:4378.70, oi2:5116.15, oa1:4232.75, oa2:4535.73, ni1:4987.11, ni2:6612.12, na1:4841.16, na2:6418.61, deduz:true,  cx:true,  mat:1156.20, matAmb:1968},
-  {g:303, nome:'Artrodese dorsal e/ou lombar p/ curvatura vertebral', area:'raquis', oi1:5577.69, oi2:7847.38, oa1:5418.19, oa2:null, ni1:6412.58, ni2:7717.20, na1:6253.08, na2:null,    deduz:true,  cx:true,  mat:553.50},
-  {g:304, nome:'Artrodese dorsal e/ou lombar, exceto curvatura', area:'raquis', oi1:3846.75, oi2:6013.67, oa1:3205.63, oa2:5083.44, ni1:4231.42, ni2:6934.75, na1:3526.19, na2:6704.99, deduz:true,  cx:true,  mat:553.50},
-  {g:305, nome:'Amputação de membros inferiores exceto dedos', area:'geral', oi1:3445.55, oi2:4667.80, oa1:3445.55, oa2:4667.80, ni1:3972.55, ni2:5076.71, na1:3972.55, na2:5076.71, deduz:false, cx:false, mat:0},
-  {g:308, nome:'Proc. anca/fémur por traumatismo, exceto substituição', area:'anca', oi1:2828.37, oi2:3676.88, oa1:2828.37, oa2:null, ni1:3276.32, ni2:4101.63, na1:3276.32, na2:null,    deduz:false, cx:false, mat:0},
-  {g:309, nome:'Proc. anca/fémur não traumáticos, exceto substituição', area:'anca', oi1:2196.34, oi2:4844.20, oa1:2196.34, oa2:4844.20, ni1:3858.56, ni2:9419.54, na1:3858.56, na2:9419.54, deduz:false, cx:false, mat:0},
-  {g:310, nome:'Excisão e/ou descompressão de disco intervertebral', area:'raquis', oi1:1962.72, oi2:2435.35, oa1:1686.36, oa2:2435.35, ni1:2195.35, ni2:3269.30, na1:1918.98, na2:2857.73, deduz:true, cx:false, mat:0},
-  {g:312, nome:'Enxerto de pele (exceto mão), sist. músculo-esquelético', area:'geral', oi1:3323.63, oi2:9902.28, oa1:3325.13, oa2:9902.28, ni1:3657.65, ni2:10570.97, na1:3657.65, na2:10570.97, deduz:false, cx:false, mat:0},
-  {g:313, nome:'Procedimentos no joelho e/ou perna, exceto no pé', area:'joelho', oi1:1275.37, oi2:3504.73, oa1:1266.96, oa2:3504.73, ni1:2064.00, ni2:3975.99, na1:2064.00, na2:3975.99, deduz:true, cx:false, mat:467.40},
-  {g:314, nome:'Procedimentos no pé e/ou dedos', area:'pé', oi1:1325.25, oi2:3098.69, oa1:1150.41, oa2:3098.69, ni1:1751.68, ni2:3168.18, na1:1751.68, na2:3168.18, deduz:false, cx:false, mat:0},
-  {g:315, nome:'Procedimentos no ombro, braço e/ou antebraço', area:'ombro', oi1:1168.05, oi2:2860.20, oa1:1075.75, oa2:2537.95, ni1:1949.37, ni2:3539.34, na1:1949.37, na2:3539.34, deduz:false, cx:false, mat:0},
-  {g:316, nome:'Procedimentos na mão e/ou punho', area:'mão', oi1:921.31, oi2:2166.18, oa1:921.31, oa2:2166.18, ni1:1485.39, ni2:2383.84, na1:1485.39, na2:2383.84, deduz:false, cx:false, mat:0},
-  {g:317, nome:'Procedimentos no tendão, músculo e/ou tecidos moles', area:'geral', oi1:1063.03, oi2:2958.16, oa1:1063.03, oa2:2958.16, ni1:1684.62, ni2:4104.45, na1:1684.62, na2:4104.45, deduz:false, cx:false, mat:0},
-  {g:320, nome:'Outros proc. sist. músculo-esquelético / tecido conjuntivo', area:'geral', oi1:1127.18, oi2:4250.79, oa1:1101.26, oa2:4250.79, ni1:1851.27, ni2:3384.45, na1:1851.27, na2:3384.45, deduz:false, cx:false, mat:0},
-  {g:321, nome:'Artrodese cervical / outros proc. dorso-pescoço', area:'raquis', oi1:2233.02, oi2:3633.61, oa1:1978.81, oa2:3633.61, ni1:2953.53, ni2:5304.96, na1:2953.53, na2:5304.96, deduz:true, cx:false, mat:473.55},
+  {esp:'ortopedia', g:26,  nome:'Canal cárpico (outros proc. do sistema nervoso)', area:'mão', oi1:1381.33, oi2:2857.39, oa1:1381.33, oa2:2857.39, ni1:2226.25, ni2:3398.94, na1:2226.25, na2:3398.94, amb0:true, deduz:false, cx:false, mat:0},
+  {esp:'ortopedia', g:301, nome:'Substituição da articulação da anca', area:'anca',   oi1:4484.54, oi2:5351.01, oa1:4386.89, oa2:null,    ni1:5074.34, ni2:6053.53, na1:4976.69, na2:null,     compl0:true, deduz:true,  cx:true,  mat:1602.69},
+  {esp:'ortopedia', g:302, nome:'Substituição da articulação do joelho', area:'joelho', oi1:4378.70, oi2:5116.15, oa1:4232.75, oa2:4535.73, ni1:4987.11, ni2:6612.12, na1:4841.16, na2:6418.61, compl0:true, deduz:true,  cx:true,  vol0:150, mat:1156.20, matAmb:1968},
+  {esp:'ortopedia', g:303, nome:'Artrodese dorsal e/ou lombar p/ curvatura vertebral', area:'raquis', oi1:5577.69, oi2:7847.38, oa1:5418.19, oa2:null, ni1:6412.58, ni2:7717.20, na1:6253.08, na2:null,    deduz:true,  cx:true,  mat:553.50},
+  {esp:'ortopedia', g:304, nome:'Artrodese dorsal e/ou lombar, exceto curvatura', area:'raquis', oi1:3846.75, oi2:6013.67, oa1:3205.63, oa2:5083.44, ni1:4231.42, ni2:6934.75, na1:3526.19, na2:6704.99, deduz:true,  cx:true,  mat:553.50},
+  {esp:'ortopedia', g:305, nome:'Amputação de membros inferiores exceto dedos', area:'geral', oi1:3445.55, oi2:4667.80, oa1:3445.55, oa2:4667.80, ni1:3972.55, ni2:5076.71, na1:3972.55, na2:5076.71, deduz:false, cx:false, mat:0},
+  {esp:'ortopedia', g:308, nome:'Proc. anca/fémur por traumatismo, exceto substituição', area:'anca', oi1:2828.37, oi2:3676.88, oa1:2828.37, oa2:null, ni1:3276.32, ni2:4101.63, na1:3276.32, na2:null,    deduz:false, cx:false, mat:0},
+  {esp:'ortopedia', g:309, nome:'Proc. anca/fémur não traumáticos, exceto substituição', area:'anca', oi1:2196.34, oi2:4844.20, oa1:2196.34, oa2:4844.20, ni1:3858.56, ni2:9419.54, na1:3858.56, na2:9419.54, deduz:false, cx:false, mat:0},
+  {esp:'ortopedia', g:310, nome:'Excisão e/ou descompressão de disco intervertebral', area:'raquis', oi1:1962.72, oi2:2435.35, oa1:1686.36, oa2:2435.35, ni1:2195.35, ni2:3269.30, na1:1918.98, na2:2857.73, deduz:true, cx:false, mat:0},
+  {esp:'ortopedia', g:312, nome:'Enxerto de pele (exceto mão), sist. músculo-esquelético', area:'geral', oi1:3323.63, oi2:9902.28, oa1:3325.13, oa2:9902.28, ni1:3657.65, ni2:10570.97, na1:3657.65, na2:10570.97, deduz:false, cx:false, mat:0},
+  {esp:'ortopedia', g:313, nome:'Procedimentos no joelho e/ou perna, exceto no pé', area:'joelho', oi1:1275.37, oi2:3504.73, oa1:1266.96, oa2:3504.73, ni1:2064.00, ni2:3975.99, na1:2064.00, na2:3975.99, amb0:true, deduz:true, cx:false, vol0:50, mat:467.40},
+  {esp:'ortopedia', g:314, nome:'Procedimentos no pé e/ou dedos', area:'pé', oi1:1325.25, oi2:3098.69, oa1:1150.41, oa2:3098.69, ni1:1751.68, ni2:3168.18, na1:1751.68, na2:3168.18, deduz:false, cx:false, mat:0},
+  {esp:'ortopedia', g:315, nome:'Procedimentos no ombro, braço e/ou antebraço', area:'ombro', oi1:1168.05, oi2:2860.20, oa1:1075.75, oa2:2537.95, ni1:1949.37, ni2:3539.34, na1:1949.37, na2:3539.34, deduz:false, cx:false, mat:0},
+  {esp:'ortopedia', g:316, nome:'Procedimentos na mão e/ou punho', area:'mão', oi1:921.31, oi2:2166.18, oa1:921.31, oa2:2166.18, ni1:1485.39, ni2:2383.84, na1:1485.39, na2:2383.84, deduz:false, cx:false, mat:0},
+  {esp:'ortopedia', g:317, nome:'Procedimentos no tendão, músculo e/ou tecidos moles', area:'geral', oi1:1063.03, oi2:2958.16, oa1:1063.03, oa2:2958.16, ni1:1684.62, ni2:4104.45, na1:1684.62, na2:4104.45, deduz:false, cx:false, mat:0},
+  {esp:'ortopedia', g:320, nome:'Outros proc. sist. músculo-esquelético / tecido conjuntivo', area:'geral', oi1:1127.18, oi2:4250.79, oa1:1101.26, oa2:4250.79, ni1:1851.27, ni2:3384.45, na1:1851.27, na2:3384.45, deduz:false, cx:false, mat:0},
+  {esp:'ortopedia', g:321, nome:'Artrodese cervical / outros proc. dorso-pescoço', area:'raquis', oi1:2233.02, oi2:3633.61, oa1:1978.81, oa2:3633.61, ni1:2953.53, ni2:5304.96, na1:2953.53, na2:5304.96, deduz:true, cx:false, mat:473.55},
+  {esp:'urologia', g:442, nome:'Rim e vias urinárias — doença maligna', area:'rim e vias urinárias', oi1:3133.01, oi2:3402.82, oa1:2610.84, oa2:null, ni1:3638.84, ni2:4726.53, na1:3638.84, na2:null, deduz:false, cx:false, mat:0},
+  {esp:'urologia', g:443, nome:'Rim e vias urinárias — doença não maligna', area:'rim e vias urinárias', oi1:2044.97, oi2:3109.66, oa1:1451.23, oa2:3109.66, ni1:2340.65, ni2:3151.54, na1:2340.65, na2:3151.54, deduz:false, cx:false, mat:0},
+  {esp:'urologia', g:447, nome:'Outros proc. no rim e vias urinárias', area:'rim e vias urinárias', oi1:2300.3, oi2:2481.51, oa1:1422.15, oa2:2481.51, ni1:2179.1, ni2:3598.37, na1:2179.1, na2:3598.37, deduz:false, cx:false, mat:0},
+  {esp:'urologia', g:441, nome:'Procedimentos major na bexiga', area:'bexiga', oi1:2318.64, oi2:6238.96, oa1:null, oa2:null, ni1:3697.11, ni2:5589.32, na1:null, na2:null, deduz:false, cx:false, mat:0},
+  {esp:'urologia', g:445, nome:'Outros procedimentos na bexiga', area:'bexiga', oi1:1220.44, oi2:2139.45, oa1:971.38, oa2:2139.45, ni1:1526.45, ni2:2603.71, na1:1526.45, na2:2603.71, deduz:false, cx:false, mat:0},
+  {esp:'urologia', g:446, nome:'Procedimentos uretrais e/ou transuretrais', area:'uretra', oi1:834.3, oi2:1645.43, oa1:834.3, oa2:1645.43, ni1:1333.81, ni2:1809.81, na1:1333.81, na2:1809.81, deduz:false, cx:false, mat:0, amb0:true},
+  {esp:'urologia', g:480, nome:'Procedimentos major pélvicos masculinos', area:'próstata', oi1:2499.56, oi2:2878.64, oa1:2499.56, oa2:2878.64, ni1:2829.2, ni2:3405.82, na1:2829.2, na2:3405.82, deduz:false, cx:false, mat:0},
+  {esp:'urologia', g:482, nome:'Prostatectomia transuretral (RTU-P)', area:'próstata', oi1:1247.15, oi2:1568.86, oa1:1247.15, oa2:null, ni1:1434.26, ni2:1817.82, na1:1434.26, na2:null, deduz:false, cx:false, mat:0},
+  {esp:'urologia', g:483, nome:'Procedimentos nos testículos e/ou escroto', area:'testículo e escroto', oi1:970.13, oi2:3087.26, oa1:789.19, oa2:3087.26, ni1:1341.18, ni2:2414.65, na1:1341.18, na2:2414.65, deduz:false, cx:false, mat:0, amb0:true},
+  {esp:'urologia', g:484, nome:'Outros proc. do aparelho reprodutor masculino', area:'testículo e escroto', oi1:1677.42, oi2:2388.26, oa1:1677.42, oa2:2085.98, ni1:2066.99, ni2:2410.32, na1:2066.99, na2:2410.32, deduz:false, cx:false, mat:0, amb0:true},
+  {esp:'otorrinolaringologia', g:91, nome:'Procedimentos major na cabeça e/ou pescoço', area:'cabeça e pescoço', oi1:3839.8, oi2:5898.75, oa1:3629.04, oa2:null, ni1:4172.33, ni2:8140.61, na1:4172.33, na2:null, deduz:false, cx:false, mat:0},
+  {esp:'otorrinolaringologia', g:89, nome:'Procedimentos major nos ossos do crânio/face', area:'ossos da face', oi1:2804.84, oi2:5044.82, oa1:2804.84, oa2:5044.82, ni1:3085.32, ni2:4958.98, na1:3085.32, na2:4958.98, deduz:false, cx:false, mat:0},
+  {esp:'otorrinolaringologia', g:92, nome:'Procedimentos nos ossos da face (exceto major)', area:'ossos da face', oi1:2008.02, oi2:2979.64, oa1:1392.3, oa2:2979.64, ni1:2234.27, ni2:3355.74, na1:2168.05, na2:3256.28, deduz:false, cx:false, mat:0},
+  {esp:'otorrinolaringologia', g:95, nome:'Reparação de fenda labial e/ou do palato', area:'boca e palato', oi1:1400.01, oi2:1928.08, oa1:1029.6, oa2:1928.08, ni1:2076.1, ni2:2737.03, na1:2076.1, na2:2737.03, deduz:false, cx:false, mat:0},
+  {esp:'otorrinolaringologia', g:97, nome:'Amígdalas e adenoides', area:'amígdalas e adenoides', oi1:638.58, oi2:1378.77, oa1:577.39, oa2:1378.77, ni1:819.9, ni2:1759, na1:819.9, na2:1759, deduz:false, cx:false, mat:0, amb0:true},
+  {esp:'otorrinolaringologia', g:98, nome:'Outros proc. ouvido, nariz, boca e garganta', area:'ouvido, nariz e garganta', oi1:1238.37, oi2:2069.73, oa1:1014.35, oa2:1498.41, ni1:1533.19, ni2:2446.88, na1:1533.19, na2:2446.88, deduz:false, cx:false, mat:0, amb0:true},
+  {esp:'ginecologia', g:510, nome:'Evisceração pélvica / histerectomia radical', area:'oncológica', oi1:2995.05, oi2:3424.07, oa1:2738.57, oa2:3424.07, ni1:3012.43, ni2:4290.03, na1:3012.43, na2:4290.03, deduz:false, cx:false, mat:0},
+  {esp:'ginecologia', g:511, nome:'Útero/anexos — maligna ovárica ou anexial', area:'oncológica', oi1:2301, oi2:3351.18, oa1:2301, oa2:null, ni1:3169.82, ni2:4156.39, na1:3169.82, na2:null, deduz:false, cx:false, mat:0},
+  {esp:'ginecologia', g:512, nome:'Útero/anexos — maligna não ovárica', area:'oncológica', oi1:2121.85, oi2:2571.77, oa1:2121.85, oa2:2571.77, ni1:2900.21, ni2:3595.99, na1:2900.21, na2:3595.99, deduz:false, cx:false, mat:0},
+  {esp:'ginecologia', g:513, nome:'Útero/anexos — não maligna (exceto mioma)', area:'útero e anexos', oi1:1139.15, oi2:1514.32, oa1:1037.12, oa2:1514.32, ni1:1659.94, ni2:1875.66, na1:1659.94, na2:1875.66, deduz:false, cx:false, mat:0},
+  {esp:'ginecologia', g:519, nome:'Útero/anexos — mioma uterino', area:'útero e anexos', oi1:1163, oi2:1992.06, oa1:1163, oa2:1992.06, ni1:1865.94, ni2:2226.05, na1:1865.94, na2:2226.05, deduz:false, cx:false, mat:0},
+  {esp:'ginecologia', g:514, nome:'Proc. reconstrutivos do aparelho reprodutor', area:'reconstrutiva', oi1:1358.66, oi2:1698.86, oa1:1132.22, oa2:1698.21, ni1:1611.9, ni2:2030.72, na1:1385.45, na2:1745.44, deduz:false, cx:false, mat:0},
+  {esp:'ginecologia', g:517, nome:'Dilatação e/ou curetagem (não obstétrica)', area:'outros', oi1:660.27, oi2:1325.53, oa1:660.27, oa2:1325.53, ni1:1037.57, ni2:1262.42, na1:1037.57, na2:1262.42, deduz:false, cx:false, mat:0, amb0:true},
+  {esp:'ginecologia', g:518, nome:'Outros proc. do aparelho reprodutor feminino', area:'outros', oi1:955.53, oi2:2093.97, oa1:861.33, oa2:2093.97, ni1:1429.38, ni2:2414, na1:1429.38, na2:2414, deduz:false, cx:false, mat:0, amb0:true},
+  {esp:'cirurgia plástica', g:363, nome:'Procedimentos na mama exceto mastectomia', area:'mama', oi1:1280.83, oi2:3276.23, oa1:1223.3, oa2:3276.23, ni1:1943.67, ni2:3286.47, na1:1943.67, na2:3286.47, deduz:true, cx:false, mat:0},
+  {esp:'cirurgia plástica', g:361, nome:'Enxerto de pele — pele e tecido subcutâneo', area:'pele e enxertos', oi1:2268.83, oi2:5305.54, oa1:1600.62, oa2:5305.54, ni1:2495.71, ni2:2841.15, na1:1760.68, na2:2841.15, deduz:false, cx:false, mat:0, amb0:true},
+  {esp:'cirurgia plástica', g:364, nome:'Outros proc. na pele e tecido subcutâneo', area:'pele e enxertos', oi1:1195.65, oi2:2743.14, oa1:1073.58, oa2:2743.14, ni1:1315.22, ni2:2312.61, na1:1180.94, na2:2076.5, deduz:false, cx:false, mat:0, amb0:true},
+  {esp:'cirurgia plástica', g:312, nome:'Enxerto de pele (exceto mão) — músculo-esq.', area:'pele e enxertos', oi1:3323.63, oi2:9902.28, oa1:3325.13, oa2:9902.28, ni1:3657.65, ni2:10570.97, na1:3657.65, na2:10570.97, deduz:false, cx:false, mat:0},
+  {esp:'cirurgia plástica', g:316, nome:'Procedimentos na mão e/ou punho', area:'mão', oi1:921.31, oi2:2166.18, oa1:921.31, oa2:2166.18, ni1:1485.39, ni2:2383.84, na1:1485.39, na2:2383.84, deduz:false, cx:false, mat:0, amb0:true},
+  {esp:'oftalmologia', g:73, nome:'Procedimentos no olho exceto órbita (cataratas)', area:'olho', oi1:999.45, oi2:1344.62, oa1:919.55, oa2:1240.25, ni1:1313.65, ni2:1917.52, na1:1313.65, na2:1917.52, deduz:true, cx:false, mat:0, amb0:true},
+  {esp:'cirurgia geral', g:228, nome:'Hérnia inguinal, femoral e/ou umbilical', area:'parede abdominal', oi1:839.58, oi2:1219.46, oa1:839.58, oa2:1219.46, ni1:1199.4, ni2:1707.79, na1:1199.4, na2:1707.79, deduz:false, cx:false, mat:0, amb0:true},
+  {esp:'cirurgia geral', g:227, nome:'Hérnia exceto inguinal/femoral/umbilical', area:'parede abdominal', oi1:1173.23, oi2:2370.23, oa1:1173.23, oa2:2370.23, ni1:1900.66, ni2:2695.8, na1:1900.66, na2:2695.8, deduz:false, cx:false, mat:0},
+  {esp:'cirurgia geral', g:263, nome:'Colecistectomia laparoscópica', area:'vias biliares', oi1:1395.51, oi2:2048.5, oa1:1339.69, oa2:2048.5, ni1:1622.26, ni2:2637.33, na1:1578.78, na2:2566.66, deduz:false, cx:false, mat:0},
+  {esp:'cirurgia geral', g:264, nome:'Outros proc. hepatobiliares e pancreáticos', area:'vias biliares', oi1:3335.37, oi2:3673.14, oa1:2779.47, oa2:3673.14, ni1:3057.42, ni2:4474.94, na1:3057.42, na2:4474.94, deduz:false, cx:false, mat:0},
+  {esp:'cirurgia geral', g:233, nome:'Apendicectomia c/ diagnóstico principal complexo', area:'apêndice', oi1:1219.37, oi2:1837.37, oa1:1111.88, oa2:null, ni1:1797.39, ni2:2401.36, na1:1797.39, na2:null, deduz:false, cx:false, mat:0, og:225},
+  {esp:'cirurgia geral', g:234, nome:'Apendicectomia s/ diagnóstico principal complexo', area:'apêndice', oi1:1219.37, oi2:1837.37, oa1:1111.88, oa2:null, ni1:1148.39, ni2:1685.81, na1:1148.39, na2:null, deduz:false, cx:false, mat:0, og:225},
+  {esp:'cirurgia geral', g:226, nome:'Procedimentos no ânus', area:'ânus e proctologia', oi1:742.33, oi2:1740.71, oa1:742.33, oa2:1740.71, ni1:1228.31, ni2:1729.95, na1:1228.31, na2:1729.95, deduz:false, cx:false, mat:0, amb0:true},
+  {esp:'cirurgia geral', g:222, nome:'Outros proc. estômago, esófago e duodeno', area:'estômago e esófago', oi1:1969.85, oi2:2405.42, oa1:1641.54, oa2:2405.42, ni1:1975.51, ni2:2714.44, na1:1975.51, na2:2714.44, deduz:false, cx:false, mat:0},
+  {esp:'cirurgia geral', g:232, nome:'Fundoplicação gástrica', area:'estômago e esófago', oi1:null, oi2:null, oa1:null, oa2:null, ni1:2015.21, ni2:2608.56, na1:2015.21, na2:2608.56, deduz:false, cx:false, mat:0},
+  {esp:'cirurgia geral', g:223, nome:'Outros proc. intestino delgado e grosso', area:'intestino', oi1:2380.51, oi2:3601.39, oa1:2380.51, oa2:3601.39, ni1:3492.74, ni2:4884.57, na1:3492.74, na2:4884.57, deduz:false, cx:false, mat:0},
+  {esp:'cirurgia geral', g:231, nome:'Procedimentos major no intestino grosso', area:'intestino', oi1:2414.74, oi2:4340.13, oa1:2247.42, oa2:4340.13, ni1:2414.74, ni2:3550.42, na1:2247.42, na2:3304.4, deduz:false, cx:false, mat:0, og:221},
+  {esp:'cirurgia geral', g:362, nome:'Mastectomia', area:'mama', oi1:1612.19, oi2:2691.73, oa1:1394.28, oa2:2691.73, ni1:2205.71, ni2:3017.06, na1:2205.71, na2:3017.06, deduz:false, cx:false, mat:0},
+  {esp:'cirurgia geral', g:404, nome:'Tiróide, paratiróide e/ou tiroglosso', area:'endócrino', oi1:1607.36, oi2:2012.17, oa1:1156.23, oa2:2012.17, ni1:1804.73, ni2:2624.83, na1:1573.62, na2:2288.71, deduz:false, cx:false, mat:0},
+  {esp:'cirurgia geral', g:229, nome:'Outros proc. abdominais / ap. digestivo', area:'outros', oi1:2135.1, oi2:3691.42, oa1:2135.1, oa2:3691.42, ni1:2348.61, ni2:2714.44, na1:2348.61, na2:2714.44, deduz:false, cx:false, mat:0},
+  {esp:'neurocirurgia', g:20, nome:'Craniotomia por traumatismo', area:'crânio', oi1:4494.21, oi2:8115.41, oa1:null, oa2:null, ni1:5530.2, ni2:7526.02, na1:null, na2:null, deduz:false, cx:false, mat:0},
+  {esp:'neurocirurgia', g:21, nome:'Craniotomia exceto por traumatismo', area:'crânio', oi1:4730.64, oi2:5520.21, oa1:4730.64, oa2:null, ni1:6202.24, ni2:9940.09, na1:6202.24, na2:null, deduz:false, cx:false, mat:0},
+  {esp:'neurocirurgia', g:22, nome:'Procedimentos de shunt ventricular', area:'crânio', oi1:2980.28, oi2:4705.96, oa1:2483.57, oa2:null, ni1:2792.29, ni2:7085.41, na1:2792.29, na2:null, deduz:false, cx:false, mat:0},
+  {esp:'neurocirurgia', g:23, nome:'Procedimentos vertebrais', area:'raquis', oi1:3090.51, oi2:5598.71, oa1:2575.42, oa2:5598.71, ni1:3051.9, ni2:5848.48, na1:3051.9, na2:5848.48, deduz:false, cx:false, mat:0},
+  {esp:'neurocirurgia', g:303, nome:'Artrodese dorsal/lombar p/ curvatura', area:'raquis', oi1:5577.69, oi2:7847.38, oa1:5418.19, oa2:null, ni1:6412.58, ni2:7717.2, na1:6253.08, na2:null, deduz:true, cx:true, mat:553.5},
+  {esp:'neurocirurgia', g:304, nome:'Artrodese dorsal/lombar exceto curvatura', area:'raquis', oi1:3846.75, oi2:6013.67, oa1:3205.63, oa2:5083.44, ni1:4231.42, ni2:6934.75, na1:3526.19, na2:6704.99, deduz:true, cx:true, mat:553.5},
+  {esp:'neurocirurgia', g:310, nome:'Excisão/descompressão de disco intervertebral', area:'raquis', oi1:1962.72, oi2:2435.35, oa1:1686.36, oa2:2435.35, ni1:2195.35, ni2:3269.3, na1:1918.98, na2:2857.73, deduz:true, cx:false, mat:0},
+  {esp:'neurocirurgia', g:321, nome:'Artrodese cervical / outros proc. dorso-pescoço', area:'raquis', oi1:2233.02, oi2:3633.61, oa1:1978.81, oa2:3633.61, ni1:2953.53, ni2:5304.96, na1:2953.53, na2:5304.96, deduz:true, cx:false, mat:473.55},
+  {esp:'neurocirurgia', g:26, nome:'Nervos periféricos (inclui canal cárpico)', area:'nervos periféricos', oi1:1381.33, oi2:2857.39, oa1:1381.33, oa2:2857.39, ni1:2226.25, ni2:3398.94, na1:2226.25, na2:3398.94, deduz:false, cx:false, mat:0, amb0:true},
+  {esp:'cirurgia vascular', g:24, nome:'Procedimentos vasculares extracranianos (carótida)', area:'carótida', oi1:2497.11, oi2:3505.19, oa1:2331.74, oa2:3505.19, ni1:3304.59, ni2:4555.29, na1:3304.59, na2:4555.29, deduz:false, cx:false, mat:0},
+  {esp:'cirurgia vascular', g:169, nome:'Proc. vasculares torácicos/abdominais major', area:'aorta e vasos major', oi1:4640.26, oi2:5679.93, oa1:3945.28, oa2:5698.33, ni1:4339.81, ni2:6847.64, na1:4339.81, na2:6847.64, deduz:false, cx:false, mat:0},
+  {esp:'cirurgia vascular', g:181, nome:'Procedimentos arteriais na extremidade inferior', area:'membros e periféricos', oi1:1189.55, oi2:5032.48, oa1:1189.55, oa2:5032.48, ni1:2469.21, ni2:4088.22, na1:2469.21, na2:4088.22, deduz:false, cx:false, mat:0, og:180},
+  {esp:'cirurgia vascular', g:182, nome:'Outros proc. vasculares periféricos (inclui varizes)', area:'membros e periféricos', oi1:1189.55, oi2:5032.48, oa1:1189.55, oa2:5032.48, ni1:2244.74, ni2:3261.34, na1:2244.74, na2:3261.34, deduz:false, cx:false, mat:0, og:180, amb0:true},
+  {esp:'cirurgia vascular', g:180, nome:'Outros procedimentos no aparelho circulatório', area:'membros e periféricos', oi1:1189.55, oi2:5032.48, oa1:1189.55, oa2:5032.48, ni1:1869.29, ni2:4143.66, na1:1869.29, na2:4143.66, deduz:false, cx:false, mat:0},
+  {esp:'cirurgia vascular', g:444, nome:'Acessos vasculares para diálise', area:'acessos vasculares', oi1:2169.74, oi2:2874.53, oa1:1265.68, oa2:2874.53, ni1:2351.18, ni2:4325.17, na1:1989.56, na2:3659.93, deduz:false, cx:false, mat:0, amb0:true},
 ];
+GDH.forEach(d => { d.id = d.esp + ':' + d.g; });
+const ESPECIALIDADES = ['cirurgia geral','cirurgia plástica','cirurgia vascular','ginecologia','neurocirurgia','oftalmologia','ortopedia','otorrinolaringologia','urologia'];
+let espSel = 'ortopedia';
+const AREAS_ESP = {
+ 'ortopedia': ['anca','joelho','mão','ombro','pé','raquis','geral'],
+ 'urologia': ['rim e vias urinárias','bexiga','uretra','próstata','testículo e escroto'],
+ 'otorrinolaringologia': ['cabeça e pescoço','ossos da face','boca e palato','amígdalas e adenoides','ouvido, nariz e garganta'],
+ 'ginecologia': ['oncológica','útero e anexos','reconstrutiva','outros'],
+ 'cirurgia plástica': ['mama','pele e enxertos','mão'],
+ 'oftalmologia': ['olho'],
+ 'cirurgia geral': ['parede abdominal','vias biliares','apêndice','ânus e proctologia','estômago e esófago','intestino','mama','endócrino','outros'],
+ 'neurocirurgia': ['crânio','raquis','nervos periféricos'],
+ 'cirurgia vascular': ['carótida','aorta e vasos major','membros e periféricos','acessos vasculares'],
+};
 
 // ---- distribuição do valor da equipa (Modelos A/B do hospital) -------------
 const DIST = {
@@ -471,16 +551,16 @@ function renderDist() {
 
 // ---- estado ---------------------------------------------------------------
 const state = {}; // por GDH: {on, amb, mat, pct, cxOld, cxNew, custos, custosTouched, matTouched}
-GDH.forEach(d => state[d.g] = {
-  on: d.g === 302 || d.g === 313,
-  amb: d.g === 313 || d.g === 26,
-  mat: d.mat, // 302 começa em internamento (PTJ: 1 750 € c/ IVA; em ambulatório passa a 1 968 €)
-  pct: null,           // null = herda global
+GDH.forEach(d => state[d.id] = {
+  on: d.esp === 'ortopedia' && (d.g === 302 || d.g === 313),
+  amb: !!d.amb0,
+  mat: d.mat,
+  pct: null,           // null = herda o global do tipo (com/sem dedução)
   cxOld: d.cx, cxNew: d.cx,
-  compl: d.g === 301 || d.g === 302, // risco de complicações tardias na externalização (artroplastias)
-  nproc: 0, // procedimentos associados do mesmo GDH (+45% cada, teto +60% — art. 2.º, n.º 8, al. c)
-  ns: 0, // n.º de episódios deste GDH numa sessão (para o somatório da tabela)
-  vol: d.g === 302 ? 150 : (d.g === 313 ? 50 : 0), // episódios/ano em produção adicional
+  compl: !!d.compl0,
+  nproc: 0,
+  ns: 0,
+  vol: d.vol0 || 0,
   custos: null, matTouched: false,
 });
 
@@ -528,16 +608,27 @@ const F = (val, formula) => `<span class="vf">${val}<span class="u-info"><i>i</i
   window.addEventListener('scroll', () => { pinned = false; closeInfo(); }, true);
 })();
 
+// ---- dropdown de especialidade (título) --------------------------------------
+(function initEsp() {
+  const sel = document.getElementById('espDrop');
+  ESPECIALIDADES.forEach(e => {
+    const o = document.createElement('option');
+    o.value = e; o.textContent = e.charAt(0).toUpperCase() + e.slice(1);
+    if (e === 'ortopedia') o.selected = true;
+    sel.appendChild(o);
+  });
+  sel.addEventListener('change', () => { espSel = sel.value; render(); });
+})();
+
 // ---- tabela seletora de GDH (organizada por área) ---------------------------
-const AREAS = ['anca', 'joelho', 'mão', 'ombro', 'pé', 'raquis', 'geral'];
 // ao desselecionar uma linha, o GDH volta aos valores por defeito (mantém implantes e n.º/sessão)
-function resetGdh(g) {
-  const d = GDH.find(x => x.g === g), s = state[g];
-  s.amb = d.g === 313 || d.g === 26;
+function resetGdh(id) {
+  const d = GDH.find(x => x.id === id), s = state[id];
+  s.amb = !!d.amb0;
   s.pct = null;
   s.cxOld = d.cx;
   s.cxNew = d.cx;
-  s.compl = d.g === 301 || d.g === 302;
+  s.compl = !!d.compl0;
   s.nproc = 0;
   s.custos = null;
   if (!s.matTouched) s.mat = (s.amb && d.matAmb) ? d.matAmb : d.mat;
@@ -547,12 +638,12 @@ function renderTable() {
   const perfil = ROLES.find(x => x.k === role).lbl;
   const cls = v => v >= 0 ? 'pos' : 'negv';
   let rows = '', tN = 0, tA = 0, tG = 0;
-  AREAS.forEach(area => {
-    const ds = GDH.filter(d => d.area === area);
+  AREAS_ESP[espSel].forEach(area => {
+    const ds = GDH.filter(d => d.esp === espSel && d.area === area);
     if (!ds.length) return;
     rows += `<tr class="area-row"><td colspan="8">${area}</td></tr>`;
     ds.forEach(d => {
-      const s = state[d.g], r = calc(d);
+      const s = state[d.id], r = calc(d);
       const sh = roleShare(r.amb), f = sh === null ? 1 : sh;
       const a = r.eqOldMix === null ? null : r.eqOldMix * f;
       const g2 = r.eqMix === null ? null : r.eqMix * f;
@@ -570,17 +661,17 @@ function renderTable() {
           ? `${pctTxtN}% × (${fmt(base)}${fakT} − ${fmt(r.ded)} implante)`
           : `${pctTxtN}% × ${fmt(base)}${fakT} − ${fmt(r.ded)} implante`)
         : `${pctTxtN}% × ${fmt(base)}${fakT}`;
-      const fA = `${pTxt(r.p1)} × [${oldTerm(r.old1)}] (sev. 1) + ${pTxt(r.p2 + r.p34)} × [${oldTerm(r.old2 !== null ? r.old2 : r.old1)}] (sev. 2)${shTxt} = ${fmt(a)}<span class="nota">GDH antigo (col. SIGIC ${r.amb ? 'ambulatório' : 'internamento'}, APR31): sev. 1 ${fmt(r.old1)} · sev. 2 ${fmt(r.old2 !== null ? r.old2 : r.old1)}. Pagava-se a severidade codificada (1 ou 2), sem restrição de origem.</span>`;
+      const fA = `${pTxt(r.p1)} × [${oldTerm(r.old1)}] (sev. 1) + ${pTxt(r.p2 + r.p34)} × [${oldTerm(r.old2 !== null ? r.old2 : r.old1)}] (sev. 2)${shTxt} = ${fmt(a)}<span class="nota">${d.og ? 'Renumerado — no APR31 era o GDH ' + d.og + '. ' : ''}GDH antigo (col. SIGIC ${r.amb ? 'ambulatório' : 'internamento'}, APR31): sev. 1 ${fmt(r.old1)} · sev. 2 ${fmt(r.old2 !== null ? r.old2 : r.old1)}. Pagava-se a severidade codificada (1 ou 2), sem restrição de origem.</span>`;
       const fG = `${pTxt(r.p1 + r.p2)} × [${novTerm(r.nov1)}] (sev. paga 1) + ${pTxt(r.p34)} × [${novTerm(r.nov2eff)}] (sev. paga 2)${shTxt} = ${fmt(g2)}<span class="nota">GDH novo (col. ${r.amb ? 'P' : 'O'}, APR36): sev. 1 ${fmt(r.nov1)} · sev. 2 ${fmt(r.nov2eff)}. A sev. 2 por comorbilidades paga-se à equipa pela sev. 1 (art. 5.º, n.º 4); sev. 3/4 pela sev. 2.</span>`;
-      rows += `<tr class="grow${s.on ? ' onrow' : ''}" data-g="${d.g}">
+      rows += `<tr class="grow${s.on ? ' onrow' : ''}" data-id="${d.id}">
         <td>${d.g}</td>
         <td style="white-space:normal;text-align:left;font-family:var(--font-sans)">${d.nome} <span class="muted" style="font-size:10.5px">· ${r.amb ? 'amb.' : 'int.'}</span></td>
-        <td>${d.deduz ? `<input type="number" class="tmat" data-g="${d.g}" value="${s.mat}" min="0" step="10" style="width:92px">` : ''}</td>
+        <td>${d.deduz ? `<input type="number" class="tmat" data-id="${d.id}" value="${s.mat}" min="0" step="10" style="width:92px">` : ''}</td>
         <td>${a === null ? '—' : F(fmt(a), fA)}</td>
         <td>${g2 === null ? '—' : F(fmt(g2), fG)}</td>
         <td class="${dl === null ? '' : cls(dl)}">${dl === null ? '—' : fmtD(dl)}</td>
         <td class="${dl === null ? '' : cls(dl)}">${dl === null || !a ? '—' : fmtP(dl / a)}</td>
-        <td><input type="number" class="tns" data-g="${d.g}" value="${n}" min="0" step="1" style="width:64px"></td>
+        <td><input type="number" class="tns" data-id="${d.id}" value="${n}" min="0" step="1" style="width:64px"></td>
       </tr>`;
     });
   });
@@ -595,18 +686,18 @@ function renderTable() {
   </table>`;
   host.querySelectorAll('tr.grow').forEach(tr => tr.addEventListener('click', e => {
     if (e.target.tagName === 'INPUT') return;
-    const g = +tr.dataset.g;
-    state[g].on = !state[g].on;
-    if (!state[g].on) resetGdh(g);
+    const id = tr.dataset.id;
+    state[id].on = !state[id].on;
+    if (!state[id].on) resetGdh(id);
     render();
   }));
   host.querySelectorAll('input.tmat').forEach(i => {
     i.addEventListener('click', e => e.stopPropagation());
-    i.addEventListener('change', () => { const g = +i.dataset.g; state[g].mat = parseFloat(i.value) || 0; state[g].matTouched = true; render(); });
+    i.addEventListener('change', () => { const id = i.dataset.id; state[id].mat = parseFloat(i.value) || 0; state[id].matTouched = true; render(); });
   });
   host.querySelectorAll('input.tns').forEach(i => {
     i.addEventListener('click', e => e.stopPropagation());
-    i.addEventListener('change', () => { const g = +i.dataset.g; state[g].ns = Math.max(0, parseInt(i.value) || 0); render(); });
+    i.addEventListener('change', () => { const id = i.dataset.id; state[id].ns = Math.max(0, parseInt(i.value) || 0); render(); });
   });
 }
 
@@ -650,7 +741,7 @@ document.getElementById('gInfl').onclick = () => {
 
 // ---- cálculo por GDH ------------------------------------------------------
 function calc(d) {
-  const s = state[d.g];
+  const s = state[d.id];
   const amb = s.amb;
   const pct = (s.pct === null ? G(d.deduz ? 'gPctDed' : 'gPctND') : s.pct) / 100;
   const pctOld = G('gPctOld') / 100;
@@ -713,17 +804,17 @@ function calc(d) {
 // ---- programa anual ---------------------------------------------------------
 function renderAnual() {
   const host = document.getElementById('anual');
-  const active = GDH.filter(d => state[d.g].on);
+  const active = GDH.filter(d => d.esp === espSel && state[d.id].on);
   if (!active.length) { host.innerHTML = ''; return; }
   let TI = 0, TE = 0, TS = 0, TEq = 0, TD = 0, rows = '';
   active.forEach(d => {
-    const s = state[d.g], r = calc(d), v = s.vol || 0;
+    const s = state[d.id], r = calc(d), v = s.vol || 0;
     const ext = r.extern !== null ? r.extern : 0;
     TI += r.interno * v; TE += ext * v; TS += r.sala * v; TEq += (r.eqMix || 0) * v;
     TD += r.amb ? 0 : r.dias * v;
     rows += `<tr>
       <td>${d.g} — ${d.nome} <span class="muted">(${s.amb ? 'ambulatório' : 'internamento'})</span></td>
-      <td><input type="number" class="volin" data-g="${d.g}" value="${v}" min="0" step="10" style="width:90px"></td>
+      <td><input type="number" class="volin" data-id="${d.id}" value="${v}" min="0" step="10" style="width:90px"></td>
       <td>${fmt((r.eqMix || 0) * v)}</td>
       <td>${fmt(r.interno * v)}</td>
       <td>${fmt(ext * v)}</td>
@@ -750,7 +841,7 @@ function renderAnual() {
     </div>
   </section>`;
   host.querySelectorAll('.volin').forEach(i => i.addEventListener('change', () => {
-    state[i.dataset.g].vol = Math.max(0, parseFloat(i.value) || 0); render();
+    state[i.dataset.id].vol = Math.max(0, parseFloat(i.value) || 0); render();
   }));
 }
 
@@ -759,14 +850,14 @@ function render() {
   renderTable();
   const host = document.getElementById('cards');
   host.innerHTML = '';
-  const active = GDH.filter(d => state[d.g].on);
+  const active = GDH.filter(d => d.esp === espSel && state[d.id].on);
   if (!active.length) {
     host.innerHTML = '<div class="glass panel empty">Selecione um ou mais GDH na tabela acima para ver a análise detalhada.</div>';
     renderAnual();
     return;
   }
   active.forEach(d => {
-    const s = state[d.g], r = calc(d);
+    const s = state[d.id], r = calc(d);
     const card = document.createElement('section');
     card.className = 'glass card';
 
