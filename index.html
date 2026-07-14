@@ -148,6 +148,7 @@ input.est { background: rgba(230,126,34,.07); border-color: rgba(230,126,34,.4);
 .gtable td:first-child { font-family: var(--font-mono); font-weight: 600; }
 .gtable tr.gtop td { border-top: 1px solid var(--rule); }
 .gtable td .rlabel { font-family: var(--font-mono); font-size: 9.5px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: .5px; }
+.pcteff { display: block; margin-top: 2px; font-family: var(--font-mono); font-size: 10.5px; font-weight: 600; color: var(--color-primary-dark); white-space: nowrap; }
 .majtable { width: 100%; border-collapse: collapse; }
 .majtable td { padding: 5px 8px; font-size: 12px; vertical-align: middle; border-bottom: 1px solid var(--rule-soft); }
 .majtable .majcrit { font-size: 10px; color: var(--ink-muted); margin-top: 1px; font-family: var(--font-sans); }
@@ -156,7 +157,7 @@ input.est { background: rgba(230,126,34,.07); border-color: rgba(230,126,34,.4);
 .seg.majseg { display: inline-flex; width: auto; min-height: 28px; }
 .seg.majseg button { flex: 0 0 auto; padding: 4px 12px; font-size: 11.5px; white-space: nowrap; }
 .seg.majseg.lock { opacity: .55; }
-.seg.majseg button.sel.def { background: var(--paper); color: var(--color-primary); box-shadow: inset 0 0 0 1.5px var(--color-primary); }
+.seg.majseg button.sel.def { background: rgba(59,135,123,.14); color: var(--color-primary-dark); box-shadow: none; }
 .seg.majseg button:disabled { cursor: default; }
 #majLec { font-family: var(--font-sans); text-align: left; }
 
@@ -698,6 +699,9 @@ function renderTable() {
         const ns = ambFlag ? s.nsAmb : s.nsInt;
         const matv = ambFlag ? s.matAmb : s.matInt;
         const pctv = ambFlag ? s.pctAmb : s.pctInt;
+        const pctBaseCell = d.deduz ? pctv : G('gPctND');
+        const pctEffCell = r.pct * 100;
+        const effArrow = (maj.on && Math.abs(pctEffCell - pctBaseCell) > 0.01) ? `<div class="pcteff" title="% base + majoração, com teto da LEC">→ ${pctEffCell.toLocaleString('pt-PT')}%</div>` : '';
         tN += ns; if (a !== null) tA += a * ns; if (g2 !== null) tG += g2 * ns;
         const shTxt = f === 1 ? '' : `, × ${roleDesc(ambFlag)}`;
         const pctTxtN = (r.pct * 100).toLocaleString('pt-PT'), pctTxtO = (r.pctOld * 100).toLocaleString('pt-PT');
@@ -716,7 +720,7 @@ function renderTable() {
           <td>${ri === 0 ? d.g : ''}</td>
           <td style="white-space:normal;text-align:left;font-family:var(--font-sans)">${ri === 0 ? d.nome + ' ' : ''}<span class="rlabel">${ambFlag ? 'ambulatório' : 'internamento'}</span></td>
           <td>${d.deduz ? `<input type="number" class="tmat" data-id="${d.id}" data-amb="${ambFlag ? 1 : 0}" value="${matv}" min="0" step="10" style="width:88px">` : ''}</td>
-          <td>${d.deduz ? `<input type="number" class="tpct" data-id="${d.id}" data-amb="${ambFlag ? 1 : 0}" value="${pctv}" min="20" max="80" step="5" style="width:58px">` : `<span class="muted">${(r.pct*100).toLocaleString('pt-PT')}%</span>`}</td>
+          <td style="white-space:nowrap">${d.deduz ? `<input type="number" class="tpct" data-id="${d.id}" data-amb="${ambFlag ? 1 : 0}" value="${pctv}" min="20" max="80" step="5" style="width:58px">` : `<span class="muted">${pctBaseCell.toLocaleString('pt-PT')}%</span>`}${effArrow}</td>
           <td>${a === null ? '—' : F(fmt(a), fA)}</td>
           <td>${g2 === null ? '—' : F(fmt(g2), fG)}</td>
           <td class="${dl === null ? '' : cls(dl)}">${dl === null ? '—' : fmtD(dl)}</td>
