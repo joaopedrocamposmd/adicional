@@ -148,6 +148,16 @@ input.est { background: rgba(230,126,34,.07); border-color: rgba(230,126,34,.4);
 .gtable td:first-child { font-family: var(--font-mono); font-weight: 600; }
 .gtable tr.gtop td { border-top: 1px solid var(--rule); }
 .gtable td .rlabel { font-family: var(--font-mono); font-size: 9.5px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: .5px; }
+.majtable { width: 100%; border-collapse: collapse; }
+.majtable td { padding: 5px 8px; font-size: 12px; vertical-align: middle; border-bottom: 1px solid var(--rule-soft); }
+.majtable .majcrit { font-size: 10px; color: var(--ink-muted); margin-top: 1px; font-family: var(--font-sans); }
+.majtable tr.majdim td { font-family: var(--font-mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: .5px; color: var(--ink-soft); background: var(--bg-tint); padding: 6px 8px; }
+.majtable tr.majtot td { border-top: 2px solid var(--rule); background: var(--bg-tint); font-family: var(--font-mono); }
+.seg.majseg { display: inline-flex; width: auto; min-height: 28px; }
+.seg.majseg button { flex: 0 0 auto; padding: 4px 12px; font-size: 11.5px; white-space: nowrap; }
+.seg.majseg.lock { opacity: .55; }
+.seg.majseg button:disabled { cursor: default; }
+#majLec { font-family: var(--font-sans); text-align: left; }
 
 /* chips (perfil) */
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -314,6 +324,8 @@ footer { margin-top: 30px; font-size: 11px; color: var(--ink-muted); line-height
     </details>
   </div>
 
+  <section class="glass panel" id="majCard"></section>
+
   <div class="glass panel">
     <h2><span class="eyebrow" style="margin:0">Perfil — quem está a ver os valores</span></h2>
     <div class="chips" id="roleChips"></div>
@@ -375,6 +387,27 @@ footer { margin-top: 30px; font-size: 11px; color: var(--ink-muted); line-height
 </div>
 
 <script>
+// ---- modelo de majoração (grelha cirúrgica) --------------------------------
+const MAJ_GRID = {
+  A: {titulo: 'A — Acesso e Gestão da LIC', cap: 10, ind: [
+    {k: 'a1', nome: 'Redução de doentes fora do TMRG', mel: '≥10% face ao período anterior', res: '0 doentes fora do TMRG'},
+    {k: 'a2', nome: 'Redução de doentes com TE elevado', mel: 'redução ≥20% dos >270 dias', res: '0 doentes >270 dias'},
+    {k: 'a3', nome: 'Neoplasias malignas dentro do TMRG', mel: '≥90% dentro do TMRG', res: '0 oncológicos fora do TMRG'},
+  ]},
+  B: {titulo: 'B — Eficiência Operacional', cap: 10, ind: [
+    {k: 'b1', nome: 'Tempo mediano de turnover', mel: '≤25 min', res: '≤20 min'},
+    {k: 'b2', nome: 'Pontualidade das sessões operatórias', mel: '≥75% início atempado', res: '≥90% início atempado'},
+  ]},
+  C: {titulo: 'C — Qualidade e Utilização dos Recursos', cap: 5, ind: [
+    {k: 'c1', nome: 'Cancelamentos no próprio dia imputáveis à equipa', mel: '<3%', res: '0 cancelamentos imputáveis'},
+    {k: 'c2', nome: 'Transferências por incapacidade institucional', mel: '<5%', res: '0 transferências'},
+  ]},
+};
+const maj = {on: false, prod: true, lec: 80, ind: {a1: 0, a2: 0, a3: 0, b1: 0, b2: 0, c1: 0, c2: 0}};
+// dependência: 0 doentes fora do TMRG (a1 resultado) implica 0 >270 dias (a2) e 0 oncológicos fora (a3)
+function majInd() { const s = {...maj.ind}; if (s.a1 === 5) { s.a2 = 5; s.a3 = 5; } return s; }
+function majTotal() { const s = majInd(); return Math.min(s.a1 + s.a2 + s.a3, 10) + Math.min(s.b1 + s.b2, 10) + Math.min(s.c1 + s.c2, 5); }
+
 // ---- dados: GDH ortopédicos ----------------------------------------------
 // old*: Portaria 207/2017 (APR31). new*: colunas O/P da Portaria 274/2026/1 (APR36).
 // deduz: lista do art. 5.º n.º 10 / art. 9.º n.º 10 da Portaria 281/2026/1.
@@ -761,11 +794,13 @@ document.getElementById('gInfl').onclick = () => {
   render();
 };
 
+
 // ---- cálculo por GDH ------------------------------------------------------
 function calc(d, ambArg) {
   const s = state[d.id];
   const amb = ambArg === undefined ? s.amb : ambArg;
-  const pct = (d.deduz ? (amb ? s.pctAmb : s.pctInt) : G('gPctND')) / 100;
+  const pctBase = d.deduz ? (amb ? s.pctAmb : s.pctInt) : G('gPctND');
+  const pct = (maj.on ? Math.min(pctBase + (maj.prod ? majTotal() : 0), maj.lec) : pctBase) / 100;
   const pctOld = ((d.g === 301 || d.g === 302) ? G('gPctOldArtro') : G('gPctOld')) / 100;
   const mat = (amb ? s.matAmb : s.matInt) || 0;
   const custos = s.custos === null ? (amb ? G('gAmbCost') : G('gIntCost')) : s.custos;
@@ -798,11 +833,11 @@ function calc(d, ambArg) {
   const eqOldMix = eqOld1 === null ? null : p1 * eqOld1 + (p2 + p34) * eqOld2eff;
 
   // hospital — custo esperado por episódio com o mix
-  const maj = s.cxNew ? 1.2 : 1;
+  const majF = s.cxNew ? 1.2 : 1;
   const interno = (eqMix !== null ? eqMix : 0) + mat + custos;
   const externExtra = (!d.deduz && mat > 200) ? mat : 0; // dispositivo acresce (art. 9.º n.º 1)
   const compExtra = s.compl ? G('gCompRate') / 100 * G('gCompCost') : 0; // risco de complicações tardias
-  const extern = nov1 === null ? null : (p1 * nov1 + (p2 + p34) * nov2eff) * fak * maj + externExtra + compExtra;
+  const extern = nov1 === null ? null : (p1 * nov1 + (p2 + p34) * nov2eff) * fak * majF + externExtra + compExtra;
   const fracSala = (amb ? G('gFracAmb') : G('gFracInt')) / 100;
   const sala = G('gSala') + mat + (eqMix !== null ? eqMix * fracSala : 0);
 
@@ -813,7 +848,7 @@ function calc(d, ambArg) {
       : (eqOld1 + ded) / (nov1 * fak)) : null;
   const eqMix80 = nov1 === null ? null : (p1 + p2) * eqAt(nov1 * fak, 0.8) + p34 * eqAt(nov2eff * fak, 0.8);
   const interno80 = eqMix80 === null ? null : eqMix80 + mat + custos;
-  const sev2Extra = nov2 !== null ? (nov2 - nov1) * fak * maj : null; // custo extra por comórbido externalizado
+  const sev2Extra = nov2 !== null ? (nov2 - nov1) * fak * majF : null; // custo extra por comórbido externalizado
   const dias = Math.max(1, G('gDias'));
   const deltaSala = sala - interno;
   const diariaBE = deltaSala / dias;
@@ -867,8 +902,62 @@ function renderAnual() {
   }));
 }
 
+function renderMaj() {
+  const host = document.getElementById('majCard');
+  const ind = majInd(), total = majTotal(), aplicada = maj.prod ? total : 0;
+  const seg = (k, cur, locked) => {
+    const opt = (v, lbl) => `<button data-mk="${k}" data-mv="${v}" class="${cur === v ? 'sel' : ''}"${locked ? ' disabled' : ''}>${lbl}</button>`;
+    return `<div class="seg majseg${locked ? ' lock' : ''}">${opt(0, 'Não')}${opt(2.5, '+2,5')}${opt(5, '+5')}</div>`;
+  };
+  let grid = '';
+  Object.values(MAJ_GRID).forEach(g => {
+    let sub = 0, rws = '';
+    g.ind.forEach(it => {
+      const locked = (it.k === 'a2' || it.k === 'a3') && ind.a1 === 5;
+      const cur = ind[it.k]; sub += cur;
+      rws += `<tr><td style="text-align:left">${it.nome}<div class="majcrit">melhoria: ${it.mel} · resultado: ${it.res}</div></td><td style="text-align:right">${seg(it.k, cur, locked)}</td></tr>`;
+    });
+    grid += `<tr class="majdim"><td colspan="2">${g.titulo} <span class="muted">— subtotal ${Math.min(sub, g.cap).toLocaleString('pt-PT')} / ${g.cap} p.p.</span></td></tr>${rws}`;
+  });
+  host.innerHTML = `
+    <h2 style="justify-content:space-between; width:100%">
+      <span class="eyebrow" style="margin:0">Modelo de majoração — grelha cirúrgica</span>
+      <span class="sw ${maj.on ? 'on' : ''}" id="majToggle" style="cursor:pointer"><div class="track"></div><span class="lbl">${maj.on ? 'ativo' : 'inativo'}</span></span>
+    </h2>
+    ${maj.on ? `
+    <div class="globals" style="margin-bottom:14px">
+      <div class="field"><label>Produção contratualizada (serviço, anual)</label>
+        <span class="sw ${maj.prod ? 'on' : ''}" id="majProd" style="cursor:pointer"><div class="track"></div><span class="lbl">${maj.prod ? 'atingida' : 'não atingida'}</span></span></div>
+      <div class="field"><label>Situação da LEC do serviço → teto máximo</label>
+        <select id="majLec">
+          <option value="60"${maj.lec === 60 ? ' selected' : ''}>LEC muito crítica (>70% fora TMRG) — 60%</option>
+          <option value="70"${maj.lec === 70 ? ' selected' : ''}>LEC crítica (>50–70%) — 70%</option>
+          <option value="75"${maj.lec === 75 ? ' selected' : ''}>LEC em recuperação (>30–50%) — 75%</option>
+          <option value="80"${maj.lec === 80 ? ' selected' : ''}>LEC otimizada (≤20%) — 80%</option>
+        </select></div>
+    </div>
+    <div class="rbox" style="overflow:auto"><table class="majtable">${grid}
+      <tr class="majtot"><td style="text-align:left;font-weight:700;font-family:var(--font-sans)">Majoração total da grelha</td><td style="text-align:right;font-weight:700">${total.toLocaleString('pt-PT')} p.p. <span class="muted">(máx. 25)</span></td></tr>
+    </table></div>
+    <div class="mgmt">▸ Majoração aplicada: <b>${aplicada.toLocaleString('pt-PT')} p.p.</b> ${maj.prod ? '(produção anual atingida)' : '<span class="ko">(produção não atingida — só o indexante base)</span>'}. Soma-se à % base de cada GDH na coluna «Agora», nos custos do hospital e nos totais, limitada ao teto da LEC (<b>${maj.lec}%</b>) e ao máximo absoluto de 80%.</div>
+    <div class="group-note">A <b>produção contratualizada</b> é anual e ao nível do serviço (decide se a majoração é paga); os <b>indicadores da grelha</b> são mensais e por unidade (cumpridos no mês da cirurgia). Cada mês paga-se o indexante base; a majoração dos vários meses é paga no fim do ano se a produção anual for atingida — substitui o antigo regime dos 10% retidos. Dependência automática: 0 doentes fora do TMRG implica 0 doentes >270 dias e 0 oncológicos fora do TMRG. Regra de progressão: o teto pode subir um patamar se o serviço reduzir ≥10 p.p. nos pedidos fora do TMRG — nesse caso, selecione o patamar imediatamente superior.</div>
+    ` : `<div class="group-note">Ative para modelar a majoração da grelha cirúrgica (até 25 p.p., limite legal). Quando ativa e a produção contratualizada atingida, a majoração soma-se à % da equipa na coluna «Agora», nos custos do hospital e nos totais, com o teto da situação da LEC do serviço.</div>`}
+  `;
+  document.getElementById('majToggle').onclick = () => { maj.on = !maj.on; render(); };
+  if (maj.on) {
+    document.getElementById('majProd').onclick = () => { maj.prod = !maj.prod; render(); };
+    document.getElementById('majLec').onchange = e => { maj.lec = +e.target.value; render(); };
+    host.querySelectorAll('.majseg button[data-mk]').forEach(b => b.onclick = () => {
+      if (b.disabled) return;
+      maj.ind[b.dataset.mk] = parseFloat(b.dataset.mv);
+      render();
+    });
+  }
+}
+
 // ---- render ---------------------------------------------------------------
 function render() {
+  renderMaj();
   renderTable();
   const host = document.getElementById('cards');
   host.innerHTML = '';
