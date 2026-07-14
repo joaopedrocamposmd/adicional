@@ -146,6 +146,8 @@ input.est { background: rgba(230,126,34,.07); border-color: rgba(230,126,34,.4);
 .gtable tr.area-row td { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--ink-soft); background: var(--bg-tint); padding: 4px 8px; text-align: left; }
 .gtable tr.trow td { border-top: 2px solid var(--rule); font-weight: 600; background: var(--bg-tint); }
 .gtable td:first-child { font-family: var(--font-mono); font-weight: 600; }
+.gtable tr.gtop td { border-top: 1px solid var(--rule); }
+.gtable td .rlabel { font-family: var(--font-mono); font-size: 9.5px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: .5px; }
 
 /* chips (perfil) */
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -257,8 +259,6 @@ footer { margin-top: 30px; font-size: 11px; color: var(--ink-muted); line-height
       <div class="group-title">Produção adicional</div>
       <div class="globals">
         <div class="field"><label>% equipa — regime antigo:<span class="slval" id="gPctOldV">45%</span></label><input type="range" id="gPctOld" value="45" min="35" max="55" step="10"></div>
-        <div class="field"><label>% equipa novo — GDH com dedução de implantes:<span class="slval" id="gPctDedV">45%</span></label><input type="range" id="gPctDed" value="45" min="20" max="80" step="5"></div>
-        <div class="field"><label>% equipa novo — GDH sem dedução:<span class="slval" id="gPctNDV">45%</span></label><input type="range" id="gPctND" value="45" min="20" max="80" step="5"></div>
       </div>
       <div class="globals" style="margin-top:12px">
         <div class="field" style="grid-column: span 2; min-width: 320px"><label>Dedução dos implantes à equipa (art. 5.º, n.º 10 — duas leituras)</label>
@@ -272,7 +272,7 @@ footer { margin-top: 30px; font-size: 11px; color: var(--ink-muted); line-height
         </div>
         <div class="field"><label>Inflação acumulada 2017→2026 (%)</label><input type="number" id="gInflPct" value="23" min="0" step="0.5"></div>
       </div>
-      <div class="group-note"><b>Dedução dos implantes</b> — o art. 5.º, n.º 10 admite duas leituras: «(GDH − implante) × %» desconta o implante ao bolo e a equipa recebe a percentagem do restante (leitura adotada pelo CA); «GDH × % − implante» desconta o implante à verba da equipa (leitura literal). <b>Inflação</b> — os preços da Portaria 207/2017 nunca foram atualizados; o IPC acumulado desde julho de 2017 é ≈ 22–23% (INE, taxas médias anuais). Com o interruptor ativo, os valores «antes» são multiplicados por (1 + taxa) para comparação a preços de hoje.</div>
+      <div class="group-note"><b>Dedução dos implantes</b> — a Direção Executiva do SNS esclareceu que a fórmula aplicável é «(GDH − implante) × %» (implante descontado ao bolo). O art. 5.º, n.º 10 admite duas leituras: «(GDH − implante) × %» desconta o implante ao bolo e a equipa recebe a percentagem do restante (leitura adotada pelo CA); «GDH × % − implante» desconta o implante à verba da equipa (leitura literal). <b>Inflação</b> — os preços da Portaria 207/2017 nunca foram atualizados; o IPC acumulado desde julho de 2017 é ≈ 22–23% (INE, taxas médias anuais). Com o interruptor ativo, os valores «antes» são multiplicados por (1 + taxa) para comparação a preços de hoje.</div>
     </div>
     <div class="group">
       <div class="group-title">Mix de severidades (case-mix do serviço)</div>
@@ -325,7 +325,7 @@ footer { margin-top: 30px; font-size: 11px; color: var(--ink-muted); line-height
   <div class="glass panel">
     <h2><span class="eyebrow" style="margin:0">GDH da especialidade — selecionar para analisar</span></h2>
     <div id="gdhTable" style="overflow:auto; background: rgba(255,255,255,.85); border: 1px solid var(--rule); border-radius: var(--radius-md);"></div>
-    <div class="group-note">Clique numa linha para abrir/fechar o cartão de análise detalhada. «Antes/Agora» são <b>valores esperados por episódio com o mix de severidades</b> (parâmetros acima): no antigo pagava-se a severidade codificada; no novo, a sev. 2 por comorbilidades paga-se pela sev. 1. Linhas com cartão aberto seguem os ajustes desse cartão (regime, %, majorações); as restantes seguem os defeitos (% conforme o GDH tem ou não dedução de implantes). O valor dos implantes é editável aqui e no cartão — sincronizados. Os valores refletem o perfil escolhido acima.</div>
+    <div class="group-note">Cada GDH tem uma sublinha por regime (internamento e ambulatório), com o valor dos <b>implantes</b> e a <b>% da equipa</b> editáveis por regime (predefinidos por GDH). «Antes/Agora» são <b>valores esperados por episódio com o mix de severidades</b>: no antigo pagava-se a severidade codificada; no novo, a sev. 2 por comorbilidades paga-se pela sev. 1. Fórmula confirmada pela DE-SNS: <b>(GDH − implante) × %</b>. Clique numa linha para abrir/fechar o cartão detalhado desse regime. «N.º / sessão» soma o total no rodapé; os valores refletem o perfil escolhido acima.</div>
   </div>
 
   <div id="cards"></div>
@@ -551,17 +551,23 @@ function renderDist() {
 
 // ---- estado ---------------------------------------------------------------
 const state = {}; // por GDH: {on, amb, mat, pct, cxOld, cxNew, custos, custosTouched, matTouched}
-GDH.forEach(d => state[d.id] = {
-  on: d.esp === 'ortopedia' && (d.g === 302 || d.g === 313),
-  amb: !!d.amb0,
-  mat: d.mat,
-  pct: null,           // null = herda o global do tipo (com/sem dedução)
-  cxOld: d.cx, cxNew: d.cx,
-  compl: !!d.compl0,
-  nproc: 0,
-  ns: 0,
-  vol: d.vol0 || 0,
-  custos: null, matTouched: false,
+const PCT_DEF = {301:[70,70], 302:[60,70], 303:[80,80], 304:[80,80], 310:[55,55], 313:[55,55], 321:[60,60]};
+GDH.forEach(d => {
+  const pd = PCT_DEF[d.g] || [55, 55];
+  state[d.id] = {
+    on: d.esp === 'ortopedia' && (d.g === 302 || d.g === 313),
+    amb: !!d.amb0,
+    matInt: d.mat,
+    matAmb: (d.matAmb != null ? d.matAmb : d.mat),
+    matIntTouched: false, matAmbTouched: false,
+    pctInt: pd[0], pctAmb: pd[1],
+    nsInt: 0, nsAmb: 0,
+    cxOld: d.cx, cxNew: d.cx,
+    compl: !!d.compl0,
+    nproc: 0,
+    vol: d.vol0 || 0,
+    custos: null,
+  };
 });
 
 const fmt = v => (v === null || v === undefined || isNaN(v)) ? '—'
@@ -624,80 +630,94 @@ const F = (val, formula) => `<span class="vf">${val}<span class="u-info"><i>i</i
 // ao desselecionar uma linha, o GDH volta aos valores por defeito (mantém implantes e n.º/sessão)
 function resetGdh(id) {
   const d = GDH.find(x => x.id === id), s = state[id];
-  s.amb = !!d.amb0;
-  s.pct = null;
   s.cxOld = d.cx;
   s.cxNew = d.cx;
   s.compl = !!d.compl0;
   s.nproc = 0;
   s.custos = null;
-  if (!s.matTouched) s.mat = (s.amb && d.matAmb) ? d.matAmb : d.mat;
 }
 function renderTable() {
   const host = document.getElementById('gdhTable');
   const perfil = ROLES.find(x => x.k === role).lbl;
   const cls = v => v >= 0 ? 'pos' : 'negv';
+  const pTxt = v => (v * 100).toLocaleString('pt-PT') + '%';
   let rows = '', tN = 0, tA = 0, tG = 0;
   AREAS_ESP[espSel].forEach(area => {
     const ds = GDH.filter(d => d.esp === espSel && d.area === area);
     if (!ds.length) return;
-    rows += `<tr class="area-row"><td colspan="8">${area}</td></tr>`;
+    rows += `<tr class="area-row"><td colspan="9">${area}</td></tr>`;
     ds.forEach(d => {
-      const s = state[d.id], r = calc(d);
-      const sh = roleShare(r.amb), f = sh === null ? 1 : sh;
-      const a = r.eqOldMix === null ? null : r.eqOldMix * f;
-      const g2 = r.eqMix === null ? null : r.eqMix * f;
-      const dl = a !== null && g2 !== null ? g2 - a : null;
-      const n = s.ns || 0;
-      tN += n; if (a !== null) tA += a * n; if (g2 !== null) tG += g2 * n;
-      const pTxt = v => (v * 100).toLocaleString('pt-PT') + '%';
-      const shTxt = f === 1 ? '' : `, × ${roleDesc(r.amb)}`;
-      const pctTxtN = (r.pct * 100).toLocaleString('pt-PT'), pctTxtO = (r.pctOld * 100).toLocaleString('pt-PT');
-      const fakT = r.nproc ? ` × ${r.fak.toLocaleString('pt-PT')} (${r.nproc} proc. assoc.)` : '';
-      const inflT = inflOn ? ` × ${(1 + G('gInflPct') / 100).toLocaleString('pt-PT')} (inflação)` : '';
-      const oldTerm = base => `${pctTxtO}% × ${fmt(base)}${s.cxOld ? ' × 1,2 (complexo)' : ''}${fakT}${inflT}`;
-      const novTerm = base => r.ded
-        ? (dedMode === 'bolo'
-          ? `${pctTxtN}% × (${fmt(base)}${fakT} − ${fmt(r.ded)} implante)`
-          : `${pctTxtN}% × ${fmt(base)}${fakT} − ${fmt(r.ded)} implante`)
-        : `${pctTxtN}% × ${fmt(base)}${fakT}`;
-      const fA = `${pTxt(r.p1)} × [${oldTerm(r.old1)}] (sev. 1) + ${pTxt(r.p2 + r.p34)} × [${oldTerm(r.old2 !== null ? r.old2 : r.old1)}] (sev. 2)${shTxt} = ${fmt(a)}<span class="nota">${d.og ? 'Renumerado — no APR31 era o GDH ' + d.og + '. ' : ''}GDH antigo (col. SIGIC ${r.amb ? 'ambulatório' : 'internamento'}, APR31): sev. 1 ${fmt(r.old1)} · sev. 2 ${fmt(r.old2 !== null ? r.old2 : r.old1)}. Pagava-se a severidade codificada (1 ou 2), sem restrição de origem.</span>`;
-      const fG = `${pTxt(r.p1 + r.p2)} × [${novTerm(r.nov1)}] (sev. paga 1) + ${pTxt(r.p34)} × [${novTerm(r.nov2eff)}] (sev. paga 2)${shTxt} = ${fmt(g2)}<span class="nota">GDH novo (col. ${r.amb ? 'P' : 'O'}, APR36): sev. 1 ${fmt(r.nov1)} · sev. 2 ${fmt(r.nov2eff)}. A sev. 2 por comorbilidades paga-se à equipa pela sev. 1 (art. 5.º, n.º 4); sev. 3/4 pela sev. 2.</span>`;
-      rows += `<tr class="grow${s.on ? ' onrow' : ''}" data-id="${d.id}">
-        <td>${d.g}</td>
-        <td style="white-space:normal;text-align:left;font-family:var(--font-sans)">${d.nome} <span class="muted" style="font-size:10.5px">· ${r.amb ? 'amb.' : 'int.'}</span></td>
-        <td>${d.deduz ? `<input type="number" class="tmat" data-id="${d.id}" value="${s.mat}" min="0" step="10" style="width:92px">` : ''}</td>
-        <td>${a === null ? '—' : F(fmt(a), fA)}</td>
-        <td>${g2 === null ? '—' : F(fmt(g2), fG)}</td>
-        <td class="${dl === null ? '' : cls(dl)}">${dl === null ? '—' : fmtD(dl)}</td>
-        <td class="${dl === null ? '' : cls(dl)}">${dl === null || !a ? '—' : fmtP(dl / a)}</td>
-        <td><input type="number" class="tns" data-id="${d.id}" value="${n}" min="0" step="1" style="width:64px"></td>
-      </tr>`;
+      const s = state[d.id];
+      const regs = [];
+      if (d.ni1 != null) regs.push(false);
+      if (d.na1 != null) regs.push(true);
+      regs.forEach((ambFlag, ri) => {
+        const r = calc(d, ambFlag);
+        const sh = roleShare(ambFlag), f = sh === null ? 1 : sh;
+        const a = r.eqOldMix === null ? null : r.eqOldMix * f;
+        const g2 = r.eqMix === null ? null : r.eqMix * f;
+        const dl = a !== null && g2 !== null ? g2 - a : null;
+        const ns = ambFlag ? s.nsAmb : s.nsInt;
+        const matv = ambFlag ? s.matAmb : s.matInt;
+        const pctv = ambFlag ? s.pctAmb : s.pctInt;
+        tN += ns; if (a !== null) tA += a * ns; if (g2 !== null) tG += g2 * ns;
+        const shTxt = f === 1 ? '' : `, × ${roleDesc(ambFlag)}`;
+        const pctTxtN = (r.pct * 100).toLocaleString('pt-PT'), pctTxtO = (r.pctOld * 100).toLocaleString('pt-PT');
+        const fakT = r.nproc ? ` × ${r.fak.toLocaleString('pt-PT')} (${r.nproc} proc. assoc.)` : '';
+        const inflT = inflOn ? ` × ${(1 + G('gInflPct') / 100).toLocaleString('pt-PT')} (inflação)` : '';
+        const oldTerm = base => `${pctTxtO}% × ${fmt(base)}${s.cxOld ? ' × 1,2 (complexo)' : ''}${fakT}${inflT}`;
+        const novTerm = base => r.ded
+          ? (dedMode === 'bolo'
+            ? `${pctTxtN}% × (${fmt(base)}${fakT} − ${fmt(r.ded)} implante)`
+            : `${pctTxtN}% × ${fmt(base)}${fakT} − ${fmt(r.ded)} implante`)
+          : `${pctTxtN}% × ${fmt(base)}${fakT}`;
+        const fA = `${pTxt(r.p1)} × [${oldTerm(r.old1)}] (sev. 1) + ${pTxt(r.p2 + r.p34)} × [${oldTerm(r.old2 !== null ? r.old2 : r.old1)}] (sev. 2)${shTxt} = ${fmt(a)}<span class="nota">${d.og ? 'Renumerado — no APR31 era o GDH ' + d.og + '. ' : ''}GDH antigo (col. SIGIC ${ambFlag ? 'ambulatório' : 'internamento'}, APR31): sev. 1 ${fmt(r.old1)} · sev. 2 ${fmt(r.old2 !== null ? r.old2 : r.old1)}. Pagava-se a severidade codificada (1 ou 2), sem restrição de origem.</span>`;
+        const fG = `${pTxt(r.p1 + r.p2)} × [${novTerm(r.nov1)}] (sev. paga 1) + ${pTxt(r.p34)} × [${novTerm(r.nov2eff)}] (sev. paga 2)${shTxt} = ${fmt(g2)}<span class="nota">GDH novo (col. ${ambFlag ? 'P' : 'O'}, APR36): sev. 1 ${fmt(r.nov1)} · sev. 2 ${fmt(r.nov2eff)}. Fórmula confirmada pela DE-SNS: (GDH − implante) × %. A sev. 2 por comorbilidades paga-se à equipa pela sev. 1 (art. 5.º, n.º 4); sev. 3/4 pela sev. 2.</span>`;
+        const isOpen = s.on && (s.amb === ambFlag);
+        rows += `<tr class="grow${isOpen ? ' onrow' : ''}${ri === 0 ? ' gtop' : ''}" data-id="${d.id}" data-amb="${ambFlag ? 1 : 0}">
+          <td>${ri === 0 ? d.g : ''}</td>
+          <td style="white-space:normal;text-align:left;font-family:var(--font-sans)">${ri === 0 ? d.nome + ' ' : ''}<span class="rlabel">${ambFlag ? 'ambulatório' : 'internamento'}</span></td>
+          <td>${d.deduz ? `<input type="number" class="tmat" data-id="${d.id}" data-amb="${ambFlag ? 1 : 0}" value="${matv}" min="0" step="10" style="width:88px">` : ''}</td>
+          <td><input type="number" class="tpct" data-id="${d.id}" data-amb="${ambFlag ? 1 : 0}" value="${pctv}" min="20" max="80" step="5" style="width:58px"></td>
+          <td>${a === null ? '—' : F(fmt(a), fA)}</td>
+          <td>${g2 === null ? '—' : F(fmt(g2), fG)}</td>
+          <td class="${dl === null ? '' : cls(dl)}">${dl === null ? '—' : fmtD(dl)}</td>
+          <td class="${dl === null ? '' : cls(dl)}">${dl === null || !a ? '—' : fmtP(dl / a)}</td>
+          <td><input type="number" class="tns" data-id="${d.id}" data-amb="${ambFlag ? 1 : 0}" value="${ns}" min="0" step="1" style="width:56px"></td>
+        </tr>`;
+      });
     });
   });
   const tD = tG - tA;
   host.innerHTML = `<table class="gtable">
-    <tr><th>GDH</th><th style="text-align:left">Nome</th><th>Implantes c/ IVA (€)</th><th>Antes</th><th>Agora</th><th>Δ €</th><th>Δ %</th><th>N.º / sessão</th></tr>
+    <tr><th>GDH</th><th style="text-align:left">Nome</th><th>Implantes c/ IVA (€)</th><th>% equipa</th><th>Antes</th><th>Agora</th><th>Δ €</th><th>Δ %</th><th>N.º / sessão</th></tr>
     ${rows}
-    <tr class="trow"><td></td><td style="font-family:var(--font-sans);text-align:left">TOTAL DA SESSÃO — ${perfil}</td><td></td>
+    <tr class="trow"><td></td><td style="font-family:var(--font-sans);text-align:left">TOTAL DA SESSÃO — ${perfil}</td><td></td><td></td>
       <td>${fmt(tA)}</td><td>${fmt(tG)}</td>
       <td class="${cls(tD)}">${fmtD(tD)}</td><td class="${cls(tD)}">${tA ? fmtP(tD / tA) : '—'}</td>
       <td>${tN}</td></tr>
   </table>`;
   host.querySelectorAll('tr.grow').forEach(tr => tr.addEventListener('click', e => {
     if (e.target.tagName === 'INPUT') return;
-    const id = tr.dataset.id;
-    state[id].on = !state[id].on;
-    if (!state[id].on) resetGdh(id);
+    const id = tr.dataset.id, ambFlag = tr.dataset.amb === '1', s = state[id];
+    if (s.on && s.amb === ambFlag) { s.on = false; resetGdh(id); }
+    else { s.on = true; s.amb = ambFlag; }
     render();
   }));
   host.querySelectorAll('input.tmat').forEach(i => {
     i.addEventListener('click', e => e.stopPropagation());
-    i.addEventListener('change', () => { const id = i.dataset.id; state[id].mat = parseFloat(i.value) || 0; state[id].matTouched = true; render(); });
+    i.addEventListener('change', () => { const s = state[i.dataset.id], v = parseFloat(i.value) || 0;
+      if (i.dataset.amb === '1') { s.matAmb = v; s.matAmbTouched = true; } else { s.matInt = v; s.matIntTouched = true; } render(); });
+  });
+  host.querySelectorAll('input.tpct').forEach(i => {
+    i.addEventListener('click', e => e.stopPropagation());
+    i.addEventListener('change', () => { const s = state[i.dataset.id], v = Math.min(80, Math.max(20, parseFloat(i.value) || 45));
+      if (i.dataset.amb === '1') s.pctAmb = v; else s.pctInt = v; render(); });
   });
   host.querySelectorAll('input.tns').forEach(i => {
     i.addEventListener('click', e => e.stopPropagation());
-    i.addEventListener('change', () => { const id = i.dataset.id; state[id].ns = Math.max(0, parseInt(i.value) || 0); render(); });
+    i.addEventListener('change', () => { const s = state[i.dataset.id], v = Math.max(0, parseInt(i.value) || 0);
+      if (i.dataset.amb === '1') s.nsAmb = v; else s.nsInt = v; render(); });
   });
 }
 
@@ -718,11 +738,11 @@ function decorateSliders(root) {
   });
 }
 
-const SLV = {gPctOld: 'gPctOldV', gPctDed: 'gPctDedV', gPctND: 'gPctNDV', gP2: 'gP2V', gP34: 'gP34V'};
+const SLV = {gPctOld: 'gPctOldV', gP2: 'gP2V', gP34: 'gP34V'};
 function syncSlv() {
   Object.entries(SLV).forEach(([i, v]) => document.getElementById(v).textContent = G(i).toLocaleString('pt-PT') + '%');
 }
-['gPctOld','gPctDed','gPctND','gIntCost','gAmbCost','gSala','gFracInt','gFracAmb','gP2','gP34','gDias','gCompRate','gCompCost','gInflPct'].forEach(id =>
+['gPctOld','gIntCost','gAmbCost','gSala','gFracInt','gFracAmb','gP2','gP34','gDias','gCompRate','gCompCost','gInflPct'].forEach(id =>
   document.getElementById(id).addEventListener('input', () => { syncSlv(); render(); }));
 
 // leitura do art. 5.º, n.º 10 (dedução dos implantes) e inflação sobre os valores antigos
@@ -740,12 +760,12 @@ document.getElementById('gInfl').onclick = () => {
 };
 
 // ---- cálculo por GDH ------------------------------------------------------
-function calc(d) {
+function calc(d, ambArg) {
   const s = state[d.id];
-  const amb = s.amb;
-  const pct = (s.pct === null ? G(d.deduz ? 'gPctDed' : 'gPctND') : s.pct) / 100;
+  const amb = ambArg === undefined ? s.amb : ambArg;
+  const pct = (amb ? s.pctAmb : s.pctInt) / 100;
   const pctOld = G('gPctOld') / 100;
-  const mat = s.mat || 0;
+  const mat = (amb ? s.matAmb : s.matInt) || 0;
   const custos = s.custos === null ? (amb ? G('gAmbCost') : G('gIntCost')) : s.custos;
 
   const old1 = amb ? d.oa1 : d.oi1, old2 = amb ? d.oa2 : d.oi2;
@@ -912,10 +932,10 @@ function render() {
               <button data-k="amb" class="${s.amb ? 'sel' : ''}">Ambulatório</button>
             </div>
           </div>
-          <div class="field"><label>% equipa — novo:<span class="slval">${(r.pct*100).toLocaleString('pt-PT')}%</span>${s.pct !== null ? ' <button class="reset" data-k="pctReset" title="Voltar ao valor global">↺ global</button>' : ''}</label>
+          <div class="field"><label>% equipa — novo:<span class="slval">${(r.pct*100).toLocaleString('pt-PT')}%</span></label>
             <input type="range" data-k="pct" value="${r.pct*100}" min="20" max="80" step="5"></div>
           <div class="field"><label>Material implantável, c/ IVA (€)</label>
-            <input type="number" data-k="mat" value="${s.mat}" min="0" step="50"></div>
+            <input type="number" data-k="mat" value="${r.mat}" min="0" step="50"></div>
           <div class="field"><label>Custos internos do hospital (€)</label>
             <input type="number" data-k="custos" value="${r.custos}" min="0" step="50"></div>
           <div class="field"><label>Procedimentos associados (mesmo GDH):<span class="slval">${r.nproc}</span></label>
@@ -983,18 +1003,12 @@ function render() {
     // listeners
     card.querySelectorAll('.seg button').forEach(b => b.onclick = () => {
       const goAmb = b.dataset.k === 'amb';
-      if (goAmb !== s.amb) {
-        s.amb = goAmb;
-        // material por defeito específico do regime (ex.: PTJ 1300 / PUC 1600)
-        if (!s.matTouched && d.g === 302) s.mat = goAmb ? (d.matAmb || d.mat) : d.mat;
-        if (s.custos === null) {} // continua a herdar o global do regime
-        render();
-      }
+      if (goAmb !== s.amb) { s.amb = goAmb; render(); }
     });
     card.querySelectorAll('input[data-k]').forEach(inp => inp.addEventListener('change', () => {
       const k = inp.dataset.k, v = inp.value === '' ? null : parseFloat(inp.value);
-      if (k === 'mat') { s.mat = v || 0; s.matTouched = true; }
-      if (k === 'pct') { s.pct = v; }
+      if (k === 'mat') { if (s.amb) { s.matAmb = v || 0; s.matAmbTouched = true; } else { s.matInt = v || 0; s.matIntTouched = true; } }
+      if (k === 'pct') { const pv = Math.min(80, Math.max(20, v || 45)); if (s.amb) s.pctAmb = pv; else s.pctInt = pv; }
       if (k === 'nproc') { s.nproc = v || 0; }
       if (k === 'custos') { s.custos = v; }
       render();
@@ -1002,9 +1016,6 @@ function render() {
     card.querySelectorAll('.sw').forEach(sw => sw.onclick = () => {
       s[sw.dataset.k] = !s[sw.dataset.k]; render();
     });
-    const rbtn = card.querySelector('button[data-k=pctReset]');
-    if (rbtn) rbtn.onclick = () => { s.pct = null; render(); };
-
     host.appendChild(card);
   });
   renderAnual();
