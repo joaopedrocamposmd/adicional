@@ -259,6 +259,8 @@ footer { margin-top: 30px; font-size: 11px; color: var(--ink-muted); line-height
       <div class="group-title">Produção adicional</div>
       <div class="globals">
         <div class="field"><label>% equipa — regime antigo:<span class="slval" id="gPctOldV">45%</span></label><input type="range" id="gPctOld" value="45" min="35" max="55" step="10"></div>
+        <div class="field"><label>% equipa artroplastia — regime antigo (301, 302):<span class="slval" id="gPctOldArtroV">45%</span></label><input type="range" id="gPctOldArtro" value="45" min="35" max="45" step="10"></div>
+        <div class="field"><label>% equipa novo — GDH sem dedução de implantes (transversal):<span class="slval" id="gPctNDV">55%</span></label><input type="range" id="gPctND" value="55" min="20" max="80" step="5"></div>
       </div>
       <div class="globals" style="margin-top:12px">
         <div class="field" style="grid-column: span 2; min-width: 320px"><label>Dedução dos implantes à equipa (art. 5.º, n.º 10 — duas leituras)</label>
@@ -387,7 +389,7 @@ const GDH = [
   {esp:'ortopedia', g:309, nome:'Proc. anca/fémur não traumáticos, exceto substituição', area:'anca', oi1:2196.34, oi2:4844.20, oa1:2196.34, oa2:4844.20, ni1:3858.56, ni2:9419.54, na1:3858.56, na2:9419.54, deduz:false, cx:false, mat:0},
   {esp:'ortopedia', g:310, nome:'Excisão e/ou descompressão de disco intervertebral', area:'raquis', oi1:1962.72, oi2:2435.35, oa1:1686.36, oa2:2435.35, ni1:2195.35, ni2:3269.30, na1:1918.98, na2:2857.73, deduz:true, cx:false, mat:0},
   {esp:'ortopedia', g:312, nome:'Enxerto de pele (exceto mão), sist. músculo-esquelético', area:'geral', oi1:3323.63, oi2:9902.28, oa1:3325.13, oa2:9902.28, ni1:3657.65, ni2:10570.97, na1:3657.65, na2:10570.97, deduz:false, cx:false, mat:0},
-  {esp:'ortopedia', g:313, nome:'Procedimentos no joelho e/ou perna, exceto no pé', area:'joelho', oi1:1275.37, oi2:3504.73, oa1:1266.96, oa2:3504.73, ni1:2064.00, ni2:3975.99, na1:2064.00, na2:3975.99, amb0:true, deduz:true, cx:false, vol0:50, mat:123},
+  {esp:'ortopedia', g:313, nome:'Procedimentos no joelho e/ou perna, exceto no pé', area:'joelho', oi1:1275.37, oi2:3504.73, oa1:1266.96, oa2:3504.73, ni1:2064.00, ni2:3975.99, na1:2064.00, na2:3975.99, amb0:true, deduz:true, cx:false, vol0:50, mat:0},
   {esp:'ortopedia', g:314, nome:'Procedimentos no pé e/ou dedos', area:'pé', oi1:1325.25, oi2:3098.69, oa1:1150.41, oa2:3098.69, ni1:1751.68, ni2:3168.18, na1:1751.68, na2:3168.18, deduz:false, cx:false, mat:0},
   {esp:'ortopedia', g:315, nome:'Procedimentos no ombro, braço e/ou antebraço', area:'ombro', oi1:1168.05, oi2:2860.20, oa1:1075.75, oa2:2537.95, ni1:1949.37, ni2:3539.34, na1:1949.37, na2:3539.34, deduz:false, cx:false, mat:0},
   {esp:'ortopedia', g:316, nome:'Procedimentos na mão e/ou punho', area:'mão', oi1:921.31, oi2:2166.18, oa1:921.31, oa2:2166.18, ni1:1485.39, ni2:2383.84, na1:1485.39, na2:2383.84, deduz:false, cx:false, mat:0},
@@ -678,7 +680,7 @@ function renderTable() {
           <td>${ri === 0 ? d.g : ''}</td>
           <td style="white-space:normal;text-align:left;font-family:var(--font-sans)">${ri === 0 ? d.nome + ' ' : ''}<span class="rlabel">${ambFlag ? 'ambulatório' : 'internamento'}</span></td>
           <td>${d.deduz ? `<input type="number" class="tmat" data-id="${d.id}" data-amb="${ambFlag ? 1 : 0}" value="${matv}" min="0" step="10" style="width:88px">` : ''}</td>
-          <td><input type="number" class="tpct" data-id="${d.id}" data-amb="${ambFlag ? 1 : 0}" value="${pctv}" min="20" max="80" step="5" style="width:58px"></td>
+          <td>${d.deduz ? `<input type="number" class="tpct" data-id="${d.id}" data-amb="${ambFlag ? 1 : 0}" value="${pctv}" min="20" max="80" step="5" style="width:58px">` : `<span class="muted">${(r.pct*100).toLocaleString('pt-PT')}%</span>`}</td>
           <td>${a === null ? '—' : F(fmt(a), fA)}</td>
           <td>${g2 === null ? '—' : F(fmt(g2), fG)}</td>
           <td class="${dl === null ? '' : cls(dl)}">${dl === null ? '—' : fmtD(dl)}</td>
@@ -738,11 +740,11 @@ function decorateSliders(root) {
   });
 }
 
-const SLV = {gPctOld: 'gPctOldV', gP2: 'gP2V', gP34: 'gP34V'};
+const SLV = {gPctOld: 'gPctOldV', gPctOldArtro: 'gPctOldArtroV', gPctND: 'gPctNDV', gP2: 'gP2V', gP34: 'gP34V'};
 function syncSlv() {
   Object.entries(SLV).forEach(([i, v]) => document.getElementById(v).textContent = G(i).toLocaleString('pt-PT') + '%');
 }
-['gPctOld','gIntCost','gAmbCost','gSala','gFracInt','gFracAmb','gP2','gP34','gDias','gCompRate','gCompCost','gInflPct'].forEach(id =>
+['gPctOld','gPctOldArtro','gPctND','gIntCost','gAmbCost','gSala','gFracInt','gFracAmb','gP2','gP34','gDias','gCompRate','gCompCost','gInflPct'].forEach(id =>
   document.getElementById(id).addEventListener('input', () => { syncSlv(); render(); }));
 
 // leitura do art. 5.º, n.º 10 (dedução dos implantes) e inflação sobre os valores antigos
@@ -763,8 +765,8 @@ document.getElementById('gInfl').onclick = () => {
 function calc(d, ambArg) {
   const s = state[d.id];
   const amb = ambArg === undefined ? s.amb : ambArg;
-  const pct = (amb ? s.pctAmb : s.pctInt) / 100;
-  const pctOld = G('gPctOld') / 100;
+  const pct = (d.deduz ? (amb ? s.pctAmb : s.pctInt) : G('gPctND')) / 100;
+  const pctOld = ((d.g === 301 || d.g === 302) ? G('gPctOldArtro') : G('gPctOld')) / 100;
   const mat = (amb ? s.matAmb : s.matInt) || 0;
   const custos = s.custos === null ? (amb ? G('gAmbCost') : G('gIntCost')) : s.custos;
 
@@ -932,7 +934,7 @@ function render() {
               <button data-k="amb" class="${s.amb ? 'sel' : ''}">Ambulatório</button>
             </div>
           </div>
-          <div class="field"><label>% equipa — novo:<span class="slval">${(r.pct*100).toLocaleString('pt-PT')}%</span></label>
+          <div class="field"><label>% equipa — novo${d.deduz ? '' : ' (global sem dedução)'}:<span class="slval">${(r.pct*100).toLocaleString('pt-PT')}%</span></label>
             <input type="range" data-k="pct" value="${r.pct*100}" min="20" max="80" step="5"></div>
           <div class="field"><label>Material implantável, c/ IVA (€)</label>
             <input type="number" data-k="mat" value="${r.mat}" min="0" step="50"></div>
@@ -1008,7 +1010,7 @@ function render() {
     card.querySelectorAll('input[data-k]').forEach(inp => inp.addEventListener('change', () => {
       const k = inp.dataset.k, v = inp.value === '' ? null : parseFloat(inp.value);
       if (k === 'mat') { if (s.amb) { s.matAmb = v || 0; s.matAmbTouched = true; } else { s.matInt = v || 0; s.matIntTouched = true; } }
-      if (k === 'pct') { const pv = Math.min(80, Math.max(20, v || 45)); if (s.amb) s.pctAmb = pv; else s.pctInt = pv; }
+      if (k === 'pct') { const pv = Math.min(80, Math.max(20, v || 45)); if (d.deduz) { if (s.amb) s.pctAmb = pv; else s.pctInt = pv; } else { document.getElementById('gPctND').value = pv; syncSlv(); } }
       if (k === 'nproc') { s.nproc = v || 0; }
       if (k === 'custos') { s.custos = v; }
       render();
