@@ -156,6 +156,7 @@ input.est { background: rgba(230,126,34,.07); border-color: rgba(230,126,34,.4);
 .seg.majseg { display: inline-flex; width: auto; min-height: 28px; }
 .seg.majseg button { flex: 0 0 auto; padding: 4px 12px; font-size: 11.5px; white-space: nowrap; }
 .seg.majseg.lock { opacity: .55; }
+.seg.majseg button.sel.def { background: var(--paper); color: var(--color-primary); box-shadow: inset 0 0 0 1.5px var(--color-primary); }
 .seg.majseg button:disabled { cursor: default; }
 #majLec { font-family: var(--font-sans); text-align: left; }
 
@@ -271,6 +272,8 @@ footer { margin-top: 30px; font-size: 11px; color: var(--ink-muted); line-height
         <div class="field"><label>% equipa — regime antigo:<span class="slval" id="gPctOldV">45%</span></label><input type="range" id="gPctOld" value="45" min="35" max="55" step="10"></div>
         <div class="field"><label>% equipa artroplastia — regime antigo (301, 302):<span class="slval" id="gPctOldArtroV">45%</span></label><input type="range" id="gPctOldArtro" value="45" min="35" max="45" step="10"></div>
         <div class="field"><label>% equipa novo — GDH sem dedução de implantes (transversal):<span class="slval" id="gPctNDV">55%</span></label><input type="range" id="gPctND" value="55" min="20" max="80" step="5"></div>
+        <div class="field"><label>Complexo no regime antigo (×1,2)</label>
+          <div class="sw on" id="gCx" style="cursor:pointer"><div class="track"></div><span class="lbl">majoração ×1,2 dos procedimentos complexos</span></div></div>
       </div>
       <div class="globals" style="margin-top:12px">
         <div class="field" style="grid-column: span 2; min-width: 320px"><label>Dedução dos implantes à equipa (art. 5.º, n.º 10 — duas leituras)</label>
@@ -700,7 +703,7 @@ function renderTable() {
         const pctTxtN = (r.pct * 100).toLocaleString('pt-PT'), pctTxtO = (r.pctOld * 100).toLocaleString('pt-PT');
         const fakT = r.nproc ? ` × ${r.fak.toLocaleString('pt-PT')} (${r.nproc} proc. assoc.)` : '';
         const inflT = inflOn ? ` × ${(1 + G('gInflPct') / 100).toLocaleString('pt-PT')} (inflação)` : '';
-        const oldTerm = base => `${pctTxtO}% × ${fmt(base)}${s.cxOld ? ' × 1,2 (complexo)' : ''}${fakT}${inflT}`;
+        const oldTerm = base => `${pctTxtO}% × ${fmt(base)}${(s.cxOld && cxGlobal) ? ' × 1,2 (complexo)' : ''}${fakT}${inflT}`;
         const novTerm = base => r.ded
           ? (dedMode === 'bolo'
             ? `${pctTxtN}% × (${fmt(base)}${fakT} − ${fmt(r.ded)} implante)`
@@ -781,6 +784,7 @@ function syncSlv() {
   document.getElementById(id).addEventListener('input', () => { syncSlv(); render(); }));
 
 // leitura do art. 5.º, n.º 10 (dedução dos implantes) e inflação sobre os valores antigos
+let cxGlobal = true; // majoração ×1,2 dos procedimentos complexos no regime antigo (global)
 let dedMode = 'bolo'; // 'bolo' = (GDH − implante) × % (leitura do CA) · 'equipa' = GDH × % − implante (leitura literal)
 let inflOn = false;
 document.querySelectorAll('#gDedMode button').forEach(b => b.onclick = () => {
@@ -793,6 +797,7 @@ document.getElementById('gInfl').onclick = () => {
   document.getElementById('gInfl').classList.toggle('on', inflOn);
   render();
 };
+document.getElementById('gCx').onclick = () => { cxGlobal = !cxGlobal; document.getElementById('gCx').classList.toggle('on', cxGlobal); render(); };
 
 
 // ---- cálculo por GDH ------------------------------------------------------
@@ -807,7 +812,7 @@ function calc(d, ambArg) {
 
   const old1 = amb ? d.oa1 : d.oi1, old2 = amb ? d.oa2 : d.oi2;
   const nov1 = amb ? d.na1 : d.ni1, nov2 = amb ? d.na2 : d.ni2;
-  const majOld = s.cxOld ? 1.2 : 1;
+  const majOld = (s.cxOld && cxGlobal) ? 1.2 : 1;
 
   // procedimentos associados do mesmo GDH: +45% cada, teto acumulado +60% — regra igual
   // no regime novo (art. 2.º, n.º 8, al. c da Portaria 281/2026/1) e no antigo (Portaria 207/2017)
@@ -906,7 +911,7 @@ function renderMaj() {
   const host = document.getElementById('majCard');
   const ind = majInd(), total = majTotal(), aplicada = maj.prod ? total : 0;
   const seg = (k, cur, locked) => {
-    const opt = (v, lbl) => `<button data-mk="${k}" data-mv="${v}" class="${cur === v ? 'sel' : ''}"${locked ? ' disabled' : ''}>${lbl}</button>`;
+    const opt = (v, lbl) => `<button data-mk="${k}" data-mv="${v}" class="${cur === v ? (v === 0 ? 'sel def' : 'sel') : ''}"${locked ? ' disabled' : ''}>${lbl}</button>`;
     return `<div class="seg majseg${locked ? ' lock' : ''}">${opt(0, 'Não')}${opt(2.5, '+2,5')}${opt(5, '+5')}</div>`;
   };
   let grid = '';
@@ -928,7 +933,7 @@ function renderMaj() {
     <div class="globals" style="margin-bottom:14px">
       <div class="field"><label>Produção contratualizada (serviço, anual)</label>
         <span class="sw ${maj.prod ? 'on' : ''}" id="majProd" style="cursor:pointer"><div class="track"></div><span class="lbl">${maj.prod ? 'atingida' : 'não atingida'}</span></span></div>
-      <div class="field"><label>Situação da LEC do serviço → teto máximo</label>
+      <div class="field"><label>Situação da LEC da unidade → teto máximo</label>
         <select id="majLec">
           <option value="60"${maj.lec === 60 ? ' selected' : ''}>LEC muito crítica (>70% fora TMRG) — 60%</option>
           <option value="70"${maj.lec === 70 ? ' selected' : ''}>LEC crítica (>50–70%) — 70%</option>
@@ -940,7 +945,7 @@ function renderMaj() {
       <tr class="majtot"><td style="text-align:left;font-weight:700;font-family:var(--font-sans)">Majoração total da grelha</td><td style="text-align:right;font-weight:700">${total.toLocaleString('pt-PT')} p.p. <span class="muted">(máx. 25)</span></td></tr>
     </table></div>
     <div class="mgmt">▸ Majoração aplicada: <b>${aplicada.toLocaleString('pt-PT')} p.p.</b> ${maj.prod ? '(produção anual atingida)' : '<span class="ko">(produção não atingida — só o indexante base)</span>'}. Soma-se à % base de cada GDH na coluna «Agora», nos custos do hospital e nos totais, limitada ao teto da LEC (<b>${maj.lec}%</b>) e ao máximo absoluto de 80%.</div>
-    <div class="group-note">A <b>produção contratualizada</b> é anual e ao nível do serviço (decide se a majoração é paga); os <b>indicadores da grelha</b> são mensais e por unidade (cumpridos no mês da cirurgia). Cada mês paga-se o indexante base; a majoração dos vários meses é paga no fim do ano se a produção anual for atingida — substitui o antigo regime dos 10% retidos. Dependência automática: 0 doentes fora do TMRG implica 0 doentes >270 dias e 0 oncológicos fora do TMRG. Regra de progressão: o teto pode subir um patamar se o serviço reduzir ≥10 p.p. nos pedidos fora do TMRG — nesse caso, selecione o patamar imediatamente superior.</div>
+    <div class="group-note">A <b>produção contratualizada</b> é anual e ao nível do serviço (decide se a majoração é paga); os <b>indicadores da grelha</b> e o <b>teto da LEC</b> são mensais e ao nível da unidade (avaliados no mês da cirurgia). Cada mês paga-se o indexante base; a majoração dos vários meses é paga no fim do ano se a produção anual do serviço for atingida — substitui o antigo regime dos 10% retidos. Dependência automática: 0 doentes fora do TMRG implica 0 doentes >270 dias e 0 oncológicos fora do TMRG. <b>Regra de progressão da LEC:</b> a unidade pode aplicar o teto do patamar imediatamente superior (na tabela da LEC acima) se reduzir ≥10 p.p. na proporção de pedidos fora do TMRG face ao período de referência, havendo produção de consulta contratualizada e executada — nesse caso, selecione o patamar acima.</div>
     ` : `<div class="group-note">Ative para modelar a majoração da grelha cirúrgica (até 25 p.p., limite legal). Quando ativa e a produção contratualizada atingida, a majoração soma-se à % da equipa na coluna «Agora», nos custos do hospital e nos totais, com o teto da situação da LEC do serviço.</div>`}
   `;
   document.getElementById('majToggle').onclick = () => { maj.on = !maj.on; render(); };
@@ -995,7 +1000,7 @@ function render() {
     const fakTxt = r.nproc ? ` × ${r.fak.toLocaleString('pt-PT')} (${r.nproc} proc. associado${r.nproc > 1 ? 's' : ''}: +45% cada, teto +60% — art. 2.º, n.º 8, al. c)` : '';
     const fakOldTxt = r.nproc ? ` × ${r.fak.toLocaleString('pt-PT')} (${r.nproc} proc. associado${r.nproc > 1 ? 's' : ''}: +45% cada, teto +60% — regra idêntica na Portaria 207/2017)` : '';
     const inflTxt = inflOn ? ` × ${(1 + G('gInflPct') / 100).toLocaleString('pt-PT')} (inflação 2017→2026)` : '';
-    const fOld = sev => `${pctOldTxt}% × ${fmt(sev === 1 ? r.old1 : r.old2)} (GDH antigo, sev. ${sev})${s.cxOld ? ' × 1,2 (complexo)' : ''}${fakOldTxt}${inflTxt} = ${fmt(sev === 1 ? r.eqOld1 : r.eqOld2)}`;
+    const fOld = sev => `${pctOldTxt}% × ${fmt(sev === 1 ? r.old1 : r.old2)} (GDH antigo, sev. ${sev})${(s.cxOld && cxGlobal) ? ' × 1,2 (complexo)' : ''}${fakOldTxt}${inflTxt} = ${fmt(sev === 1 ? r.eqOld1 : r.eqOld2)}`;
     const fNov = sev => { const res = sev === 1 ? r.eqNov1 : r.eqNov2;
       const baseTxt = `${fmt(sev === 1 ? r.nov1 : r.nov2)} (col. ${r.amb ? 'P' : 'O'}, sev. ${sev})${fakTxt}`;
       const core = r.ded
@@ -1045,7 +1050,7 @@ function render() {
           <div class="rbox">
             <h3>Equipa — antes vs. agora <span class="muted" style="font-weight:500">(${r.amb ? 'ambulatório' : 'internamento'})</span></h3>
             <table>
-              <tr><th></th><th>Antes ${s.cxOld ? '<span class="badge b12">×1,2</span>' : ''}</th><th>Agora (${(r.pct*100).toLocaleString('pt-PT')}%)</th><th>Δ €</th><th>Δ %</th></tr>
+              <tr><th></th><th>Antes ${(s.cxOld && cxGlobal) ? '<span class="badge b12">×1,2</span>' : ''}</th><th>Agora (${(r.pct*100).toLocaleString('pt-PT')}%)</th><th>Δ €</th><th>Δ %</th></tr>
               <tr${mainCls}>
                 <td>Severidade 1</td>
                 <td>${r.eqOld1 === null ? '—' : F(fmt(r.eqOld1), fOld(1))}</td>
