@@ -156,6 +156,17 @@ input.est { background: rgba(230,126,34,.07); border-color: rgba(230,126,34,.4);
 .caacc-h { font-family: var(--font-mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: .5px; color: var(--ink-muted); background: var(--bg-tint); padding: 6px 10px; border-radius: var(--radius-sm); margin-bottom: 3px; }
 .caacc-h.met { color: var(--color-primary-dark); box-shadow: inset 3px 0 0 var(--color-primary); }
 .cadis { opacity: .45; pointer-events: none; }
+.cainps { border: 1px solid var(--rule-soft); border-radius: var(--radius-sm); overflow: hidden; }
+.cainp { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 6px 10px; font-size: 12px; color: var(--ink-soft); flex-wrap: wrap; border-bottom: 1px solid var(--rule-soft); }
+.cainp:last-child { border-bottom: none; }
+.cainp-l { flex: 1 1 240px; min-width: 200px; }
+.calvl { margin-bottom: 8px; border: 1px solid var(--rule); border-radius: var(--radius-sm); overflow: hidden; }
+.calvl.met { border-color: var(--color-primary); }
+.calvl-h { font-family: var(--font-mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: .5px; color: var(--ink-muted); background: var(--bg-tint); padding: 6px 10px; }
+.calvl.met .calvl-h { color: var(--color-primary-dark); background: rgba(59,135,123,.12); }
+.cachips { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 10px; }
+.cachip { font-size: 11px; padding: 3px 9px; border-radius: 999px; background: var(--bg-tint); border: 1px solid var(--rule); color: var(--ink-muted); }
+.cachip.ok { background: rgba(46,204,113,.14); border-color: rgba(46,204,113,.5); color: var(--pos-dark); font-weight: 600; }
 .majtable { width: 100%; border-collapse: collapse; }
 .majtable td { padding: 5px 8px; font-size: 12px; vertical-align: middle; border-bottom: 1px solid var(--rule-soft); }
 .majtable .majcrit { font-size: 10px; color: var(--ink-muted); margin-top: 1px; font-family: var(--font-sans); }
@@ -350,8 +361,7 @@ footer { margin-top: 30px; font-size: 11px; color: var(--ink-muted); line-height
   </div>
 
   <div class="glass panel">
-    <h2><span class="eyebrow" style="margin:0">GDH da especialidade — selecionar para analisar</span></h2>
-    <div class="seg" id="tblModeSeg" style="max-width:320px;margin-bottom:12px"><button data-mode="portaria" class="sel">Portaria</button><button data-mode="ca">Proposta CA</button></div>
+    <h2 style="justify-content:space-between;flex-wrap:wrap;gap:10px"><span class="eyebrow" style="margin:0">GDH da especialidade — selecionar para analisar</span><div class="seg" id="tblModeSeg" style="width:auto;flex:none;margin:0;min-width:260px"><button data-mode="portaria" class="sel">Portaria</button><button data-mode="ca">Proposta CA</button></div></h2>
     <div id="gdhTable" style="overflow:auto; background: rgba(255,255,255,.85); border: 1px solid var(--rule); border-radius: var(--radius-md);"></div>
     <div class="group-note">Cada GDH tem uma sublinha por regime (internamento e ambulatório), com o valor dos <b>implantes</b> e a <b>% da equipa</b> editáveis por regime (predefinidos por GDH). «Antes/Agora» são <b>valores esperados por episódio com o mix de severidades</b>: no antigo pagava-se a severidade codificada; no novo, a sev. 2 por comorbilidades paga-se pela sev. 1. Fórmula confirmada pela DE-SNS: <b>(GDH − implante) × %</b>. Clique numa linha para abrir/fechar o cartão detalhado desse regime. «N.º / sessão» soma o total no rodapé; os valores refletem o perfil escolhido acima.</div>
   </div>
@@ -421,14 +431,38 @@ const maj = {on: false, prod: true, lec: 80, ind: {a1: 0, a2: 0, a3: 0, b1: 0, b
 
 // ---- proposta CA (Excel administração): x% base e material assumido por GDH ----
 const CA = {23:{x:38}, 26:{x:30}, 73:{x:35,mat:55.09}, 97:{x:35}, 98:{x:37}, 227:{x:35}, 228:{x:45}, 263:{x:55}, 301:{x:50,mat:1643.02}, 302:{x:50,mat:1367.39}, 303:{x:50,mat:635.98}, 304:{x:55,mat:635.98}, 308:{x:45}, 309:{x:30}, 310:{x:55}, 312:{x:40.9}, 313:{x:50,mat:402.8}, 314:{x:50}, 315:{x:55}, 316:{x:45}, 317:{x:55}, 320:{x:45}, 321:{x:50,mat:408.09}, 361:{x:40.9}, 362:{x:35}, 363:{x:35}, 364:{x:55}, 385:{x:40.9}, 403:{x:45}, 404:{x:45}, 443:{x:40}, 482:{x:55}, 483:{x:55}, 484:{x:55}, 512:{x:35}, 513:{x:35}, 517:{x:35}, 518:{x:35}, 519:{x:35}, 532:{x:46.8}, 850:{x:35}, 950:{x:35}, 951:{x:47.6}};
-const CA_ACCESS = {
-  1: {pp: 5, crit: ['≥90% doentes c/ neoplasia maligna da LIC operados dentro do TMRG no mês', '≥93% doentes com TE < TMRG na LIC no fim do mês', 'Zero doentes com TE >270 dias na LIC no fim do mês', 'Zero doentes com TE >365 dias na LEC (ou dobro de consultas em adicional vs. cirurgias em adicional)']},
-  2: {pp: 10, crit: ['100% doentes c/ neoplasia maligna da LIC operados dentro do TMRG', '≥98% doentes com TE < TMRG na LIC', 'Zero doentes com TE >270 dias na LEC (ou dobro de consultas em adicional)', 'Zero doentes da LIC transferidos para fora no mês']},
-  3: {pp: 15, crit: ['100% doentes c/ neoplasia maligna da LIC operados dentro do TMRG', '100% doentes com TE < TMRG na LIC', '100% doentes com TE < TMRG na LEC', 'Zero doentes da LIC transferidos para fora no mês']},
-};
+const CA_INPUTS = [
+  {k: 'neo', label: 'Neoplasias malignas da LIC operadas dentro do TMRG (mês)', opts: ['<90%', '≥90%', '100%']},
+  {k: 'teLIC', label: 'Doentes com TE < TMRG na LIC (fim do mês)', opts: ['<93%', '≥93%', '≥98%', '100%']},
+  {k: 'lec', label: 'Doente mais antigo na LEC (fim do mês)', opts: ['>365 dias', '<365 dias', '<270 dias', '< TMRG']},
+  {k: 'te270', label: 'Zero doentes com TE >270 dias na LIC (fim do mês)', bin: true},
+  {k: 'transf', label: 'Zero doentes da LIC transferidos para fora (mês)', bin: true},
+  {k: 'dobro', label: '≥ dobro de consultas em adicional vs. cirurgias em adicional', bin: true},
+];
+const CA_LEVELS = [
+  {n: 1, pp: 5, crit: [
+    {t: 'Neoplasias ≥90% dentro do TMRG', ok: o => o.neo >= 1},
+    {t: 'TE < TMRG na LIC ≥93%', ok: o => o.teLIC >= 1},
+    {t: 'Zero TE >270 dias na LIC', ok: o => o.te270},
+    {t: 'Doente mais antigo na LEC <365 dias ou ≥dobro de consultas', ok: o => o.lec >= 1 || o.dobro},
+  ]},
+  {n: 2, pp: 10, crit: [
+    {t: 'Neoplasias 100% dentro do TMRG', ok: o => o.neo >= 2},
+    {t: 'TE < TMRG na LIC ≥98%', ok: o => o.teLIC >= 2},
+    {t: 'Doente mais antigo na LEC <270 dias ou ≥dobro de consultas', ok: o => o.lec >= 2 || o.dobro},
+    {t: 'Zero transferidos da LIC para fora', ok: o => o.transf},
+  ]},
+  {n: 3, pp: 15, crit: [
+    {t: 'Neoplasias 100% dentro do TMRG', ok: o => o.neo >= 2},
+    {t: 'TE < TMRG na LIC 100%', ok: o => o.teLIC >= 3},
+    {t: 'Doente mais antigo na LEC < TMRG', ok: o => o.lec >= 3},
+    {t: 'Zero transferidos da LIC para fora', ok: o => o.transf},
+  ]},
+];
 const CA_EFIC = ['≥90% cirurgias da produção base com início pontual (indução <30 min após a hora de início)', 'Tempo médio de turnover na base ≤20 min', 'Zero cancelamentos no dia imputáveis à equipa', 'Superação da produção base cirúrgica ≥5% (apuramento mensal, verificação anual)'];
-const caObj = {a: {1: [false, false, false, false], 2: [false, false, false, false], 3: [false, false, false, false]}, e: [false, false, false, false]};
-function caAccessLevel() { for (const n of [3, 2, 1]) if (caObj.a[n].every(Boolean)) return n; return 0; }
+const caObj = {neo: 0, teLIC: 0, lec: 0, te270: false, transf: false, dobro: false, e: [false, false, false, false]};
+function caLevelMet(n) { return CA_LEVELS[n - 1].crit.every(c => c.ok(caObj)); }
+function caAccessLevel() { for (const n of [3, 2, 1]) if (caLevelMet(n)) return n; return 0; }
 function caBonus() { const lvl = caAccessLevel(); const acc = {0: 0, 1: 5, 2: 10, 3: 15}[lvl]; const ef = lvl >= 1 ? Math.min(caObj.e.filter(Boolean).length * 2.5, 10) : 0; return acc + ef; }
 let tblMode = 'portaria'; // 'portaria' | 'ca' — só afeta a tabela
 // dependência: 0 doentes fora do TMRG (a1 resultado) implica 0 >270 dias (a2) e 0 oncológicos fora (a3)
@@ -725,7 +759,7 @@ function renderTable() {
         let caAgora = null;
         if (caD && r.nov1 !== null) {
           const caEq = price => (price - caMatV) * (caEffPct / 100);
-          caAgora = ((r.p1 + r.p2) * caEq(r.nov1) + r.p34 * caEq(r.nov2eff)) * f;
+          caAgora = caEq(r.nov1) * f;
         }
         const g2 = isCa ? (caD ? caAgora : null) : gPort;
         const dl = a !== null && g2 !== null ? g2 - a : null;
@@ -749,7 +783,7 @@ function renderTable() {
         const fA = `${pTxt(r.p1)} × [${oldTerm(r.old1)}] (sev. 1) + ${pTxt(r.p2 + r.p34)} × [${oldTerm(r.old2 !== null ? r.old2 : r.old1)}] (sev. 2)${shTxt} = ${fmt(a)}<span class="nota">${d.og ? 'Renumerado — no APR31 era o GDH ' + d.og + '. ' : ''}GDH antigo (col. SIGIC ${ambFlag ? 'ambulatório' : 'internamento'}, APR31): sev. 1 ${fmt(r.old1)} · sev. 2 ${fmt(r.old2 !== null ? r.old2 : r.old1)}. Pagava-se a severidade codificada (1 ou 2), sem restrição de origem.</span>`;
         const fG = `${pTxt(r.p1 + r.p2)} × [${novTerm(r.nov1)}] (sev. paga 1) + ${pTxt(r.p34)} × [${novTerm(r.nov2eff)}] (sev. paga 2)${shTxt} = ${fmt(gPort)}<span class="nota">GDH novo (col. ${ambFlag ? 'P' : 'O'}, APR36): sev. 1 ${fmt(r.nov1)} · sev. 2 ${fmt(r.nov2eff)}. Fórmula confirmada pela DE-SNS: (GDH − implante) × %. A sev. 2 por comorbilidades paga-se à equipa pela sev. 1 (art. 5.º, n.º 4); sev. 3/4 pela sev. 2.</span>`;
         const caArrow = (caD && caBonus() > 0) ? `<div class="pcteff" title="x% base + bónus da proposta CA (teto 80%)">→ ${caEffPct.toLocaleString('pt-PT')}%</div>` : '';
-        const fCA = caD ? `${pTxt(r.p1 + r.p2)} × [(${fmt(r.nov1)} − ${fmt(caMatV)}) × ${caEffPct.toLocaleString('pt-PT')}%] + ${pTxt(r.p34)} × [(${fmt(r.nov2eff)} − ${fmt(caMatV)}) × ${caEffPct.toLocaleString('pt-PT')}%]${shTxt} = ${fmt(caAgora)}<span class="nota">Proposta CA (col. ${ambFlag ? 'P' : 'O'}, APR36): x% base ${caD.x.toLocaleString('pt-PT')}% + bónus ${caBonus().toLocaleString('pt-PT')} p.p. = ${caEffPct.toLocaleString('pt-PT')}% (teto 80%). Material assumido ${fmt(caMatV)} deduzido ao valor da tabela.</span>` : '';
+        const fCA = caD ? `(${fmt(r.nov1)} − ${fmt(caMatV)}) × ${caEffPct.toLocaleString('pt-PT')}%${shTxt} = ${fmt(caAgora)}<span class="nota">Proposta CA (col. ${ambFlag ? 'P' : 'O'}, APR36, sev. 1): x% base ${caD.x.toLocaleString('pt-PT')}% + bónus ${caBonus().toLocaleString('pt-PT')} p.p. = ${caEffPct.toLocaleString('pt-PT')}% (teto 80%). Material assumido ${fmt(caMatV)} deduzido. A proposta CA não considera severidades no pagamento.</span>` : '';
         const naoAbr = isCa && !caD;
         const isOpen = s.on && (s.amb === ambFlag);
         rows += `<tr class="grow${isOpen ? ' onrow' : ''}${ri === 0 ? ' gtop' : ''}" data-id="${d.id}" data-amb="${ambFlag ? 1 : 0}">
@@ -950,33 +984,42 @@ function renderAnual() {
 
 function renderCaObj() {
   const host = document.getElementById('caObjCard');
+  const o = caObj;
   const lvl = caAccessLevel(), bonus = caBonus();
-  const sw = ch => `<span class="sw${ch ? ' on' : ''}"><span class="track"></span></span>`;
-  let acc = '';
-  [1, 2, 3].forEach(n => {
-    const g = CA_ACCESS[n], met = caObj.a[n].every(Boolean);
-    let crit = '';
-    g.crit.forEach((c, i) => { crit += `<div class="cacrit" data-ca="a" data-lvl="${n}" data-i="${i}">${sw(caObj.a[n][i])}<span>${c}</span></div>`; });
-    acc += `<div class="caacc"><div class="caacc-h${met ? ' met' : ''}">${n}º nível — +${g.pp}% do GDH${met ? ' · <b>atingido</b>' : ''}</div>${crit}</div>`;
+  let inp = '';
+  CA_INPUTS.forEach(f => {
+    let btns;
+    if (f.bin) btns = [[false, 'Não'], [true, 'Sim']].map(([v, l]) => `<button data-cak="${f.k}" data-cav="${v}" class="${o[f.k] === v ? 'sel' : ''}">${l}</button>`).join('');
+    else btns = f.opts.map((l, i) => `<button data-cak="${f.k}" data-cav="${i}" class="${o[f.k] === i ? 'sel' : ''}">${l}</button>`).join('');
+    inp += `<div class="cainp"><span class="cainp-l">${f.label}</span><div class="seg majseg">${btns}</div></div>`;
+  });
+  let levels = '';
+  CA_LEVELS.forEach(L => {
+    const met = L.crit.every(c => c.ok(o));
+    const chips = L.crit.map(c => `<span class="cachip${c.ok(o) ? ' ok' : ''}">${c.t}</span>`).join('');
+    levels += `<div class="calvl${met ? ' met' : ''}"><div class="calvl-h">${L.n}º nível — +${L.pp}% do GDH${met ? ' · <b>atingido</b>' : ''}</div><div class="cachips">${chips}</div></div>`;
   });
   const efEnabled = lvl >= 1;
-  const efPP = efEnabled ? Math.min(caObj.e.filter(Boolean).length * 2.5, 10) : 0;
+  const efPP = efEnabled ? Math.min(o.e.filter(Boolean).length * 2.5, 10) : 0;
+  const sw = ch => `<span class="sw${ch ? ' on' : ''}"><span class="track"></span></span>`;
   let ef = '';
-  CA_EFIC.forEach((c, i) => { ef += `<div class="cacrit" data-ca="e" data-i="${i}">${sw(caObj.e[i])}<span>${c} <span class="muted">(+2,5%)</span></span></div>`; });
+  CA_EFIC.forEach((c, i) => { ef += `<div class="cacrit" data-cae="${i}">${sw(o.e[i])}<span>${c} <span class="muted">(+2,5%)</span></span></div>`; });
   host.innerHTML = `
     <h2><span class="eyebrow" style="margin:0">Objetivos — proposta CA (bonificações por serviço/unidade)</span></h2>
-    <div class="group-title">Bonificação de acesso — níveis mutuamente exclusivos (vale o mais alto totalmente cumprido)</div>
-    ${acc}
-    <div class="group-title" style="margin-top:8px">Bonificações de eficiência — máx. +10%, só se atingido ≥1º nível de acesso${efEnabled ? '' : ' <span class="ko">(inativo: falta o 1º nível)</span>'}</div>
+    <div class="group-title">Bonificação de acesso — indicadores da unidade</div>
+    <div class="cainps">${inp}</div>
+    <div style="margin-top:10px">${levels}</div>
+    <div class="group-title" style="margin-top:10px">Bonificações de eficiência — máx. +10%, só se atingido ≥1º nível de acesso${efEnabled ? '' : ' <span class="ko">(inativo: falta o 1º nível)</span>'}</div>
     <div class="${efEnabled ? '' : 'cadis'}">${ef}</div>
-    <div class="mgmt">▸ Nível de acesso: <b>${lvl === 0 ? 'nenhum' : lvl + 'º (+' + CA_ACCESS[lvl].pp + '%)'}</b> · eficiência <b>+${efPP.toLocaleString('pt-PT')}%</b> · <b>bónus total ${bonus.toLocaleString('pt-PT')} p.p.</b> (máx. 25). Soma-se à % base da proposta na coluna «Agora» quando a tabela está em <b>Proposta CA</b>, com teto de 80%.</div>
-    <div class="group-note">Avaliação mensal por unidade funcional (objetivos cumpridos no mês da cirurgia). Cada critério de um nível de acesso é obrigatório — o nível só conta se <b>todos</b> estiverem cumpridos. A eficiência só é elegível se a unidade cumprir pelo menos o 1º nível de acesso.</div>
+    <div class="mgmt">▸ Nível de acesso: <b>${lvl === 0 ? 'nenhum' : lvl + 'º (+' + {1: 5, 2: 10, 3: 15}[lvl] + '%)'}</b> · eficiência <b>+${efPP.toLocaleString('pt-PT')}%</b> · <b>bónus total ${bonus.toLocaleString('pt-PT')} p.p.</b> (máx. 25). Soma-se à % base da proposta na coluna «Agora» quando a tabela está em <b>Proposta CA</b>, com teto de 80%.</div>
+    <div class="group-note">Avaliação mensal por unidade funcional. Os níveis de acesso são mutuamente exclusivos — cada nível só conta se <b>todos</b> os seus critérios estiverem cumpridos (a verde), e vale o mais alto totalmente cumprido. A eficiência exige pelo menos o 1º nível. A proposta CA <b>não considera severidades</b> no pagamento — o «Agora» usa a sev. 1.</div>
   `;
-  host.querySelectorAll('.cacrit').forEach(el => el.onclick = () => {
-    if (el.dataset.ca === 'a') { const n = +el.dataset.lvl, i = +el.dataset.i; caObj.a[n][i] = !caObj.a[n][i]; }
-    else { caObj.e[+el.dataset.i] = !caObj.e[+el.dataset.i]; }
+  host.querySelectorAll('.seg.majseg button[data-cak]').forEach(b => b.onclick = () => {
+    const k = b.dataset.cak, v = b.dataset.cav;
+    caObj[k] = v === 'true' ? true : (v === 'false' ? false : +v);
     render();
   });
+  host.querySelectorAll('.cacrit[data-cae]').forEach(el => el.onclick = () => { caObj.e[+el.dataset.cae] = !caObj.e[+el.dataset.cae]; render(); });
 }
 
 function renderMaj() {
