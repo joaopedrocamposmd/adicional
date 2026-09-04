@@ -549,20 +549,33 @@ const GDH = [
   {esp:'cirurgia vascular', g:182, nome:'Outros proc. vasculares periféricos (inclui varizes)', area:'membros e periféricos', oi1:1189.55, oi2:5032.48, oa1:1189.55, oa2:5032.48, ni1:2244.74, ni2:3261.34, na1:2244.74, na2:3261.34, deduz:false, cx:false, mat:0, og:180, amb0:true},
   {esp:'cirurgia vascular', g:180, nome:'Outros procedimentos no aparelho circulatório', area:'membros e periféricos', oi1:1189.55, oi2:5032.48, oa1:1189.55, oa2:5032.48, ni1:1869.29, ni2:4143.66, na1:1869.29, na2:4143.66, deduz:false, cx:false, mat:0},
   {esp:'cirurgia vascular', g:444, nome:'Acessos vasculares para diálise', area:'acessos vasculares', oi1:2169.74, oi2:2874.53, oa1:1265.68, oa2:2874.53, ni1:2351.18, ni2:4325.17, na1:1989.56, na2:3659.93, deduz:false, cx:false, mat:0, amb0:true},
+  {esp:'cirurgia geral', g:361, nome:'Enxerto de pele — pele e tecido subcutâneo', area:'pele', oi1:2268.83, oi2:5305.54, oa1:1600.62, oa2:5305.54, ni1:2495.71, ni2:2841.15, na1:1760.68, na2:2841.15, deduz:false, cx:false, mat:0, amb0:true},
+  {esp:'cirurgia geral', g:364, nome:'Outros proc. na pele e tecido subcutâneo', area:'pele', oi1:1195.65, oi2:2743.14, oa1:1073.58, oa2:2743.14, ni1:1315.22, ni2:2312.61, na1:1180.94, na2:2076.5, deduz:false, cx:false, mat:0, amb0:true},
+  {esp:'cirurgia geral', g:385, nome:'Outras perturbações da pele, tecido subcutâneo e/ou mama', area:'pele', oi1:719.28, oi2:1226.82, oa1:626.82, oa2:626.82, ni1:791.21, ni2:1491.29, na1:689.51, na2:1491.29, deduz:false, cx:false, mat:0, amb0:true},
+  {esp:'cirurgia geral', g:403, nome:'Procedimentos para a obesidade', area:'estômago e esófago', oi1:2221.71, oi2:2850.86, oa1:2221.71, oa2:2576.79, ni1:2472.47, ni2:2929.74, na1:2472.47, na2:2929.74, deduz:false, cx:false, mat:0},
+  {esp:'cirurgia geral', g:850, nome:'Reabilitação, continuação de cuidados e outros contactos', area:'outros', oi1:1366.29, oi2:2630.04, oa1:1366.29, oa2:2630.04, ni1:2537.40, ni2:4223.18, na1:2537.40, na2:4223.18, deduz:false, cx:false, mat:0},
+  {esp:'cirurgia plástica', g:362, nome:'Mastectomia', area:'mama', oi1:1612.19, oi2:2691.73, oa1:1394.28, oa2:2691.73, ni1:2205.71, ni2:3017.06, na1:2205.71, na2:3017.06, deduz:false, cx:false, mat:0},
+  {esp:'ginecologia', g:532, nome:'Perturbações menstruais e outras do aparelho reprodutor feminino', area:'útero e anexos', oi1:554.71, oi2:671.79, oa1:554.71, oa2:554.71, ni1:533.46, ni2:850.61, na1:533.46, na2:850.61, deduz:false, cx:false, mat:0, amb0:true},
+  {esp:'ortopedia', g:23, nome:'Procedimentos vertebrais', area:'raquis', oi1:3090.51, oi2:5598.71, oa1:2575.42, oa2:5598.71, ni1:3051.9, ni2:5848.48, na1:3051.9, na2:5848.48, deduz:false, cx:false, mat:0},
+  {esp:'urologia', g:950, nome:'Procedimentos extensos não relacionados c/ diagnóstico principal', area:'outros', oi1:2698.06, oi2:5533.36, oa1:2547.32, oa2:5533.36, ni1:3332.67, ni2:5766.37, na1:3332.67, na2:5766.37, deduz:false, cx:false, mat:0},
+  {esp:'urologia', g:951, nome:'Procedimentos moderadamente extensos não relacionados c/ diagn. principal', area:'outros', oi1:2531.55, oi2:4046.28, oa1:2025.24, oa2:4046.28, ni1:1913.85, ni2:4215.51, na1:1913.85, na2:4215.51, deduz:false, cx:false, mat:0},
+  {esp:'dermatologia', g:361, nome:'Enxerto de pele — pele e tecido subcutâneo', area:'pele e enxertos', oi1:2268.83, oi2:5305.54, oa1:1600.62, oa2:5305.54, ni1:2495.71, ni2:2841.15, na1:1760.68, na2:2841.15, deduz:false, cx:false, mat:0, amb0:true},
+  {esp:'dermatologia', g:385, nome:'Outras perturbações da pele, tecido subcutâneo e/ou mama', area:'outras lesões', oi1:719.28, oi2:1226.82, oa1:626.82, oa2:626.82, ni1:791.21, ni2:1491.29, na1:689.51, na2:1491.29, deduz:false, cx:false, mat:0, amb0:true},
 ];
 GDH.forEach(d => { d.id = d.esp + ':' + d.g; });
-const ESPECIALIDADES = ['cirurgia geral','cirurgia plástica','cirurgia vascular','ginecologia','neurocirurgia','oftalmologia','ortopedia','otorrinolaringologia','urologia'];
+const ESPECIALIDADES = ['cirurgia geral','cirurgia plástica','cirurgia vascular','dermatologia','ginecologia','neurocirurgia','oftalmologia','ortopedia','otorrinolaringologia','urologia'];
 let espSel = 'ortopedia';
 const AREAS_ESP = {
  'ortopedia': ['anca','joelho','mão','ombro','pé','raquis','geral'],
- 'urologia': ['rim e vias urinárias','bexiga','uretra','próstata','testículo e escroto'],
+ 'urologia': ['rim e vias urinárias','bexiga','uretra','próstata','testículo e escroto','outros'],
  'otorrinolaringologia': ['cabeça e pescoço','ossos da face','boca e palato','amígdalas e adenoides','ouvido, nariz e garganta'],
  'ginecologia': ['oncológica','útero e anexos','reconstrutiva','outros'],
  'cirurgia plástica': ['mama','pele e enxertos','mão'],
  'oftalmologia': ['olho'],
- 'cirurgia geral': ['parede abdominal','vias biliares','apêndice','ânus e proctologia','estômago e esófago','intestino','mama','endócrino','outros'],
+ 'cirurgia geral': ['parede abdominal','vias biliares','apêndice','ânus e proctologia','estômago e esófago','intestino','mama','endócrino','pele','outros'],
  'neurocirurgia': ['crânio','raquis','nervos periféricos'],
  'cirurgia vascular': ['carótida','aorta e vasos major','membros e periféricos','acessos vasculares'],
+ 'dermatologia': ['pele e enxertos','outras lesões'],
 };
 
 // ---- distribuição do valor da equipa (Modelos A/B do hospital) -------------
