@@ -430,7 +430,7 @@ const MAJ_GRID = {
 const maj = {on: false, prod: true, lec: 80, ind: {a1: 0, a2: 0, a3: 0, b1: 0, b2: 0, c1: 0, c2: 0}};
 
 // ---- proposta CA (Excel administração): x% base e material assumido por GDH ----
-const CA = {23:{x:38}, 26:{x:30}, 73:{x:35,mat:55.09}, 97:{x:35}, 98:{x:37}, 227:{x:35}, 228:{x:45}, 263:{x:55}, 301:{x:50,mat:1643.02}, 302:{x:50,mat:1367.39}, 303:{x:50,mat:635.98}, 304:{x:55,mat:635.98}, 308:{x:45}, 309:{x:30}, 310:{x:55}, 312:{x:40.9}, 313:{x:50,mat:402.8}, 314:{x:50}, 315:{x:55}, 316:{x:45}, 317:{x:55}, 320:{x:45}, 321:{x:50,mat:408.09}, 361:{x:40.9}, 362:{x:35}, 363:{x:35}, 364:{x:55}, 385:{x:40.9}, 403:{x:45}, 404:{x:45}, 443:{x:40}, 482:{x:55}, 483:{x:55}, 484:{x:55}, 512:{x:35}, 513:{x:35}, 517:{x:35}, 518:{x:35}, 519:{x:35}, 532:{x:46.8}, 850:{x:35}, 950:{x:35}, 951:{x:47.6}};
+const CA = {23:{x:38}, 26:{x:30}, 73:{x:35,mat:55.12}, 97:{x:35}, 98:{x:37}, 227:{x:35}, 228:{x:45}, 263:{x:55}, 301:{x:50,mat:1643.00}, 302:{x:50,mat:1367.40}, 303:{x:50,mat:636.00}, 304:{x:55,mat:636.00}, 308:{x:45}, 309:{x:30}, 310:{x:55}, 312:{x:40.9}, 313:{x:50,mat:402.8}, 314:{x:50}, 315:{x:55}, 316:{x:45}, 317:{x:55}, 320:{x:45}, 321:{x:50,mat:408.10}, 361:{x:40.9}, 362:{x:35}, 363:{x:35}, 364:{x:55}, 385:{x:40.9}, 403:{x:45}, 404:{x:45}, 443:{x:40}, 482:{x:55}, 483:{x:55}, 484:{x:55}, 512:{x:35}, 513:{x:35}, 517:{x:35}, 518:{x:35}, 519:{x:35}, 532:{x:46.8}, 850:{x:35}, 950:{x:35}, 951:{x:47.6}};
 const CA_INPUTS = [
   {k: 'neo', label: 'Neoplasias malignas da LIC operadas dentro do TMRG (mês)', opts: ['<90%', '≥90%', '100%']},
   {k: 'teLIC', label: 'Doentes com TE < TMRG na LIC (fim do mês)', opts: ['<93%', '≥93%', '≥98%', '100%']},
@@ -464,6 +464,10 @@ const caObj = {neo: 0, teLIC: 0, lec: 0, te270: false, transf: false, dobro: fal
 function caLevelMet(n) { return CA_LEVELS[n - 1].crit.every(c => c.ok(caObj)); }
 function caAccessLevel() { for (const n of [3, 2, 1]) if (caLevelMet(n)) return n; return 0; }
 function caBonus() { const lvl = caAccessLevel(); const acc = {0: 0, 1: 5, 2: 10, 3: 15}[lvl]; const ef = lvl >= 1 ? Math.min(caObj.e.filter(Boolean).length * 2.5, 10) : 0; return acc + ef; }
+// Override do indexante por especialidade (esp:g) quando difere do valor geral por GDH (Anexo III, 1.4)
+const CA_ESP = {'dermatologia:385': {x:35}};
+// GDH não especificamente previstos no Anexo III (1.4) → indexante base geral de 35%
+function caFor(d){ const e = CA_ESP[d.esp+':'+d.g]; if(e) return e; const c = CA[d.g]; if(c) return c; return {x:35, generic:true}; }
 let tblMode = 'portaria'; // 'portaria' | 'ca' — só afeta a tabela
 // dependência: 0 doentes fora do TMRG (a1 resultado) implica 0 >270 dias (a2) e 0 oncológicos fora (a3)
 function majInd() { const s = {...maj.ind}; if (s.a1 === 5) { s.a2 = 5; s.a3 = 5; } return s; }
@@ -552,7 +556,8 @@ const GDH = [
   {esp:'cirurgia geral', g:361, nome:'Enxerto de pele — pele e tecido subcutâneo', area:'pele', oi1:2268.83, oi2:5305.54, oa1:1600.62, oa2:5305.54, ni1:2495.71, ni2:2841.15, na1:1760.68, na2:2841.15, deduz:false, cx:false, mat:0, amb0:true},
   {esp:'cirurgia geral', g:364, nome:'Outros proc. na pele e tecido subcutâneo', area:'pele', oi1:1195.65, oi2:2743.14, oa1:1073.58, oa2:2743.14, ni1:1315.22, ni2:2312.61, na1:1180.94, na2:2076.5, deduz:false, cx:false, mat:0, amb0:true},
   {esp:'cirurgia geral', g:385, nome:'Outras perturbações da pele, tecido subcutâneo e/ou mama', area:'pele', oi1:719.28, oi2:1226.82, oa1:626.82, oa2:626.82, ni1:791.21, ni2:1491.29, na1:689.51, na2:1491.29, deduz:false, cx:false, mat:0, amb0:true},
-  {esp:'cirurgia geral', g:403, nome:'Procedimentos para a obesidade', area:'estômago e esófago', oi1:2221.71, oi2:2850.86, oa1:2221.71, oa2:2576.79, ni1:2472.47, ni2:2929.74, na1:2472.47, na2:2929.74, deduz:false, cx:false, mat:0},
+  {esp:'cirurgia geral', g:403, sub:'m1', nome:'Modelo 1 — banda gástrica / gastrectomia vertical (obesidade)', area:'obesidade', oi1:3377.02, oi2:null, oa1:3377.02, oa2:null, ni1:3377.02, ni2:null, na1:3377.02, na2:null, deduz:false, cx:false, mat:0},
+  {esp:'cirurgia geral', g:403, sub:'m2', nome:'Modelo 2 — bypass gástrico / derivações bílio-pancreáticas (obesidade)', area:'obesidade', oi1:4295.02, oi2:null, oa1:4295.02, oa2:null, ni1:4295.02, ni2:null, na1:4295.02, na2:null, deduz:false, cx:false, mat:0},
   {esp:'cirurgia geral', g:850, nome:'Reabilitação, continuação de cuidados e outros contactos', area:'outros', oi1:1366.29, oi2:2630.04, oa1:1366.29, oa2:2630.04, ni1:2537.40, ni2:4223.18, na1:2537.40, na2:4223.18, deduz:false, cx:false, mat:0},
   {esp:'cirurgia plástica', g:362, nome:'Mastectomia', area:'mama', oi1:1612.19, oi2:2691.73, oa1:1394.28, oa2:2691.73, ni1:2205.71, ni2:3017.06, na1:2205.71, na2:3017.06, deduz:false, cx:false, mat:0},
   {esp:'ginecologia', g:532, nome:'Perturbações menstruais e outras do aparelho reprodutor feminino', area:'útero e anexos', oi1:554.71, oi2:671.79, oa1:554.71, oa2:554.71, ni1:533.46, ni2:850.61, na1:533.46, na2:850.61, deduz:false, cx:false, mat:0, amb0:true},
@@ -562,7 +567,7 @@ const GDH = [
   {esp:'dermatologia', g:361, nome:'Enxerto de pele — pele e tecido subcutâneo', area:'pele e enxertos', oi1:2268.83, oi2:5305.54, oa1:1600.62, oa2:5305.54, ni1:2495.71, ni2:2841.15, na1:1760.68, na2:2841.15, deduz:false, cx:false, mat:0, amb0:true},
   {esp:'dermatologia', g:385, nome:'Outras perturbações da pele, tecido subcutâneo e/ou mama', area:'outras lesões', oi1:719.28, oi2:1226.82, oa1:626.82, oa2:626.82, ni1:791.21, ni2:1491.29, na1:689.51, na2:1491.29, deduz:false, cx:false, mat:0, amb0:true},
 ];
-GDH.forEach(d => { d.id = d.esp + ':' + d.g; });
+GDH.forEach(d => { d.id = d.esp + ':' + d.g + (d.sub ? ':' + d.sub : ''); });
 const ESPECIALIDADES = ['cirurgia geral','cirurgia plástica','cirurgia vascular','dermatologia','ginecologia','neurocirurgia','oftalmologia','ortopedia','otorrinolaringologia','urologia'];
 let espSel = 'ortopedia';
 const AREAS_ESP = {
@@ -572,7 +577,7 @@ const AREAS_ESP = {
  'ginecologia': ['oncológica','útero e anexos','reconstrutiva','outros'],
  'cirurgia plástica': ['mama','pele e enxertos','mão'],
  'oftalmologia': ['olho'],
- 'cirurgia geral': ['parede abdominal','vias biliares','apêndice','ânus e proctologia','estômago e esófago','intestino','mama','endócrino','pele','outros'],
+ 'cirurgia geral': ['parede abdominal','vias biliares','apêndice','ânus e proctologia','estômago e esófago','intestino','mama','endócrino','pele','obesidade','outros'],
  'neurocirurgia': ['crânio','raquis','nervos periféricos'],
  'cirurgia vascular': ['carótida','aorta e vasos major','membros e periféricos','acessos vasculares'],
  'dermatologia': ['pele e enxertos','outras lesões'],
@@ -766,7 +771,7 @@ function renderTable() {
         const a = r.eqOldMix === null ? null : r.eqOldMix * f;
         const gPort = r.eqMix === null ? null : r.eqMix * f;
         const isCa = tblMode === 'ca';
-        const caD = CA[d.g];
+        const caD = caFor(d);
         const caMatV = (caD && caD.mat != null) ? caD.mat : 0;
         const caEffPct = caD ? Math.min(caD.x + caBonus(), 80) : null;
         let caAgora = null;
@@ -796,7 +801,7 @@ function renderTable() {
         const fA = `${pTxt(r.p1)} × [${oldTerm(r.old1)}] (sev. 1) + ${pTxt(r.p2 + r.p34)} × [${oldTerm(r.old2 !== null ? r.old2 : r.old1)}] (sev. 2)${shTxt} = ${fmt(a)}<span class="nota">${d.og ? 'Renumerado — no APR31 era o GDH ' + d.og + '. ' : ''}GDH antigo (col. SIGIC ${ambFlag ? 'ambulatório' : 'internamento'}, APR31): sev. 1 ${fmt(r.old1)} · sev. 2 ${fmt(r.old2 !== null ? r.old2 : r.old1)}. Pagava-se a severidade codificada (1 ou 2), sem restrição de origem.</span>`;
         const fG = `${pTxt(r.p1 + r.p2)} × [${novTerm(r.nov1)}] (sev. paga 1) + ${pTxt(r.p34)} × [${novTerm(r.nov2eff)}] (sev. paga 2)${shTxt} = ${fmt(gPort)}<span class="nota">GDH novo (col. ${ambFlag ? 'P' : 'O'}, APR36): sev. 1 ${fmt(r.nov1)} · sev. 2 ${fmt(r.nov2eff)}. Fórmula confirmada pela DE-SNS: (GDH − implante) × %. A sev. 2 por comorbilidades paga-se à equipa pela sev. 1 (art. 5.º, n.º 4); sev. 3/4 pela sev. 2.</span>`;
         const caArrow = (caD && caBonus() > 0) ? `<div class="pcteff" title="x% base + bónus da proposta CA (teto 80%)">→ ${caEffPct.toLocaleString('pt-PT')}%</div>` : '';
-        const fCA = caD ? `(${fmt(r.nov1)} − ${fmt(caMatV)}) × ${caEffPct.toLocaleString('pt-PT')}%${shTxt} = ${fmt(caAgora)}<span class="nota">Proposta CA (col. ${ambFlag ? 'P' : 'O'}, APR36, sev. 1): x% base ${caD.x.toLocaleString('pt-PT')}% + bónus ${caBonus().toLocaleString('pt-PT')} p.p. = ${caEffPct.toLocaleString('pt-PT')}% (teto 80%). Material assumido ${fmt(caMatV)} deduzido. A proposta CA não considera severidades no pagamento.</span>` : '';
+        const fCA = caD ? `(${fmt(r.nov1)} − ${fmt(caMatV)}) × ${caEffPct.toLocaleString('pt-PT')}%${shTxt} = ${fmt(caAgora)}<span class="nota">Proposta CA (col. ${ambFlag ? 'P' : 'O'}, APR36, sev. 1): x% base ${caD.x.toLocaleString('pt-PT')}% + bónus ${caBonus().toLocaleString('pt-PT')} p.p. = ${caEffPct.toLocaleString('pt-PT')}% (teto 80%). Material assumido ${fmt(caMatV)} deduzido. A proposta CA não considera severidades no pagamento.${caD.generic ? ' GDH não especificamente previsto no Anexo III (1.4) — indexante base geral de 35%.' : ''}</span>` : '';
         const naoAbr = isCa && !caD;
         const isOpen = s.on && (s.amb === ambFlag);
         rows += `<tr class="grow${isOpen ? ' onrow' : ''}${ri === 0 ? ' gtop' : ''}" data-id="${d.id}" data-amb="${ambFlag ? 1 : 0}">
@@ -1026,6 +1031,22 @@ function renderCaObj() {
     <div class="${efEnabled ? '' : 'cadis'}">${ef}</div>
     <div class="mgmt">▸ Nível de acesso: <b>${lvl === 0 ? 'nenhum' : lvl + 'º (+' + {1: 5, 2: 10, 3: 15}[lvl] + '%)'}</b> · eficiência <b>+${efPP.toLocaleString('pt-PT')}%</b> · <b>bónus total ${bonus.toLocaleString('pt-PT')} p.p.</b> (máx. 25). Soma-se à % base da proposta na coluna «Agora» quando a tabela está em <b>Proposta CA</b>, com teto de 80%.</div>
     <div class="group-note">Avaliação mensal por unidade funcional. Os níveis de acesso são mutuamente exclusivos — cada nível só conta se <b>todos</b> os seus critérios estiverem cumpridos (a verde), e vale o mais alto totalmente cumprido. A eficiência exige pelo menos o 1º nível. A proposta CA <b>não considera severidades</b> no pagamento — o «Agora» usa a sev. 1.</div>
+    <details class="group" style="margin-top:16px">
+      <summary class="group-title">Detalhes do Regulamento Interno — ULSM (31-08-2026)</summary>
+      <div class="group-note" style="font-size:11.5px; margin-top:12px">
+        <p><b>Base e teto.</b> O indexante base da cirurgia adicional é o «valor da equipa» da tabela 1.4 do Anexo III (coluna O/P da Portaria 274/2026/1 × x% fixado pelo CA); teto máximo <b>80%</b> (Anexo III, 1.2).</p>
+        <p><b>Severidade.</b> Paga-se sempre a <b>severidade nível 1</b>, para salvaguardar equidade transversal entre equipas (art. 20.º, n.º 3).</p>
+        <p><b>Condição das majorações.</b> É obrigatório cumprir a produção base contratualizada e que a produção adicional não a ultrapasse; caso contrário aplica-se só o indexante base (Anexo III, 2.1). Em cada dimensão conta apenas o patamar mais alto atingido; as dimensões acumulam até ao limite (Anexo I, regras 3 e 4). A ausência da LVSC impede a majoração (Anexo I, regra 5).</p>
+        <p><b>Bonificação de acesso</b> (por serviço/unidade, mensal): 1.º/2.º/3.º nível = +5% / +10% / +15% do valor do GDH — critérios de neoplasias malignas operadas dentro do TMRG, % de TE&lt;TMRG na LIC, zero TE&gt;270/&gt;365 dias e zero transferências para fora (Anexo III, 2.4). <b>Eficiência</b>: máx. +10% (4 critérios × +2,5%: indução pontual &lt;30 min, turnover ≤20 min, zero cancelamentos imputáveis, superação da base ≥5%), exige ≥1.º nível de acesso. <span class="ok">Estes critérios já estão modelados nos seletores acima.</span></p>
+        <p><b>Material implantável deduzido</b> (com IVA, valores por defeito — Anexo III, 1.4): GDH 73 → 55,12 € · 301 → 1&nbsp;643,00 € · 302 → 1&nbsp;367,40 € · 303 → 636,00 € · 304 → 636,00 € · 310 → sem dedução · 313 → 402,80 € · 321 → 408,10 €.</p>
+        <p><b>Cirurgia bariátrica (GDH 403).</b> Regime próprio da Portaria 245/2018 (art. 20.º, n.º 9; art. 5.º, n.º 11 da Portaria 281/2026/1): 45% do valor do <b>Modelo 1</b> (banda gástrica / gastrectomia linear vertical) ou do <b>Modelo 2</b> (bypass gástrico / derivações bílio-pancreáticas). Ambos os modelos estão na tabela.</p>
+        <p><b>Outros GDH não especificamente previstos:</b> 35% (Anexo III, 1.4).</p>
+        <p><b>Linha de trauma ortopédico</b> (fraturas proximais do fémur — trocantéricas e do colo). Autorizada especificamente para doentes &gt;65 anos com admissão urgente e diagnóstico principal de fratura da anca, para aumentar a proporção operada nas primeiras 48 h; não substitui a resposta urgente da produção base (art. 22.º, n.º 2; Anexo III, 1.3).</p>
+        <p><b>Não elegível:</b> pequena cirurgia; cirurgias para tratar complicações; procedimento diferente do validado para a LIC (art. 20.º, n.os 5, 6 e 7).</p>
+        <p><b>Apoio operacional</b> (Anexo II): esterilização e assistentes técnicos são retidos à produção elegível mesmo quando não alocados (verba institucional); turno de 6 h = 100 €; o TSDT/Técnico de RX (6,34%) só conta em dias não úteis e, se exigido de forma permanente no ato, é retirado à equipa (cirurgiões 44,45%, anestesista 20,33%, enfermeiros 25,33%).</p>
+        <p><b>Pagamento.</b> Mensal pelo indexante base da atividade validada; as majorações são provisórias e só se tornam definitivas no fim do ano, após validação do cumprimento da produção base e dos critérios (Anexo III, 4).</p>
+      </div>
+    </details>
   `;
   host.querySelectorAll('.seg.majseg button[data-cak]').forEach(b => b.onclick = () => {
     const k = b.dataset.cak, v = b.dataset.cav;
