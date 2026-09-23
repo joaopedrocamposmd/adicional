@@ -263,6 +263,11 @@ tr.indiv td:first-child { color: var(--ink-muted); }
   font-size: 13.5px; line-height: 1.6; color: var(--ink-soft);
 }
 .alert-warn b { color: var(--ink); }
+/* regime de cálculo: controlos que só valem num dos modos */
+body.mode-ca [data-only="portaria"] { opacity: .45; }
+body.mode-ca [data-only="portaria"]::after { content: 'só no modo Portaria'; display: block; margin-top: 4px; font-family: var(--font-mono); font-size: 10px; letter-spacing: .5px; color: var(--ink-muted); }
+.modenote { font-size: 11.5px; color: var(--ink-soft); background: rgba(230,126,34,.08); border-left: 3px solid var(--warn); border-radius: var(--radius-sm); padding: 7px 12px; margin-bottom: 12px; line-height: 1.5; }
+.card-dim > *:not(h2):not(.modenote) { opacity: .5; }
 footer { margin-top: 30px; font-size: 11px; color: var(--ink-muted); line-height: 1.6; }
 .empty { text-align: center; color: var(--ink-muted); font-size: 13.5px; padding: 34px 20px; }
 </style>
@@ -284,18 +289,23 @@ footer { margin-top: 30px; font-size: 11px; color: var(--ink-muted); line-height
   <p class="sub">Comparador do regime antigo (Portaria n.º 207/2017, SIGIC) com o novo regime em vigor desde <b>1 de julho de 2026</b> (<a href="https://diariodarepublica.pt/dr/detalhe/portaria/274-2026-1138714124" target="_blank" rel="noopener">Portaria n.º 274/2026/1</a> — tabelas de preços APR36; <a href="https://diariodarepublica.pt/dr/detalhe/portaria/281-2026-1139897695" target="_blank" rel="noopener">Portaria n.º 281/2026/1</a> — regras de pagamento da produção adicional e externalizada, ao abrigo do <a href="https://diariodarepublica.pt/dr/detalhe/decreto-lei/12-2026-1019913911" target="_blank" rel="noopener">DL n.º 12/2026</a> — SINACC). Selecione os GDH, ajuste material, regime e percentagem da equipa; passe o rato (ou toque) no <span class="u-info" style="margin:0 1px"><i>i</i></span> junto a cada valor para ver a fórmula completa. As citações de artigos (ex.: <a class="art" href="portaria-281-2026.html#art5" target="_blank" title="Abrir o artigo 5.º da Portaria 281/2026/1 (transcrição com âncoras)">art. 5.º</a>) saltam diretamente para o artigo no <a href="portaria-281-2026.html" target="_blank">texto integral da Portaria 281/2026/1</a> (transcrição anotada, com ligação ao texto oficial do DR) — o sítio do Diário da República não permite ligação direta a cada artigo.</p>
 
   <div class="glass panel">
+    <h2 style="justify-content:space-between;flex-wrap:wrap;gap:10px"><span class="eyebrow" style="margin:0">Regime de cálculo</span><div class="seg modeSeg" style="width:auto;flex:none;margin:0;min-width:260px"><button data-mode="portaria">Portaria</button><button data-mode="ca" class="sel">Proposta CA (v2)</button></div></h2>
+    <div class="group-note" style="margin-top:0">Define como se calcula o valor «agora» da equipa em toda a página — tabela, cartões por GDH e programa anual. <b>Portaria</b>: % da equipa por GDH, dedução do implante real e majoração pela grelha cirúrgica. <b>Proposta CA (v2)</b>: valor por GDH fixado pelo Conselho de Administração, sempre pela sev. 1, com as bonificações da secção «Objetivos»; o implante real continua a ser um custo do hospital. O «antes» (regime de 2017) é igual nos dois modos.</div>
+  </div>
+
+  <div class="glass panel">
     <h2><span class="eyebrow" style="margin:0">Parâmetros globais</span></h2>
     <div class="group">
       <div class="group-title">Produção adicional</div>
       <div class="globals">
         <div class="field"><label>% equipa — regime antigo:<span class="slval" id="gPctOldV">45%</span></label><input type="range" id="gPctOld" value="45" min="35" max="55" step="10"></div>
         <div class="field"><label>% equipa artroplastia — regime antigo (301, 302):<span class="slval" id="gPctOldArtroV">45%</span></label><input type="range" id="gPctOldArtro" value="45" min="35" max="45" step="10"></div>
-        <div class="field"><label>% equipa novo — GDH sem dedução de implantes (transversal):<span class="slval" id="gPctNDV">55%</span></label><input type="range" id="gPctND" value="55" min="20" max="80" step="5"></div>
+        <div class="field" data-only="portaria"><label>% equipa novo — GDH sem dedução de implantes (transversal):<span class="slval" id="gPctNDV">55%</span></label><input type="range" id="gPctND" value="55" min="20" max="80" step="5"></div>
         <div class="field"><label>Complexo no regime antigo (×1,2)</label>
           <div class="sw on" id="gCx" style="cursor:pointer"><div class="track"></div><span class="lbl">majoração ×1,2 dos procedimentos complexos</span></div></div>
       </div>
       <div class="globals" style="margin-top:12px">
-        <div class="field" style="grid-column: span 2; min-width: 320px"><label>Dedução dos implantes à equipa (art. 5.º, n.º 10 — duas leituras)</label>
+        <div class="field" data-only="portaria" style="grid-column: span 2; min-width: 320px"><label>Dedução dos implantes à equipa (art. 5.º, n.º 10 — duas leituras)</label>
           <div class="seg" id="gDedMode">
             <button data-m="bolo" class="sel">(GDH − implante) × %</button>
             <button data-m="equipa">GDH × % − implante</button>
@@ -361,7 +371,7 @@ footer { margin-top: 30px; font-size: 11px; color: var(--ink-muted); line-height
   </div>
 
   <div class="glass panel">
-    <h2 style="justify-content:space-between;flex-wrap:wrap;gap:10px"><span class="eyebrow" style="margin:0">GDH da especialidade — selecionar para analisar</span><div class="seg" id="tblModeSeg" style="width:auto;flex:none;margin:0;min-width:260px"><button data-mode="portaria" class="sel">Portaria</button><button data-mode="ca">Proposta CA (v2)</button></div></h2>
+    <h2 style="justify-content:space-between;flex-wrap:wrap;gap:10px"><span class="eyebrow" style="margin:0">GDH da especialidade — selecionar para analisar</span><div class="seg modeSeg" id="tblModeSeg" style="width:auto;flex:none;margin:0;min-width:260px"><button data-mode="portaria">Portaria</button><button data-mode="ca" class="sel">Proposta CA (v2)</button></div></h2>
     <div id="gdhTable" style="overflow:auto; background: rgba(255,255,255,.85); border: 1px solid var(--rule); border-radius: var(--radius-md);"></div>
     <div class="group-note">Cada GDH tem uma sublinha por regime (internamento e ambulatório), com o valor dos <b>implantes</b> e a <b>% da equipa</b> editáveis por regime (predefinidos por GDH). «Antes/Agora» são <b>valores esperados por episódio com o mix de severidades</b>: no antigo pagava-se a severidade codificada; no novo, a sev. 2 por comorbilidades paga-se pela sev. 1. Fórmula confirmada pela DE-SNS: <b>(GDH − implante) × %</b>. Clique numa linha para abrir/fechar o cartão detalhado desse regime. «N.º / sessão» soma o total no rodapé; os valores refletem o perfil escolhido acima.</div>
   </div>
@@ -468,7 +478,16 @@ function caAccessLevel() { for (const n of [3, 2, 1]) if (caLevelMet(n)) return 
 function caBonus() { const acc = {0: 0, 1: 5, 2: 10, 3: 15}[caAccessLevel()]; const ef = Math.min(caObj.e.filter(Boolean).length * 2.5, 10); return acc + ef; }
 // GDH não especificamente previstos na tabela do CA → indexante base geral de 35% (Anexo III, 1.4)
 function caFor(d) { return CA[d.sub ? d.g + ':' + d.sub : d.g] || CA[d.g] || {generic: true}; }
-let tblMode = 'portaria'; // 'portaria' | 'ca' — só afeta a tabela
+// texto do «i» para um valor da proposta CA (r = resultado de calc() em modo CA)
+function caFormula(r, shTxt, total) {
+  if (r.caBase == null) return '';
+  const p1 = v => v === null ? '—' : v.toLocaleString('pt-PT', {maximumFractionDigits: 1});
+  const core = r.fak !== 1
+    ? `${p1(r.caEffPct)}% × (${fmt(r.nov1)} × ${r.fak.toLocaleString('pt-PT')} (${r.nproc} proc. assoc.)${r.caMat ? ' − ' + fmt(r.caMat) : ''})`
+    : `${r.caD.generic ? `35% × ${fmt(r.caNet)}` : `valor base ${fmt(r.caBase)}`}${r.caBon ? ` + ${p1(r.caBon)} p.p. × ${fmt(r.caNet)} (bónus)` : ''}${r.caX !== null && r.caX + r.caBon > 80 ? ' (limitado a 80%)' : ''}`;
+  return `${core}${shTxt} = ${fmt(total)}<span class="nota">Proposta CA — 2.ª versão (Excel da administração): valor base da equipa ${fmt(r.caBase)} = ${p1(r.caX)}% × (${fmt(r.nov1)} col. ${r.amb ? 'P' : 'O'}${r.caMat ? ' − ' + fmt(r.caMat) + ' material assumido' : ''}). O bónus de acesso/eficiência soma p.p. sobre o valor do GDH líquido de material, com teto de 80%. A proposta CA não considera severidades — paga sempre a sev. 1.${r.caD.generic ? ' GDH não especificamente previsto na tabela do CA — indexante base geral de 35% (Anexo III, 1.4).' : ''}</span>`;
+}
+let tblMode = 'ca'; // regime de cálculo de toda a página: 'ca' (proposta CA, por defeito) | 'portaria'
 // dependência: 0 doentes fora do TMRG (a1 resultado) implica 0 >270 dias (a2) e 0 oncológicos fora (a3)
 function majInd() { const s = {...maj.ind}; if (s.a1 === 5) { s.a2 = 5; s.a3 = 5; } return s; }
 function majTotal() { const s = majInd(); return Math.min(s.a1 + s.a2 + s.a3, 10) + Math.min(s.b1 + s.b2, 10) + Math.min(s.c1 + s.c2, 5); }
@@ -772,18 +791,9 @@ function renderTable() {
         const sh = roleShare(ambFlag), f = sh === null ? 1 : sh;
         const a = r.eqOldMix === null ? null : r.eqOldMix * f;
         const gPort = r.eqMix === null ? null : r.eqMix * f;
-        const isCa = tblMode === 'ca';
-        // Proposta CA (2.ª versão): valor base da equipa em € (Excel do CA) + bónus em p.p. sobre o GDH líquido de material, teto 80%
-        const caD = caFor(d);
-        const caMatV = caD.mat != null ? caD.mat : 0;
-        const caNet = r.nov1 !== null ? r.nov1 - caMatV : null;
-        const caBase = caNet === null ? null : (caD.generic ? caNet * 0.35 : (ambFlag ? caD.ba : caD.bi));
-        const caX = (caBase != null && caNet > 0) ? caBase / caNet * 100 : null; // % implícita do valor base
-        const caBon = caBonus();
-        const caEffPct = caX !== null ? Math.min(caX + caBon, 80) : null;
-        const caAgora = caBase != null ? Math.min(caBase + caNet * caBon / 100, caNet * 0.80) * f : null;
+        const isCa = r.isCa;
         const pct1 = v => v.toLocaleString('pt-PT', {maximumFractionDigits: 1});
-        const g2 = isCa ? caAgora : gPort;
+        const g2 = gPort; // calc() devolve o valor do regime escolhido (portaria ou proposta CA)
         const dl = a !== null && g2 !== null ? g2 - a : null;
         const ns = ambFlag ? s.nsAmb : s.nsInt;
         const matv = ambFlag ? s.matAmb : s.matInt;
@@ -804,14 +814,14 @@ function renderTable() {
           : `${pctTxtN}% × ${fmt(base)}${fakT}`;
         const fA = `${pTxt(r.p1)} × [${oldTerm(r.old1)}] (sev. 1) + ${pTxt(r.p2 + r.p34)} × [${oldTerm(r.old2 !== null ? r.old2 : r.old1)}] (sev. 2)${shTxt} = ${fmt(a)}<span class="nota">${d.og ? 'Renumerado — no APR31 era o GDH ' + d.og + '. ' : ''}GDH antigo (col. SIGIC ${ambFlag ? 'ambulatório' : 'internamento'}, APR31): sev. 1 ${fmt(r.old1)} · sev. 2 ${fmt(r.old2 !== null ? r.old2 : r.old1)}. Pagava-se a severidade codificada (1 ou 2), sem restrição de origem.</span>`;
         const fG = `${pTxt(r.p1 + r.p2)} × [${novTerm(r.nov1)}] (sev. paga 1) + ${pTxt(r.p34)} × [${novTerm(r.nov2eff)}] (sev. paga 2)${shTxt} = ${fmt(gPort)}<span class="nota">GDH novo (col. ${ambFlag ? 'P' : 'O'}, APR36): sev. 1 ${fmt(r.nov1)} · sev. 2 ${fmt(r.nov2eff)}. Fórmula confirmada pela DE-SNS: (GDH − implante) × %. A sev. 2 por comorbilidades paga-se à equipa pela sev. 1 (art. 5.º, n.º 4); sev. 3/4 pela sev. 2.</span>`;
-        const caArrow = (caX !== null && caBon > 0) ? `<div class="pcteff" title="% base + bónus da proposta CA (teto 80%)">→ ${pct1(caEffPct)}%</div>` : '';
-        const fCA = caBase != null ? `${caD.generic ? `35% × ${fmt(caNet)}` : `valor base ${fmt(caBase)}`}${caBon ? ` + ${pct1(caBon)} p.p. × ${fmt(caNet)} (bónus)` : ''}${caX !== null && caX + caBon > 80 ? ' (limitado a 80%)' : ''}${shTxt} = ${fmt(caAgora)}<span class="nota">Proposta CA — 2.ª versão (Excel da administração, sev. 1): valor base da equipa ${fmt(caBase)} = ${pct1(caX)}% × (${fmt(r.nov1)} col. ${ambFlag ? 'P' : 'O'}${caMatV ? ' − ' + fmt(caMatV) + ' material assumido' : ''}). O bónus de acesso/eficiência soma p.p. sobre o valor do GDH líquido de material, com teto de 80%. A proposta CA não considera severidades no pagamento.${caD.generic ? ' GDH não especificamente previsto na tabela do CA — indexante base geral de 35% (Anexo III, 1.4).' : ''}</span>` : '';
+        const caArrow = (r.caX !== null && r.caBon > 0) ? `<div class="pcteff" title="% base + bónus da proposta CA (teto 80%)">→ ${pct1(r.caEffPct)}%</div>` : '';
+        const fCA = isCa ? caFormula(r, shTxt, g2) : '';
         const isOpen = s.on && (s.amb === ambFlag);
         rows += `<tr class="grow${isOpen ? ' onrow' : ''}${ri === 0 ? ' gtop' : ''}" data-id="${d.id}" data-amb="${ambFlag ? 1 : 0}">
           <td>${ri === 0 ? d.g : ''}</td>
           <td style="white-space:normal;text-align:left;font-family:var(--font-sans)">${ri === 0 ? d.nome + ' ' : ''}<span class="rlabel">${ambFlag ? 'ambulatório' : 'internamento'}</span></td>
-          <td>${isCa ? (caMatV ? `<span class="muted">${fmt(caMatV)}</span>` : '') : (d.deduz ? `<input type="number" class="tmat" data-id="${d.id}" data-amb="${ambFlag ? 1 : 0}" value="${matv}" min="0" step="10" style="width:88px">` : '')}</td>
-          <td style="white-space:nowrap">${isCa ? (caX !== null ? `<span class="muted">${pct1(caX)}%</span>${caArrow}` : '<span class="muted">—</span>') : ((d.deduz ? `<input type="number" class="tpct" data-id="${d.id}" data-amb="${ambFlag ? 1 : 0}" value="${pctv}" min="20" max="80" step="5" style="width:58px">` : `<span class="muted">${pctBaseCell.toLocaleString('pt-PT')}%</span>`) + effArrow)}</td>
+          <td>${isCa ? (r.caMat ? `<span class="muted">${fmt(r.caMat)}</span>` : '') : (d.deduz ? `<input type="number" class="tmat" data-id="${d.id}" data-amb="${ambFlag ? 1 : 0}" value="${matv}" min="0" step="10" style="width:88px">` : '')}</td>
+          <td style="white-space:nowrap">${isCa ? (r.caX !== null ? `<span class="muted">${pct1(r.caX)}%</span>${caArrow}` : '<span class="muted">—</span>') : ((d.deduz ? `<input type="number" class="tpct" data-id="${d.id}" data-amb="${ambFlag ? 1 : 0}" value="${pctv}" min="20" max="80" step="5" style="width:58px">` : `<span class="muted">${pctBaseCell.toLocaleString('pt-PT')}%</span>`) + effArrow)}</td>
           <td>${a === null ? '—' : F(fmt(a), fA)}</td>
           <td>${g2 === null ? '—' : F(fmt(g2), isCa ? fCA : fG)}</td>
           <td class="${dl === null ? '' : cls(dl)}">${dl === null ? '—' : fmtD(dl)}</td>
@@ -893,7 +903,7 @@ document.getElementById('gInfl').onclick = () => {
   render();
 };
 document.getElementById('gCx').onclick = () => { cxGlobal = !cxGlobal; document.getElementById('gCx').classList.toggle('on', cxGlobal); render(); };
-document.querySelectorAll('#tblModeSeg button').forEach(b => b.onclick = () => { tblMode = b.dataset.mode; document.querySelectorAll('#tblModeSeg button').forEach(x => x.classList.toggle('sel', x === b)); render(); });
+document.querySelectorAll('.modeSeg button').forEach(b => b.onclick = () => { tblMode = b.dataset.mode; render(); });
 
 
 // ---- cálculo por GDH ------------------------------------------------------
@@ -901,7 +911,7 @@ function calc(d, ambArg) {
   const s = state[d.id];
   const amb = ambArg === undefined ? s.amb : ambArg;
   const pctBase = d.deduz ? (amb ? s.pctAmb : s.pctInt) : G('gPctND');
-  const pct = (maj.on ? Math.min(pctBase + (maj.prod ? majTotal() : 0), maj.lec) : pctBase) / 100;
+  const pctPort = (maj.on ? Math.min(pctBase + (maj.prod ? majTotal() : 0), maj.lec) : pctBase) / 100;
   const pctOld = ((d.g === 301 || d.g === 302) ? G('gPctOldArtro') : G('gPctOld')) / 100;
   const mat = (amb ? s.matAmb : s.matInt) || 0;
   const custos = s.custos === null ? (amb ? G('gAmbCost') : G('gIntCost')) : s.custos;
@@ -917,18 +927,34 @@ function calc(d, ambArg) {
   const inflF = inflOn ? 1 + G('gInflPct') / 100 : 1; // atualização dos preços antigos (2017) pela inflação
   const eqOld1 = old1 !== null ? pctOld * old1 * majOld * fak * inflF : null;
   const eqOld2 = old2 !== null ? pctOld * old2 * majOld * fak * inflF : null;
-  const ded = d.deduz ? mat : 0;
+  // proposta CA (2.ª versão): valor base por GDH em € + bónus em p.p. sobre o GDH líquido do material
+  // assumido pelo CA, teto 80%; paga sempre a sev. 1. O implante real (mat) continua a ser custo do hospital.
+  const isCa = tblMode === 'ca';
+  const caD = caFor(d);
+  const caMat = caD.mat != null ? caD.mat : 0;
+  const caNet = nov1 !== null ? nov1 - caMat : null;
+  const caBase = caNet === null ? null : (caD.generic ? caNet * 0.35 : (amb ? caD.ba : caD.bi));
+  const caX = (caBase != null && caNet > 0) ? caBase / caNet * 100 : null; // % implícita do valor base
+  const caBon = caBonus();
+  const caEffPct = caX !== null ? Math.min(caX + caBon, 80) : null;
+  const caNetF = nov1 !== null ? nov1 * fak - caMat : null; // com procedimentos associados
+  const caEqRaw = caBase == null ? null
+    : (fak === 1 ? Math.min(caBase + caNet * caBon / 100, caNet * 0.80) : caNetF * (caEffPct || 0) / 100);
+  const caEq = caEqRaw === null ? null : Math.round(caEqRaw * 100 + 1e-7) / 100; // ao cêntimo, como na tabela do CA
+
+  const pct = isCa ? (caEffPct !== null ? caEffPct / 100 : 0) : pctPort;
+  const ded = isCa ? caMat : (d.deduz ? mat : 0);
   // duas leituras do art. 5.º, n.º 10: 'bolo' = (GDH − implante) × % · 'equipa' = GDH × % − implante
   const eqAt = (base, pctv) => ded ? (dedMode === 'bolo' ? (base - ded) * pctv : base * pctv - ded) : base * pctv;
-  const eqNov1 = nov1 !== null ? eqAt(nov1 * fak, pct) : null;
-  const eqNov2 = nov2 !== null ? eqAt(nov2 * fak, pct) : null;
+  const eqNov1 = isCa ? caEq : (nov1 !== null ? eqAt(nov1 * fak, pct) : null);
+  const eqNov2 = isCa ? caEq : (nov2 !== null ? eqAt(nov2 * fak, pct) : null); // proposta CA: sev. 2 paga como sev. 1
 
   // mix de severidades (case-mix): sev2 por comorbilidades paga sev1 à equipa interna,
   // mas sev2 ao destino na externalização (art. 8.º n.º 1 vs art. 5.º n.º 4 b) ii)
   const p2 = G('gP2') / 100, p34 = G('gP34') / 100, p1 = Math.max(0, 1 - p2 - p34);
   const nov2eff = nov2 !== null ? nov2 : nov1;
   const eqNov2eff = eqNov2 !== null ? eqNov2 : eqNov1;
-  const eqMix = eqNov1 === null ? null : (p1 + p2) * eqNov1 + p34 * eqNov2eff;
+  const eqMix = eqNov1 === null ? null : (isCa ? eqNov1 : (p1 + p2) * eqNov1 + p34 * eqNov2eff); // proposta CA: todas as severidades pagas como sev. 1
   // regime antigo: pagava-se a severidade codificada (1 ou 2), sem restrição de origem
   const eqOld2eff = eqOld2 !== null ? eqOld2 : eqOld1;
   const eqOldMix = eqOld1 === null ? null : p1 * eqOld1 + (p2 + p34) * eqOld2eff;
@@ -944,10 +970,10 @@ function calc(d, ambArg) {
 
   // indicadores de gestão
   const pctIgualar = (eqOld1 !== null && nov1) ?
-    (ded && dedMode === 'bolo'
+    (ded && (isCa || dedMode === 'bolo')
       ? (nov1 * fak - ded > 0 ? eqOld1 / (nov1 * fak - ded) : null)
       : (eqOld1 + ded) / (nov1 * fak)) : null;
-  const eqMix80 = nov1 === null ? null : (p1 + p2) * eqAt(nov1 * fak, 0.8) + p34 * eqAt(nov2eff * fak, 0.8);
+  const eqMix80 = nov1 === null ? null : (isCa ? caNetF * 0.8 : (p1 + p2) * eqAt(nov1 * fak, 0.8) + p34 * eqAt(nov2eff * fak, 0.8));
   const interno80 = eqMix80 === null ? null : eqMix80 + mat + custos;
   const sev2Extra = nov2 !== null ? (nov2 - nov1) * fak * majF : null; // custo extra por comórbido externalizado
   const dias = Math.max(1, G('gDias'));
@@ -956,7 +982,8 @@ function calc(d, ambArg) {
 
   return {amb, pct, pctOld, mat, custos, old1, old2, nov1, nov2, nov2eff, eqOld1, eqOld2, eqNov1, eqNov2, eqNov2eff,
           p1, p2, p34, eqMix, eqOldMix, eqOld2eff, interno, extern, externExtra, compExtra, sala, ded, nproc, fak,
-          pctIgualar, interno80, sev2Extra, dias, deltaSala, diariaBE};
+          pctIgualar, interno80, sev2Extra, dias, deltaSala, diariaBE,
+          isCa, caD, caMat, caNet, caNetF, caBase, caX, caBon, caEffPct};
 }
 
 // ---- programa anual ---------------------------------------------------------
@@ -982,7 +1009,7 @@ function renderAnual() {
   });
   const dSala = TS - TI;
   host.innerHTML = `<section class="glass card">
-    <div class="card-head"><span class="name">Programa anual — impacto orçamental</span><span class="tag">volumes editáveis</span></div>
+    <div class="card-head"><span class="name">Programa anual — impacto orçamental</span><span class="tag">${tblMode === 'ca' ? 'proposta CA (v2)' : 'portaria'} · volumes editáveis</span></div>
     <div class="card-body">
       <div class="rbox"><table>
         <tr><th>Procedimento</th><th>Episódios / ano</th><th>Equipa / ano</th><th>Fazer dentro / ano</th><th>Externalizar / ano</th><th>Poupança de fazer dentro</th><th>Sala privada / ano</th></tr>
@@ -1005,6 +1032,7 @@ function renderAnual() {
 
 function renderCaObj() {
   const host = document.getElementById('caObjCard');
+  host.classList.toggle('card-dim', tblMode === 'portaria');
   const o = caObj;
   const lvl = caAccessLevel(), bonus = caBonus();
   let inp = '';
@@ -1026,6 +1054,7 @@ function renderCaObj() {
   CA_EFIC.forEach((c, i) => { ef += `<div class="cacrit" data-cae="${i}">${sw(o.e[i])}<span>${c} <span class="muted">(+2,5%)</span></span></div>`; });
   host.innerHTML = `
     <h2><span class="eyebrow" style="margin:0">Objetivos — proposta CA, 2.ª versão (bonificações por serviço/unidade)</span></h2>
+    ${tblMode === 'portaria' ? '<div class="modenote">Não se aplica ao regime <b>Portaria</b> — fica visível só para comparação. Mude o regime de cálculo para «Proposta CA» para que estas bonificações entrem nos valores.</div>' : ''}
     <div class="group-title">Bonificação de acesso — indicadores da unidade</div>
     <div class="cainps">${inp}</div>
     <div style="margin-top:10px">${levels}</div>
@@ -1061,6 +1090,7 @@ function renderCaObj() {
 
 function renderMaj() {
   const host = document.getElementById('majCard');
+  host.classList.toggle('card-dim', tblMode === 'ca');
   const ind = majInd(), total = majTotal(), aplicada = maj.prod ? total : 0;
   const seg = (k, cur, locked) => {
     const opt = (v, lbl) => `<button data-mk="${k}" data-mv="${v}" class="${cur === v ? (v === 0 ? 'sel def' : 'sel') : ''}"${locked ? ' disabled' : ''}>${lbl}</button>`;
@@ -1081,6 +1111,7 @@ function renderMaj() {
       <span class="eyebrow" style="margin:0">Modelo de majoração — grelha cirúrgica</span>
       <span class="sw ${maj.on ? 'on' : ''}" id="majToggle" style="cursor:pointer"><div class="track"></div><span class="lbl">${maj.on ? 'ativo' : 'inativo'}</span></span>
     </h2>
+    ${tblMode === 'ca' ? '<div class="modenote">Não se aplica ao regime <b>Proposta CA</b> — a grelha da portaria só conta no regime «Portaria»; fica visível para comparação.</div>' : ''}
     ${maj.on ? `
     <div class="globals" style="margin-bottom:14px">
       <div class="field"><label>Produção contratualizada (serviço, anual)</label>
@@ -1114,6 +1145,8 @@ function renderMaj() {
 
 // ---- render ---------------------------------------------------------------
 function render() {
+  document.body.classList.toggle('mode-ca', tblMode === 'ca');
+  document.querySelectorAll('.modeSeg button').forEach(x => x.classList.toggle('sel', x.dataset.mode === tblMode));
   renderMaj();
   renderCaObj();
   renderTable();
@@ -1127,6 +1160,8 @@ function render() {
   }
   active.forEach(d => {
     const s = state[d.id], r = calc(d);
+    const isCa = r.isCa;
+    const pct1 = v => v === null ? '—' : v.toLocaleString('pt-PT', {maximumFractionDigits: 1});
     const card = document.createElement('section');
     card.className = 'glass card';
 
@@ -1154,7 +1189,8 @@ function render() {
     const fakOldTxt = r.nproc ? ` × ${r.fak.toLocaleString('pt-PT')} (${r.nproc} proc. associado${r.nproc > 1 ? 's' : ''}: +45% cada, teto +60% — regra idêntica na Portaria 207/2017)` : '';
     const inflTxt = inflOn ? ` × ${(1 + G('gInflPct') / 100).toLocaleString('pt-PT')} (inflação 2017→2026)` : '';
     const fOld = sev => `${pctOldTxt}% × ${fmt(sev === 1 ? r.old1 : r.old2)} (GDH antigo, sev. ${sev})${(s.cxOld && cxGlobal) ? ' × 1,2 (complexo)' : ''}${fakOldTxt}${inflTxt} = ${fmt(sev === 1 ? r.eqOld1 : r.eqOld2)}`;
-    const fNov = sev => { const res = sev === 1 ? r.eqNov1 : r.eqNov2;
+    const fNov = sev => { if (isCa) return caFormula(r, '', sev === 1 ? r.eqNov1 : r.eqNov2);
+      const res = sev === 1 ? r.eqNov1 : r.eqNov2;
       const baseTxt = `${fmt(sev === 1 ? r.nov1 : r.nov2)} (col. ${r.amb ? 'P' : 'O'}, sev. ${sev})${fakTxt}`;
       const core = r.ded
         ? (dedMode === 'bolo'
@@ -1162,7 +1198,7 @@ function render() {
           : `${pctTxt}% × ${baseTxt} − ${fmt(r.ded)} material c/ IVA — leitura: implante descontado à equipa (art. 5.º, n.º 10)`)
         : `${pctTxt}% × ${baseTxt}`;
       return `${core} = ${fmt(res)}${res !== null && res < 0 ? ' — ⚠ o material excede a verba da equipa' : ''}`; };
-    const fInt = `equipa mix: ${pTxt(r.p1 + r.p2)} × ${fmt(r.eqNov1)} (sev. paga 1) + ${pTxt(r.p34)} × ${fmt(r.eqNov2eff)} (sev. paga 2) = ${fmt(r.eqMix)}; + material ${fmt(r.mat)} + custos internos ${fmt(r.custos)} = ${fmt(r.interno)}<span class="nota">A sev. 2 por comorbilidades paga-se à equipa pela sev. 1 (art. 5.º, n.º 4).</span>`;
+    const fInt = isCa ? `equipa (proposta CA, sev. 1 em todos os episódios) ${fmt(r.eqMix)}; + material ${fmt(r.mat)} + custos internos ${fmt(r.custos)} = ${fmt(r.interno)}<span class="nota">Material = custo real do implante para o hospital; a equipa desconta o valor assumido pelo CA${r.caMat ? ' (' + fmt(r.caMat) + ')' : ' (nenhum neste GDH)'}.</span>` : `equipa mix: ${pTxt(r.p1 + r.p2)} × ${fmt(r.eqNov1)} (sev. paga 1) + ${pTxt(r.p34)} × ${fmt(r.eqNov2eff)} (sev. paga 2) = ${fmt(r.eqMix)}; + material ${fmt(r.mat)} + custos internos ${fmt(r.custos)} = ${fmt(r.interno)}<span class="nota">A sev. 2 por comorbilidades paga-se à equipa pela sev. 1 (art. 5.º, n.º 4).</span>`;
     const fExt = `${pTxt(r.p1)} × ${fmt(r.nov1)} (sev. 1) + ${pTxt(r.p2 + r.p34)} × ${fmt(r.nov2eff)} (sev. 2)${fakTxt}${s.cxNew ? ', × 1,2 (especial complexidade)' : ''}${r.externExtra ? `, + ${fmt(r.externExtra)} dispositivo (art. 9.º, n.º 1)` : ''}${r.compExtra ? `, + ${G('gCompRate').toLocaleString('pt-PT')}% × ${fmt(G('gCompCost'))} risco de complicações` : ''} = ${fmt(r.extern)}<span class="nota">A sev. 2 por comorbilidades paga-se ao destino pela sev. 2 (art. 8.º, n.º 1). ${d.deduz ? 'Prótese incluída no preço — por conta do destino (art. 9.º, n.º 10).' : (r.externExtra ? 'Inclui dispositivo pago pela origem (art. 9.º, n.º 1).' : 'Preço compreensivo: inclui pré-op., estadia e 2 meses de seguimento.')}${r.compExtra ? ' O risco de complicações tardias (após os 2 meses cobertos) recai na origem — taxa e custo editáveis nos parâmetros globais.' : ''}</span>`;
     const fSala = `${fmt(G('gSala'))} sala + ${fmt(r.mat)} material + ${(r.amb ? G('gFracAmb') : G('gFracInt')).toLocaleString('pt-PT')}% × ${fmt(r.eqMix)} equipa mix = ${fmt(r.sala)}<span class="nota">O hospital paga apenas cirurgiões + instrumentistas; anestesia e enfermagem de sala incluídas no preço da sala.</span>`;
     const neg = v => v !== null && v < 0 ? ' class="negv"' : '';
@@ -1171,7 +1207,7 @@ function render() {
       <div class="card-head">
         <span class="gdh">GDH ${d.g}</span><span class="name">${d.nome}</span>
         <span class="tag">${d.area}</span>
-        ${d.deduz ? '<a class="tag deduz" href="portaria-281-2026.html#art5" target="_blank" title="Abrir o art. 5.º da Portaria 281/2026/1">material deduzido à equipa · art. 5.º n.º 10</a>' : '<span class="tag">sem dedução de material à equipa</span>'}
+        ${isCa ? (r.caMat ? `<span class="tag deduz">material assumido pelo CA: ${fmt(r.caMat)}</span>` : '<span class="tag">sem dedução de material à equipa</span>') : (d.deduz ? '<a class="tag deduz" href="portaria-281-2026.html#art5" target="_blank" title="Abrir o art. 5.º da Portaria 281/2026/1">material deduzido à equipa · art. 5.º n.º 10</a>' : '<span class="tag">sem dedução de material à equipa</span>')}
       </div>
       <div class="card-body">
         <div class="controls">
@@ -1181,9 +1217,10 @@ function render() {
               <button data-k="amb" class="${s.amb ? 'sel' : ''}">Ambulatório</button>
             </div>
           </div>
-          <div class="field"><label>% equipa — novo${d.deduz ? '' : ' (global sem dedução)'}:<span class="slval">${(r.pct*100).toLocaleString('pt-PT')}%</span></label>
-            <input type="range" data-k="pct" value="${r.pct*100}" min="20" max="80" step="5"></div>
-          <div class="field"><label>Material implantável, c/ IVA (€)</label>
+          ${isCa ? `<div class="field"><label>% equipa — proposta CA:<span class="slval">${pct1(r.caEffPct)}%</span></label>
+            <div class="muted" style="font-size:11.5px;line-height:1.4">${pct1(r.caX)}% base${r.caBon ? ` + ${pct1(r.caBon)} p.p. de bónus` : ''} — fixado pelo CA; os bónus definem-se em «Objetivos»</div></div>` : `<div class="field"><label>% equipa — novo${d.deduz ? '' : ' (global sem dedução)'}:<span class="slval">${(r.pct*100).toLocaleString('pt-PT')}%</span></label>
+            <input type="range" data-k="pct" value="${r.pct*100}" min="20" max="80" step="5"></div>`}
+          <div class="field"><label>${isCa ? 'Material implantável real, c/ IVA (€) — custo do hospital' : 'Material implantável, c/ IVA (€)'}</label>
             <input type="number" data-k="mat" value="${r.mat}" min="0" step="50"></div>
           <div class="field"><label>Custos internos do hospital (€)</label>
             <input type="number" data-k="custos" value="${r.custos}" min="0" step="50"></div>
@@ -1203,7 +1240,7 @@ function render() {
           <div class="rbox">
             <h3>Equipa — antes vs. agora <span class="muted" style="font-weight:500">(${r.amb ? 'ambulatório' : 'internamento'})</span></h3>
             <table>
-              <tr><th></th><th>Antes ${(s.cxOld && cxGlobal) ? '<span class="badge b12">×1,2</span>' : ''}</th><th>Agora (${(r.pct*100).toLocaleString('pt-PT')}%)</th><th>Δ €</th><th>Δ %</th></tr>
+              <tr><th></th><th>Antes ${(s.cxOld && cxGlobal) ? '<span class="badge b12">×1,2</span>' : ''}</th><th>Agora (${isCa ? 'CA ' : ''}${pct1(r.pct * 100)}%)</th><th>Δ €</th><th>Δ %</th></tr>
               <tr${mainCls}>
                 <td>Severidade 1</td>
                 <td>${r.eqOld1 === null ? '—' : F(fmt(r.eqOld1), fOld(1))}</td>
@@ -1221,7 +1258,7 @@ function render() {
               </tr>
               ${iRow(r.eqOld2, r.eqNov2)}
             </table>
-            <div class="note-inline">Agora: ${(r.pct*100).toLocaleString('pt-PT')}% × coluna ${r.amb ? 'P' : 'O'} (${fmt(r.nov1)} sev. 1${r.nov2 !== null ? ' · ' + fmt(r.nov2) + ' sev. 2' : ''})${r.ded ? ` <b>− material (${fmt(r.mat)})</b>` : ''}. A sev. 2 só é paga se resultar exclusivamente do diagnóstico + procedimento principais; sev. 3/4 pagam-se pela sev. 2. «—» = sem preço na tabela aplicável.</div>
+            <div class="note-inline">${isCa ? `Agora (proposta CA, 2.ª versão): valor da equipa fixado pelo CA para o GDH — ${pct1(r.caX)}% × coluna ${r.amb ? 'P' : 'O'} (${fmt(r.nov1)})${r.caMat ? ` <b>− material assumido (${fmt(r.caMat)})</b>` : ''}${r.caBon ? `, + ${pct1(r.caBon)} p.p. de bónus` : ''}, teto 80%. A proposta CA paga sempre a sev. 1, qualquer que seja a severidade do episódio.</div>` : `Agora: ${(r.pct*100).toLocaleString('pt-PT')}% × coluna ${r.amb ? 'P' : 'O'} (${fmt(r.nov1)} sev. 1${r.nov2 !== null ? ' · ' + fmt(r.nov2) + ' sev. 2' : ''})${r.ded ? ` <b>− material (${fmt(r.mat)})</b>` : ''}. A sev. 2 só é paga se resultar exclusivamente do diagnóstico + procedimento principais; sev. 3/4 pagam-se pela sev. 2. «—» = sem preço na tabela aplicável.</div>`}
           </div>
 
           <div class="rbox">
@@ -1242,7 +1279,7 @@ function render() {
               </tr>
             </table>
             <div class="note-inline">Verde = cenário mais barato. Na sala privada, o hospital paga apenas cirurgiões + instrumentistas; anestesia e enfermagem de sala incluídas no preço da sala. Externalização: transportes até à cirurgia por conta da origem; UCI por conta do destino; preço compreensivo cobre apenas 2 meses de seguimento.</div>
-            ${d.deduz && r.pctIgualar !== null && r.eqNov1 !== null && r.eqOld1 !== null && r.eqNov1 < r.eqOld1 ? `<div class="mgmt">▸ Para a equipa repor o valor de antes (sev. 1) seriam precisos <b>${(r.pctIgualar*100).toLocaleString('pt-PT', {maximumFractionDigits: 1})}%</b>${r.pctIgualar > 0.80 ? ' — <span class="ko">acima do teto legal de 80%</span>: nem no máximo legal a equipa repõe o valor anterior' : ' — o teto legal é 80%'}. A 80%, fazer dentro custa <b>${fmt(r.interno80)}</b> vs. <b>${fmt(r.extern)}</b> externalizado: ${r.interno80 !== null && r.extern !== null && r.interno80 <= r.extern ? '<span class="ok">compensa fazer dentro (−' + fmt(r.extern - r.interno80) + ' por episódio)</span>' : '<span class="ko">+' + fmt(r.interno80 - r.extern) + ' por episódio</span> — sem contar transportes' + (r.compExtra ? '' : ', complicações tardias') + ' e camas'}.</div>` : ''}
+            ${(d.deduz || isCa) && r.pctIgualar !== null && r.eqNov1 !== null && r.eqOld1 !== null && r.eqNov1 < r.eqOld1 ? `<div class="mgmt">▸ Para a equipa repor o valor de antes (sev. 1) seriam precisos <b>${(r.pctIgualar*100).toLocaleString('pt-PT', {maximumFractionDigits: 1})}%</b>${isCa ? ` (a proposta CA dá ${pct1(r.pct * 100)}%)` : ''}${r.pctIgualar > 0.80 ? ' — <span class="ko">acima do teto legal de 80%</span>: nem no máximo legal a equipa repõe o valor anterior' : ' — o teto legal é 80%'}. A 80%, fazer dentro custa <b>${fmt(r.interno80)}</b> vs. <b>${fmt(r.extern)}</b> externalizado: ${r.interno80 !== null && r.extern !== null && r.interno80 <= r.extern ? '<span class="ok">compensa fazer dentro (−' + fmt(r.extern - r.interno80) + ' por episódio)</span>' : '<span class="ko">+' + fmt(r.interno80 - r.extern) + ' por episódio</span> — sem contar transportes' + (r.compExtra ? '' : ', complicações tardias') + ' e camas'}.</div>` : ''}
             ${r.sev2Extra ? `<div class="mgmt">▸ Cada doente concluído em sev. 2 por comorbilidades custa <b>+${fmt(r.sev2Extra)}</b> se externalizado — o destino recebe a sev. 2 (art. 8.º, n.º 1); à equipa interna paga-se a sev. 1 (art. 5.º, n.º 4).</div>` : ''}
             ${!r.amb && r.deltaSala > 0 ? `<div class="mgmt">▸ Alugar sala custa <b>+${fmt(r.deltaSala)}</b> face a fazer dentro e liberta ~${r.dias} diárias de internamento — um preço implícito de <b>${fmt(r.diariaBE)}/diária</b>. Até esse valor, compensa usá-lo para deslocar casos sociais e doentes médicos e libertar camas, mantendo a equipa própria a operar.</div>` : ''}
           </div>
